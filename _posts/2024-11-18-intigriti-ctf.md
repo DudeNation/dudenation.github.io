@@ -3,7 +3,7 @@ title: Intigriti CTF 2024 - WEB
 date: 2024-11-18
 tags: [ctf, web]
 categories: [CTF Writeups]
-author: DudeNation
+author: 2Fa0n
 img_path: /assets/img/Intigriti-ctf_2024
 image: /assets/img/Intigriti-ctf_2024/intigriti_banner.png
 ---
