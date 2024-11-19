@@ -5,7 +5,7 @@ tags: [ctf, web]
 categories: [CTF Writeups]
 author: 2Fa0n
 img_path: /assets/img/Intigriti-ctf_2024
-image: intigriti_banner.png
+image: /assets/img/Intigriti-ctf_2024/intigriti_banner.png
 ---
 
 ## Pizza Paradise
