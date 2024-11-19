@@ -379,7 +379,6 @@ router.get("/jwks.json", async (req, res) => {
     }
 });
 ```
-![Cat Club JWK](/assets/img/Intigriti-ctf_2024/cat_club_jwk.png)
 
 **Let's exploit** <br>
 - First, let's create a script to extract and format the public key from the JWKS endpoint:
