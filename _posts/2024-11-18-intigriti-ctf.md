@@ -157,7 +157,7 @@ BioCorp contacted us with some concerns about the security of their network. Spe
 ![Biocorp](/assets/img/Intigriti-ctf_2024/biocorp.png)
 
 ### Solution
-We look around the website and find nothing interesting. Let's check the source code which is provided by the challenge.
+We look around the website and find nothing interesting. Let's check the source code which is provided by the challenge. <br>
 ![Biocorp Source Code](/assets/img/Intigriti-ctf_2024/biocorp_source_code.png)
 
 We notice some interesting things in the source code.
