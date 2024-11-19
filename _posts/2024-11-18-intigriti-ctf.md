@@ -380,9 +380,9 @@ router.get("/jwks.json", async (req, res) => {
 });
 ```
 
-**Let's exploit** <br>
+#### Let's exploit <br>
 - First, let's create a script to extract and format the public key from the JWKS endpoint:
-```py
+```python
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 import base64
