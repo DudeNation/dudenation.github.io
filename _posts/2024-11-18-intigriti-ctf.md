@@ -357,6 +357,39 @@ module.exports = { signJWT, verifyJWT };
 
 We can see that if the algorithm is `none`, it will be rejected. What if we can make the algorithm confusion? Look through the internet and found out this site [JWT Algorithm Confusion](https://github.com/joaquimserafim/json-web-token/security/advisories/GHSA-4xw9-cx39-r355). <br>
 
+The reason we choose this CVE-2023-48238 is because the `json-web-token` in the `package.json` has 3.0.0 version. And the affected version is **< 3.1.1** so we can exploit it. <br>
+```json
+{
+    "name": "cat-club",
+    "version": "4.2.0",
+    "main": "app/app.js",
+    "scripts": {
+        "start": "node app/app.js"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.6",
+        "dotenv": "^16.4.5",
+        "pug": "^3.0.3",
+        "express": "^4.21.0",
+        "express-session": "^1.18.0",
+        "json-web-token": "~3.0.0",
+        "pg": "^8.12.0",
+        "sequelize": "^6.37.3"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.4"
+    },
+    "engines": {
+        "node": ""
+    },
+    "license": "MIT",
+    "keywords": [],
+    "author": "",
+    "description": ""
+}
+```
+
 We can also get the public key from `/jwks.json`. <br>
 ```js
 router.get("/jwks.json", async (req, res) => {
