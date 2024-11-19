@@ -8,8 +8,6 @@ img_path: /assets/img/Intigriti-ctf_2024
 image: /assets/img/Intigriti-ctf_2024/intigriti_banner.png
 ---
 
-By [2Fa0n](https://github.com/DudeNation)
-
 ## Pizza Paradise
 **Solvers:** 395 <br>
 **Author:** CryptoCat
