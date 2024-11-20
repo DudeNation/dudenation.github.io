@@ -726,7 +726,7 @@ Let's test out simple prototype pollution if we can inject more properties. <br>
 ```
 ![Work Break Prototype Pollution](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution.png)
 
-It shows "Settings updated successfully". The reason why we use `__proto__` but not using normal property is because:
+It shows "Settings updated successfully". The reason why we don't use normal property is because:
 - Can not exploit the Object.prototype
 - No overall impact to the application
 - Other objects will not be affected
