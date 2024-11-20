@@ -719,17 +719,12 @@ Let's test out simple prototype pollution if we can inject more properties. <br>
     "name":"Anon",
     "phone":"0123456789",
     "position":"pentest",
-    "__proto__": {
-        "isAdmin": true
-    }
+    "tasks":"10"
 }
 ```
-![Work Break Prototype Pollution](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution.png)
+![Work Break Prototype Pollution Test](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution_test.png)
 
-It shows "Settings updated successfully". The reason why we don't use normal property is because:
-- Can not exploit the Object.prototype
-- No overall impact to the application
-- Other objects will not be affected
+It will be `Not Allowed to Modify Tasks`.
 
 So we need to use `__proto__` to trigger prototype chain pollution. <br>
 Now we can inject more properties and curl to our burp collaborator to get the SID. <br>
