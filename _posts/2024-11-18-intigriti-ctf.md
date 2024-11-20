@@ -463,3 +463,264 @@ Check the burp collaborator and we got the flag. <br>
 ![Cat Club Flag](/assets/img/Intigriti-ctf_2024/cat_club_flag.png)
 
 **Flag:** `INTIGRITI{h3y_y0u_c4n7_ch41n_7h053_vuln5_l1k3_7h47}`
+
+## Work Break
+**Solvers:** 26 <br>
+**Author:** a_l & wubz
+
+### Description
+Your work portal contains multiple web vulnerabilities. Can you identify them and extract the session cookie of a support team member? <br>
+Credits: Amit Laish & Dor Konis - GE Vernova <br>
+![Work Break](/assets/img/Intigriti-ctf_2024/work_break.png)
+
+### Solution
+Just signup and login to the page. <br>
+![Work Break Login](/assets/img/Intigriti-ctf_2024/work_break_login.png)
+
+Now we are in the profile of our account. We can edit to add or change "Name", "Phone", "Position". It also display the performance chart, maybe to keep track of the employee's performance. <br>
+There is also a chat feature that we can send message to get support. <br>
+![Work Break Chat](/assets/img/Intigriti-ctf_2024/work_break_chat.png)
+
+View source of the profile page and we can see there are `chat.js` and `profile.js` file. <br>
+![Work Break Source Code](/assets/img/Intigriti-ctf_2024/work_break_source_code.png)
+
+Let's check the `chat.js` file. <br>
+```js
+document.addEventListener("DOMContentLoaded", () => {
+    const chatButton = document.getElementById("chatButton");
+    const chatWindow = document.getElementById("chatWindow");
+    const closeChat = document.getElementById("closeChat");
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+
+    chatButton.addEventListener("click", () => {
+        chatWindow.style.display = chatWindow.style.display === "none" ? "flex" : "none";
+    });
+
+    closeChat.addEventListener("click", () => {
+        chatWindow.style.display = "none";
+    });
+
+    chatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+
+        if (message === "") return;
+
+        appendMessage("user", message);
+        chatInput.value = "";
+
+        try {
+            const response = await fetch("/api/support/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message }),
+            });
+
+            const data = await response.json();
+
+            if (Array.isArray(data.supportResponse)) {
+                data.supportResponse.forEach((msg) => {
+                    appendMessage("support", msg);
+                });
+            } else {
+                appendMessage("support", data.supportResponse);
+            }
+        } catch (error) {
+            appendMessage("support", "An error occurred. Please try again later.");
+        }
+    });
+
+    const appendMessage = (sender, message) => {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("chat-message", sender);
+        const messageText = document.createElement("span");
+        messageText.classList.add("message-text");
+        messageText.textContent = message;
+        messageElement.appendChild(messageText);
+        chatMessages.appendChild(messageElement);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+});
+```
+
+It seems like just a normal sent and show the message. Let's check the `profile.js` file. <br>
+```js
+const getUserIdFromUrl = () => {
+    const path = window.location.pathname;
+    const segments = path.split("/");
+    return segments[segments.length - 1];
+};
+
+const setError = (error) => {
+    const errorText = document.getElementById("errorText");
+    errorText.innerText = error;
+
+    errorText.addEventListener("transitionend", () => {
+        errorText.innerText = "";
+        errorText.classList.remove("fade-out");
+    });
+    errorText.classList.add("fade-out");
+};
+
+let userTasks = [];
+document.addEventListener("DOMContentLoaded", async function () {
+    const logoutButton = document.getElementById("logoutButton");
+    const performanceIframe = document.getElementById("performanceIframe");
+    const profileForm = document.getElementById("profileForm");
+    const editButton = document.getElementById("editButton");
+    const submitButton = document.getElementById("submitButton");
+    const emailField = document.getElementById("email");
+    const nameField = document.getElementById("name");
+    const phoneField = document.getElementById("phone");
+    const positionField = document.getElementById("position");
+    const userId = getUserIdFromUrl();
+
+    try {
+        const response = await fetch(`/api/user/profile/${userId}`);
+        const profileData = await response.json();
+        if (response.ok) {
+            const userSettings = Object.assign(
+                { name: "", phone: "", position: "" },
+                profileData.assignedInfo
+            );
+
+            if (!profileData.ownProfile) {
+                editButton.style.display = "none";
+            } else {
+                editButton.style.display = "inline-block";
+            }
+
+            emailField.value = profileData.email;
+            nameField.value = userSettings.name;
+            phoneField.value = userSettings.phone;
+            positionField.value = userSettings.position;
+
+            userTasks = userSettings.tasks || [];
+            performanceIframe.addEventListener("load", () => {
+                performanceIframe.contentWindow.postMessage(userTasks, "*");
+            });
+        } else if (response.unauthorized) {
+            window.location.href = "/login";
+        } else {
+            setError(profileData.error);
+        }
+    } catch (error) {
+        console.log("Error fetching profile: " + error.message);
+    }
+
+    editButton.addEventListener("click", () => {
+        nameField.disabled = false;
+        phoneField.disabled = false;
+        positionField.disabled = false;
+
+        nameField.classList.add("editable");
+        phoneField.classList.add("editable");
+        positionField.classList.add("editable");
+
+        submitButton.style.display = "inline-block";
+        editButton.style.display = "none";
+    });
+
+    profileForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const updatedSettings = {
+            name: nameField.value,
+            phone: phoneField.value,
+            position: positionField.value,
+        };
+
+        try {
+            const response = await fetch("/api/user/settings", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedSettings),
+            });
+
+            if (response.ok) {
+                alert("Profile updated successfully!");
+                nameField.disabled = true;
+                phoneField.disabled = true;
+                positionField.disabled = true;
+
+                nameField.classList.remove("editable");
+                phoneField.classList.remove("editable");
+                positionField.classList.remove("editable");
+
+                submitButton.style.display = "none";
+                editButton.style.display = "inline-block";
+            } else if (response.unauthorized) {
+                window.location.href = "/login";
+            } else {
+                const errorData = await response.json();
+                setError(errorData.error);
+            }
+        } catch (error) {
+            setError(error.message);
+        }
+    });
+
+    logoutButton.addEventListener("click", async function () {
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+            });
+
+            if (response.ok) {
+                window.location.href = "/login";
+            } else {
+                const errorData = await response.json();
+                console.log("Logout failed: " + errorData.message);
+            }
+        } catch (error) {
+            console.log("Error during logout: " + error.message);
+        }
+    });
+});
+
+window.onresize = () => performanceIframe.contentWindow.postMessage(userTasks, "*");
+
+// Not fully implemented - total tasks
+window.addEventListener(
+    "message",
+    (event) => {
+        if (event.source !== frames[0]) return;
+
+        document.getElementById(
+            "totalTasks"
+        ).innerHTML = `<p>Total tasks completed: ${event.data.totalTasks}</p>`;
+    },
+    false
+);
+```
+
+We found some interesting part in the code. <br>
+```js
+const userSettings = Object.assign(
+    { name: "", phone: "", position: "" },
+    profileData.assignedInfo
+);
+```
+
+- Object.assign() merges all properties from source into target.
+- The `profileData.assignedInfo` is from the `/api/user/profile/:id` endpoint.
+- There is no validation for the `profileData.assignedInfo` so we can inject the `tasks` property.
+
+Let's update the profile and we can see the burp have POST request to `/api/user/settings` endpoint. <br>
+![Work Break Profile](/assets/img/Intigriti-ctf_2024/work_break_profile.png)
+![Work Break Settings](/assets/img/Intigriti-ctf_2024/work_break_settings.png)
+
+Let's test out simple prototype pollution if we can inject more properties. <br>
+```json
+{
+    "name":"Anon",
+    "phone":"0123456789",
+    "position":"pentest",
+    "__proto__": {
+        "isAdmin": true
+    }
+}
+```
