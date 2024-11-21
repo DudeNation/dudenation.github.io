@@ -888,7 +888,8 @@ if(isset($_POST['hello']))
 ?>
 ```
 
-1. About input handling and filtering: <br>
+Let's dive into the code analysis.
+1. About input handling and filtering:
 ```php
 $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSION['protocol'])) ? $_SESSION['protocol'] : null;
 ```
@@ -898,7 +899,7 @@ $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSI
 
 So we can use `ftp` protocol with proxy option to redirect requests.
 
-2. About `stream_context_create`: <br>
+2. About `stream_context_create`:
 ```php
 $context = stream_context_create(json_decode($options, true));
 ```
@@ -907,7 +908,7 @@ $context = stream_context_create(json_decode($options, true));
 
 We can inject FTP proxy settings to redirect requests to internal web service.
 
-3. For the HTTP request: <br>
+3. For the HTTP request:
 ```php
 $resp = @fopen("$protocol://127.0.0.1:3000/$name", 'r', false, $context);
 ```
