@@ -818,6 +818,7 @@ Enter a random name and we can see nothing special. <br>
 
 Let's check the source code from the challenge provider. <br>
 ![Greetings Source Code](/assets/img/Intigriti-ctf_2024/greetings_source_code.png)
+
 Here is the folder and files from the zip file. <br>
 ![Greetings Source Code VSCode](/assets/img/Intigriti-ctf_2024/greetings_source_code_vscode.png)
 
