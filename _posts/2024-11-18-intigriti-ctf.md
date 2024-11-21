@@ -817,7 +817,7 @@ Enter a random name and we can see nothing special. <br>
 ![Greetings Name](/assets/img/Intigriti-ctf_2024/greetings_name.png)
 
 Let's check the source code from the challenge provider. <br>
-![Greetings Source Code](/assets/img/Intigriti-ctf_2024/greetings_source_code.png)
+![Greetings Source Code](/assets/img/Intigriti-ctf_2024/greetings_source_code.png) <br>
 ![Greetings Source Code VSCode](/assets/img/Intigriti-ctf_2024/greetings_source_code_vscode.png)
 
 Look around the source code and we can see two files that we need to check. <br>
@@ -913,8 +913,7 @@ $resp = @fopen("$protocol://127.0.0.1:3000/$name", 'r', false, $context);
 
 We can inject HTTP headers through newlines and craft a custom HTTP requests.
 
-Let's exploit it. <br>
-Our payload:
+Let's exploit it. Here is our payload:
 ```
 name=aaa HTTP/1.1
 Host: a
