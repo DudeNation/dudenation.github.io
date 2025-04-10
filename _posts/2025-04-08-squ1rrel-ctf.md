@@ -62,7 +62,7 @@ Let read the source code from the challenge provider.
 ![source code](/assets/img/squ1rrel-ctf_2025/source_code.png)
 
 We look through the all the source code and find this code handle the `/api/click` request.
-```python
+```js
 app.post("/api/click", authenticate, async (req, res) => {
   // increase user balance
   const { username } = req.user;
@@ -991,7 +991,7 @@ export AWS_SESSION_TOKEN="[REDACTED]"
 ```
 
 - Then we need to check current identity.
-```
+```bash
 aws sts get-caller-identity
 ```
 ```json
@@ -1005,8 +1005,6 @@ aws sts get-caller-identity
 - We need to get role details and it policies attached to it.
 ```bash
 aws iam get-role --role-name ec2instancerole
-
-aws iam list-attached-role-policies --role-name ec2instancerole
 ```
 ```json
 {
@@ -1036,6 +1034,9 @@ aws iam list-attached-role-policies --role-name ec2instancerole
         }
     }
 }
+```
+```bash
+aws iam list-attached-role-policies --role-name ec2instancerole
 ```
 ```json
 {
