@@ -413,8 +413,98 @@ Let watch these action again with Burp Suite. <br>
 Let go through the source code. <br>
 ![go getter](/assets/img/squ1rrel-ctf_2025/source_code_go_getter.png)
 
-We find the function handle the `/execute` endpoint in `main.go` file. <br>
+First let dive into `main.go` file. <br>
 ```go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"log"
+	"net/http"
+)
+
+// Struct to parse incoming JSON
+type RequestData struct {
+	Action string `json:"action"`
+}
+
+// Serve the HTML page
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	html := `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>What GOpher are you?</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        function sendRequest() {
+            const selectedOption = document.querySelector('input[name="action"]:checked');
+            if (!selectedOption) {
+                alert("Please select an action!");
+                return;
+            }
+
+            fetch("/execute", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: selectedOption.value })
+            })
+            .then(response => response.text().then(text => ({ text, response })))
+            .then(({ text, response }) => {
+                var gopherContainer = document.getElementById("gopher-container");
+                var errorContainer = document.getElementById("error-container");
+                gopherContainer.innerHTML = "";
+                errorContainer.innerHTML = "";
+                
+                try {
+                    var data = JSON.parse(text);
+                    if (data.flag) {
+                        alert(data.flag);
+                    } else if (data.name && data.src) {
+                        var nameHeader = document.createElement("h3");
+                        nameHeader.textContent = data.name;
+                        var gopherImage = document.createElement("img");
+                        gopherImage.src = data.src;
+                        gopherImage.className = "img-fluid rounded";
+                        gopherContainer.appendChild(nameHeader);
+                        gopherContainer.appendChild(gopherImage);
+                    }
+                } catch (error) {
+                    errorContainer.textContent = "Error: " + text;
+                    errorContainer.className = "text-danger mt-3";
+                }
+            })
+            .catch(function(error) {
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</head>
+<body class="container py-5 text-center">
+    <h1 class="mb-4">Choose an Action</h1>
+    <div class="d-flex flex-column align-items-center mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="action" value="getgopher" id="getgopher">
+            <label class="form-check-label" for="getgopher">Get GOpher</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="action" value="getflag" id="getflag">
+            <label class="form-check-label" for="getflag">I don't care about gophers, I want the flag >:)</label>
+        </div>
+    </div>
+    <button class="btn btn-primary" onclick="sendRequest()">Submit</button>
+    <div id="error-container"></div>
+    <div id="gopher-container" class="mt-4"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>`
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(html))
+}
+
 // Handler for executing actions
 func executeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -457,10 +547,55 @@ func executeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid action", http.StatusBadRequest)
 	}
 }
+
+func main() {
+	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/execute", executeHandler)
+
+	log.Println("Server running on http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
 ```
 
-I personally do not know much abou Go so I look other file handle this part in `app.py` file. <br>
+We can see this file is mainly proxy/forward the request to `python-service` and return the response to the client. Let go through the `app.py` file for the backend part. <br>
 ```python
+from flask import Flask, request, jsonify
+import random
+import os
+
+app = Flask(__name__)
+
+GO_HAMSTER_IMAGES = [
+    {
+        "name": "boring gopher",
+        "src": "https://camo.githubusercontent.com/a72f086b878c2e74b90d5dbd3360e7a4aa132a219a662f4d83b7c243298fea4d/68747470733a2f2f7261772e6769746875622e636f6d2f676f6c616e672d73616d706c65732f676f706865722d766563746f722f6d61737465722f676f706865722e706e67"
+    },
+    {
+        "name": "gopher plush",
+        "src": "https://go.dev/blog/gopher/plush.jpg"
+    },
+    {
+        "name": "fairy gopher",
+        "src": "https://miro.medium.com/v2/resize:fit:1003/1*lzAGEWMWtgn3NnRECl8gmw.png"
+    },
+    {
+        "name": "scientist gopher",
+        "src": "https://miro.medium.com/v2/resize:fit:1400/1*Xxckk9KBW73GWgxhtJN5nA.png"
+    },
+    {
+        "name": "three gopher",
+        "src": "https://go.dev/blog/gopher/header.jpg"
+    },
+    {
+        "name": "hyperrealistic gopher",
+        "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPNG7wGmWuHcSi7Wkzmht8TSdeXAHOl5edBw&s"
+    },
+    {
+        "name": "flyer gopher",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/d/df/Go_gopher_app_engine_color.jpg"
+    }
+]
+
 @app.route('/execute', methods=['POST'])
 def execute():
     # Ensure request has JSON
@@ -482,20 +617,47 @@ def execute():
         return jsonify({"flag": os.getenv("FLAG")})
     else:
         return jsonify({"error": "Invalid action"}), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8081, debug=True)
 ```
 
-We can see that the if condition is check the `action` key in the request body. So what if we add another action after `getgopher`? <br>
-```json
-{
-    "action": "getflag",
-    "action": "getgopher"
+For this file, it handle the request from `main.go` and return the response to the client. <br>
+I found this part interesting:
+```go
+// Struct to parse incoming JSON
+type RequestData struct {
+	Action string `json:"action"`
 }
 ```
+Go's JSON out of order is **case-insensitive** by default. So if we change the `action` to `Action`, it will still be parsed correctly. <br>
+```python
+# Check if action key exists
+    if 'action' not in data:
+        return jsonify({"error": "Missing 'action' key"}), 400
 
-Let try and see what happen. <br>
+    # Process action
+    if data['action'] == "getgopher":
+        # choose random gopher
+        gopher = random.choice(GO_HAMSTER_IMAGES)
+        return jsonify(gopher)
+    elif data['action'] == "getflag":
+        return jsonify({"flag": os.getenv("FLAG")})
+    else:
+        return jsonify({"error": "Invalid action"}), 400
+```
+For Python, JSON parsing is **case-sensitive**. It only look for the exact lowercase `action` key. <br>
+
+Let try what we have discussed above. If I try this case first, what will happen? <br>
+```json
+{
+    "action": "getgopher",
+    "Action": "getflag"
+}
+```
 ![go getter](/assets/img/squ1rrel-ctf_2025/get_flag_request_2.png)
 
-Only get title and image. Hmm, look closely to the Process action, it only check word `action`, whatif capitalize some letter in `action`? <br>
+We get **Access denied** message, so maybe Go use the last matching value due to case-insensitive. So Go see that `getflag` will return denied message, whatif we swap the order? <br>
 ```json
 {
     "action": "getflag",
@@ -505,7 +667,7 @@ Only get title and image. Hmm, look closely to the Process action, it only check
 
 ![go getter](/assets/img/squ1rrel-ctf_2025/get_flag_request_3.png)
 
-We get the flag. <br>
+It works, so Go will use the last matching value which is `getgopher` and trigger the case to forware to Python service. So python sees the case-sentitive `"action": "getflag"` and return the flag. <br>
 
 **Flag:** `squ1rrel{p4rs3r?_1_h4rd1y_kn0w_3r!}`
 
@@ -846,7 +1008,7 @@ What if we use `data:text/javascript,alert(1)` for the url? <br>
 
 ![portrait](/assets/img/squ1rrel-ctf_2025/data_uri.png)
 
-It successfully bypass the error handling and trigger the alert. The reason is that URI schema does not download image from the network and using `data:` can direct inject vào `src` attribute. And `text/javascript` let MIME type, browser will execute content as javascript. <br>
+It successfully bypass the error handling and trigger the alert. The reason is that URI schema does not download image from the network and using `data:` can direct inject into `src` attribute. And `text/javascript` let MIME type, browser will execute content as javascript. <br>
 
 So maybe the CVE may work but I can not exploit with it so I will go with the other way. <br>
 - First run the script to host the malicious server.
