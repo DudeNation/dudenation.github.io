@@ -11,7 +11,7 @@ image: /assets/img/squ1rrel-ctf_2025/squ1rrel_banner.png
 # Web
 ## acorn clicker
 **Solvers:** 382 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 Click acorns. Buy squirrels. Profit. <br>
@@ -146,7 +146,7 @@ Now we can successfully buy the **Flag Squirrel** and get the flag.
 
 ## emojicrypt
 **Solvers:** 161 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 Passwords can be more secure. We’re taking the first step. <br>
@@ -391,7 +391,7 @@ After run the script, we get the password: `37373737373737373737373737373737` <b
 
 ## go getter
 **Solvers:** 107 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 There's a joke to be made here about Python eating the GOpher. I'll cook on it and get back to you. <br>
@@ -673,7 +673,7 @@ It works, so Go will use the last matching value which is `getgopher` and trigge
 
 ## funkytype
 **Solvers:** 95 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 our washed alum has been trying to improve his vocabulary and type really fast at the same time! <br>
@@ -759,7 +759,7 @@ We successfully get the flag. <br>
 
 ## portrait
 **Solvers:** 40 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 It's like DeviantArt, but with a report button to keep it less Deviant. Reporting a gallery will make the admin bot visit it. <br>
@@ -1025,7 +1025,7 @@ So maybe the CVE may work but I can not exploit with it so I will go with the ot
 ## Cloud
 ## opensource
 **Solvers:** 105 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 The entirety of this challenge takes place on GitHub. Accept the challenge at https://github.squ1rrel.dev/ (do not attack this website, it is not part of the challenge). <br>
@@ -1103,7 +1103,7 @@ Now we can see what inside the FLAG. <br>
 
 ## metadata
 **Solvers:** 48 <br>
-**Author:** 2Fa0n
+**Author:** squ1rrel
 
 ### Description
 Just vibe coded my very first website, and my friend put it up on his EC2. No shot it has any security vulnerabilities, right? <br>
