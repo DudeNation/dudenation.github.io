@@ -10,15 +10,15 @@ image: /assets/img/defcon-ctf-quals_2025/defcon_banner.png
 
 # PWN
 ## memory bank
-**Solvers:** *** <br>
+**Solvers:** xxx <br>
 **Author:** defcon
 
 ### Description
 ![memory_bank](/assets/img/defcon-ctf-quals_2025/memory_bank.png)
 
 ### Solution
-For this challenge, I just analyze from the writeup because I was not able to find the flag due to I miss some information when auditing the source code. And also I have never play PWN before so I just want to challenge myself and learn something new. <br>
-After examining the source code in `index.js`:
+For this challenge, I just analyze from the challenge solution because I was not able to find the flag due to I miss some information when auditing the source code. And also I have never play PWN before so I just want to challenge myself and learn something new. <br>
+So after examining the source code in `index.js`:
 ```js
 // ANSI color codes
 const RESET = "\x1b[0m";
@@ -343,9 +343,8 @@ if (currentUser.username === "bank_manager") {
 }
 ```
 
-So what is `WeakRef`? <br>
-From [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef):
-> The WeakRef object lets you reference an object while still allowing the garbage collector to collect the object.
+So what is `WeakRef`? Here is the research from [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef):
+> A **WeakRef** object lets you hold a weak reference to another object, without preventing that object from getting garbage-collected.
 
 Some example of WeakRef:
 ```js
@@ -446,7 +445,7 @@ Here is the visualization of the memory usage:
    └── Has flag access privileges
 ```
 
-Here is the complete script:
+Here is the full script exploit:
 ```python
 from pwn import *
 
@@ -502,6 +501,6 @@ if __name__ == '__main__':
 ![image](/assets/img/defcon-ctf-quals_2025/image1.png)
 ![image](/assets/img/defcon-ctf-quals_2025/image2.png)
 
-This analysis is based on the solution from [defcon-ctf-quals-2025-web-memory-banking-system](https://github.com/Nautilus-Institute/quals-2025/tree/main/memorybank). If I can look closer, I can find the part about bill withdrawal and can even exploit so this challenge is not quite hard but pretty cool and have learn something new.
+This analysis is based on the solution from [defcon-ctf-quals-2025-memorybank](https://github.com/Nautilus-Institute/quals-2025/tree/main/memorybank). If I can look closer, I can find the part about bill withdrawal and can even exploit so this challenge is not quite hard but pretty cool and have learn something new.
 
 **Flag:** `flag{XXX}`
