@@ -87,7 +87,7 @@ So the final result is:
 
 So let's correct the format `SlccjCzySpcxtzyp` and we successfully submit correctly. <br>
 
-Flag: `texsaw{SlccjCzySpcxtzyp}`
+**Flag:** `texsaw{SlccjCzySpcxtzyp}`
 
 # Web
 ## Deprecated Site
@@ -107,7 +107,7 @@ Why would you delete my website :( here's a sad flag texsaw{why_d0_i_del3t3ed}
 
 Super easy right? =))
 
-Flag: `texsaw{why_d0_i_del3t3ed}`
+**Flag:** `texsaw{why_d0_i_del3t3ed}`
 
 ## PotterMania pt.2
 **Solvers:** *** <br>
@@ -227,4 +227,4 @@ print("\n[*] Script execution completed.")
 And this technique is about `JWT manipulation` but sadly I can not find the flag because I need to read some information about `Harry Potter` which I have never watched or even read it before. <br>
 But thankfully this challenge is getting me to read something about `Harry Potter` =)) <br>
 
-Flag: `texsaw{XXX}`
+**Flag:** `texsaw{XXX}`
