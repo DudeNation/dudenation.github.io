@@ -10,7 +10,7 @@ image: /assets/img/texsaw-ctf_2025/texsaw_banner.png
 
 # Osint
 ## pottermania_part1
-**Solvers:** *** <br>
+**Solvers:** xxx <br>
 **Author:** texsaw
 
 ### Description
@@ -91,7 +91,7 @@ So let's correct the format `SlccjCzySpcxtzyp` and we successfully submit correc
 
 # Web
 ## Deprecated Site
-**Solvers:** *** <br>
+**Solvers:** xxx <br>
 **Author:** texsaw
 
 ### Description
@@ -110,7 +110,7 @@ Super easy right? =))
 **Flag:** `texsaw{why_d0_i_del3t3ed}`
 
 ## PotterMania pt.2
-**Solvers:** *** <br>
+**Solvers:** xxx <br>
 **Author:** texsaw
 
 ### Description
