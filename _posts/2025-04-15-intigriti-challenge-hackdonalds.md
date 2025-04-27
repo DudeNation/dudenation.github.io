@@ -1,6 +1,6 @@
 ---
 title: Intigriti Challenge - HackDonalds
-date: 2025-04-15
+date: 2025-04-25
 tags: [bug bounty, challenge, ctf]
 categories: [Bug Bounty, CTF Writeups]
 author: 2Fa0n
