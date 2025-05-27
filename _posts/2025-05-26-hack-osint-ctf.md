@@ -133,4 +133,4 @@ Got the badge, awesome! <br>
 
 ![badge](/assets/img/hack-osint-ctf_2025/badge.png)
 
-![badge](/assets/img/hack-osint-ctf_2025/badge2.png#center)
+![badge](/assets/img/hack-osint-ctf_2025/badge2.png)
