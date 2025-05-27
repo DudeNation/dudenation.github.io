@@ -10,7 +10,8 @@ image: /assets/img/puppy-htb-season8/puppy-htb-season8_banner.png
 
 # Puppy HTB Season 8
 ## Machine information
-As is common in real life pentests, you will start the Puppy box with credentials for the following account: `levi.james` / `KingofAkron2025!`.
+As is common in real life pentests, you will start the Puppy box with credentials for the following account: `levi.james` / `KingofAkron2025!`. <br>
+Author: [tr3nb0lone](https://app.hackthebox.com/users/1600618)
 
 ## Enumeration
 ### Nmap
