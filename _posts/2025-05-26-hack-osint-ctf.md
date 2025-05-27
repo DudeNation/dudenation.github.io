@@ -129,7 +129,7 @@ I try to find and the result is that I can not find it and so on the challenge e
 
 After all, this CTF challenge is pretty cool with nice OSINT flow. Definitely gonna try this challenge next year. <br>
 
-Got the badge, awesome! <br>
+Got the badge, awesome!
 
 ![badge](/assets/img/hack-osint-ctf_2025/badge.png)
 
