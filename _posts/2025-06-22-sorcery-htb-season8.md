@@ -971,6 +971,7 @@ pub async fn get_one(guard: RequireClient, id: &str) -> Result<Json<Response>, A
 
 Notice that there is a call to derive macro provided different functions that are defined in `backend-macros`.
 
+{% raw %}
 ```rust
 // /backend-macros/src/lib.rs
 extern crate proc_macro;
@@ -1196,6 +1197,7 @@ pub fn model_derive(input: TokenStream) -> TokenStream {
     .into()
 }
 ```
+{% endraw %}
 
 Now let's talk about how **Rust procedural macros** work.
 
