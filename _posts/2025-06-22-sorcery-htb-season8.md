@@ -363,7 +363,7 @@ That's alot, let's see if we can found some leak credentials or something else.
 12:18AM INF no leaks found
 ```
 
-So [gitleaks](https://github.com/gitleaks/gitleaks) found nothing.
+So [gitleaks](https://github.com/gitleaks/gitleaks) found nothing. <br>
 &rarr; Let's go through some git log.
 
 ```bash
