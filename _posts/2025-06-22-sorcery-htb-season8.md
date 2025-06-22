@@ -1,7 +1,7 @@
 ---
 title: Sorcery [Insane]
 date: 2025-06-22
-tags: [htb, linux, nmap, ssh, docker, pspy, tesseract, netpbm, xwud, freeipa, sudo, privesc, cypher injection, ftp, mail, dirsearch, dns, phising]
+tags: [htb, linux, nmap, ssh, docker, pspy, tesseract, netpbm, xwud, freeipa, sudo, privesc, cypher injection, ftp, mail, dirsearch, dns, phising, webauthn, devtools]
 categories: [HTB Writeups]
 author: 2Fa0n
 img_path: /assets/img/sorcery-htb-season8
@@ -108,7 +108,7 @@ After login sucess, we can see that we are the client and can only see lists of 
 
 ![Product Page](/assets/img/sorcery-htb-season8/sorcery-htb-season8_product_page.png)
 
-Nothing special, just a title of the product and a description. The different is only there is a product id assigned to it like this `https://sorcery.htb/dashboard/store/88b6b6c5-a614-486c-9d51-d255f47efb4f`.
+Nothing special, just a title of the product and a description. The different is only there is a product id assigned to it like this `https://sorcery.htb/dashboard/store/88b6b6c5-a614-486c-9d51-d255f47efb4f`. <br>
 &rarr; Let's go throught profile page and see what we can do.
 
 ![Profile Page](/assets/img/sorcery-htb-season8/sorcery-htb-season8_profile_page.png)
@@ -446,7 +446,7 @@ Date:   Wed Oct 30 18:14:43 2024 +0000
  frontend/src/api/error.ts                                 |   19 +
 ```
 
-Save this creds for later use `nicole_sullivan@sorcery.htb`.
+Save this creds for later use `nicole_sullivan@sorcery.htb`. <br>
 &rarr; Hmm, maybe go through `disearch` again with `https://git.sorcery.htb/` if there is a chance to uncover some new stuffs.
 
 ```bash
@@ -531,7 +531,7 @@ Here we go, let's go through and see if there is some interesting stuffs.
 
 ![login-oauth-key](/assets/img/sorcery-htb-season8/sorcery-htb-season8_login_oauth_key.png)
 
-Found this one in `https://git.sorcery.htb/login/oauth/keys` but did not know what to do with it.
+Found this one in `https://git.sorcery.htb/login/oauth/keys` but did not know what to do with it. <br>
 &rarr; Back to source code discovery.
 
 Got some interesting stuffs.
