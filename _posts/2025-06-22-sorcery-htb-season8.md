@@ -2025,9 +2025,41 @@ And then generate a certificate signing request.
 Then we will sign the certificate with the root CA. <br>
 > We need to remove the passphrase from the root CA key.
 
+When running, does not know the passphrase so I enter random and it got this problem.
+
 ```bash
 └─$ openssl rsa -in RootCA.key -out RootCA-unenc.key
 Enter pass phrase for RootCA.key:
+Could not find private key from RootCA.key
+40F733F8057F0000:error:1C800064:Provider routines:ossl_cipher_unpadblock:bad decrypt:../providers/implementations/ciphers/ciphercommon_block.c:107:
+40F733F8057F0000:error:11800074:PKCS12 routines:PKCS12_pbe_crypt_ex:pkcs12 cipherfinal error:../crypto/pkcs12/p12_decr.c:92:maybe wrong password
+```
+
+```bash
+└─$ file RootCA.key 
+RootCA.key: OpenSSH private key (with password)
+```
+
+So we gonna create a bash script to bruteforce the passphrase.
+
+```bash
+└─$ cat crack.sh                   
+#!/bin/bash
+while IFS= read -r pass; do
+    openssl rsa -in RootCA.key -out /dev/null -passin pass:"$pass" 2>/dev/null && { echo "Password found: $pass"; exit 0; }
+done < /usr/share/wordlists/rockyou.txt
+```
+
+```bash
+└─$ ./crack.sh                                               
+Password found: password
+```
+
+Got the passphrase. Now we can previous command again.
+
+```bash
+└─$ openssl rsa -in RootCA.key -out RootCA-unenc.key
+Enter pass phrase for RootCA.key: #input password
 writing RSA key
 ```
 
