@@ -8,7 +8,7 @@ img_path: /assets/img/artifical-htb-season8
 image: /assets/img/artifical-htb-season8/artifical-htb-season8_banner.png
 ---
 
-# Artifical HTB Season 8
+# Artificial HTB Season 8
 ## Machine information
 Author: [FisMatHack](https://app.hackthebox.com/users/1076236)
 
