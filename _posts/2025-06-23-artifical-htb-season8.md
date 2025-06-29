@@ -1,5 +1,5 @@
 ---
-title: Artifical [Easy]
+title: Artificial [Easy]
 date: 2025-06-23
 tags: [htb, linux, nmap, ssh, tensorflow, rce, backrest, chisel, hashcat, reverse shell]
 categories: [HTB Writeups]
