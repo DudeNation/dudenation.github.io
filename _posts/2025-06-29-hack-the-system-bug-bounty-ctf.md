@@ -394,6 +394,6 @@ For this flag, I got support to get this flag and also due to the time limit, so
 
 **Flag:** `HTB{cl13nt_s1d3_pp_4r3_d4ng3r0us_76d61db79df11cfc847048c16b026607}`
 
-*PS: I found out a blog writeup written about this challenge [Sattrack](https://blog.whale-tw.com/2025/06/30/2025-bugbountyctf/#Sattrack) from [@whale-tw](https://blog.whale-tw.com/). Big shout out to him for helping me a lot with this challenge.*
+*PS: I found out a blog writeup written about this challenge [Sattrack](https://blog.whale-tw.com/2025/06/30/2025-bugbountyctf/#Sattrack) from [@whale-tw](https://blog.whale-tw.com/). Big shout out to him.*
 
 ![result](/assets/img/hack-the-system-bug-bounty-ctf/result.png)
