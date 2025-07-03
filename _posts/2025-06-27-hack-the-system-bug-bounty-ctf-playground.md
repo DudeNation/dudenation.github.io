@@ -224,3 +224,5 @@ Got into the dashboard ans saw the `flag.txt` file. <br>
 *From these two challenges, we can see that these challenges based on the real world bug bounty reports. And we know that if we understand the approach of the application, we can figure out the vulnerability and exploit it.*
 
 This is just a CTF playground, let's go for the real event [Hack the System - Bug Bounty CTF](https://ctf.hackthebox.com/event/2508).
+
+![result](/assets/img/hack-the-system-bug-bounty-ctf-playground/result.png)
