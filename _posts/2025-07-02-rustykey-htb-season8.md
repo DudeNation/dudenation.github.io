@@ -1274,7 +1274,7 @@ PropagationFlags  : None
 We see that the `SUPPORT` user have `FullControl` access to the `HKLM:\Software\Classes\CLSID\{23170F69-40C1-278A-1000-000100020000}\InprocServer32` key. <br>
 &rarr; We can able to modify the **DLL** file and try to force the machine to load our malicious **DLL** which we will get privilege escalation to higher privilege.
 
-### Privilege Escalation
+## Privilege Escalation
 ### COM Hijacking
 Let's review for a normal 7-Zip COM Loading process.
 ```markdown
