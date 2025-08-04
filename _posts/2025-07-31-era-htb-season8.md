@@ -1,7 +1,7 @@
 ---
 title: Era [Medium]
 date: 2025-07-31
-tags: [htb, linux, nmap, ]
+tags: [htb, linux, nmap, ffuf, idor, elf, bcrypt, sqlite3, hashcat, ftp, stream wrapper, ssrf, penelope, group permission, backdoor, binary, objcopy, ssh2]
 categories: [HTB Writeups]
 author: 2Fa0n
 img_path: /assets/img/era-htb-season8
