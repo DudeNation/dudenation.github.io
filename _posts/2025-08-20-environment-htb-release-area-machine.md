@@ -1,7 +1,7 @@
 ---
 title: Environment [Medium]
 date: 2025-08-20
-tags: [htb, linux, nmap, ]
+tags: [htb, linux, nmap, feroxbuster, laravel, php, file upload, cve-2024-52301, cve-2024-21546, penelope, gpg, rce, systeminfo, environment variable, reverse shell]
 categories: [HTB Writeups]
 author: 2Fa0n
 img_path: /assets/img/environment-htb-release-area-machine
