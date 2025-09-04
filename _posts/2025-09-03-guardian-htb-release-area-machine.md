@@ -1,7 +1,7 @@
 ---
 title: Guardian [Hard]
 date: 2025-09-03
-tags: [htb, linux, nmap, ]
+tags: [htb, linux, nmap, subdomain, fuzzing, idor, gitea, cve-2025-22131, excel, csrf, lfi, rce, mysql, password cracking, php filter wrapper, regex, hijacking, penelope, apache config, safeapache2ctl, hashcat]
 categories: [HTB Writeups]
 author: 2Fa0n
 img_path: /assets/img/guardian-htb-release-area-machine
@@ -276,6 +276,8 @@ We see two chat session from `GU6262023` and `mireielle.feek`, there is also a `
 We choose admin to chat with, we can see from the url that we are id `13` and we are chatting with id `1` which is admin. <br>
 From here, we are assume that what if we change our id to other user, there may be chance for us to read the other chat session between other user with admin. <br>
 &rarr; Let's intercept this request with burp and then manipulate the `chat_users[0]` one.
+
+### IDOR
 
 ![Guardian Website](/assets/img/guardian-htb-release-area-machine/guardian-htb-release-area-machine_website-login-14.png)
 
@@ -682,6 +684,7 @@ As from what we see, it got filter out and also got regex in case we can bypass 
 What if we use `,` that and then add these `enrollment|academic|financial|system` end with `.php` <br>
 &rarr; Will it bypass the regex?
 
+### Bypass Regex
 The orginal path is gonna be like these: `/var/www/html/config/db.php/`.
 This one is after adding `,system.php` at the end: `/var/www/html/config/db.php/,system.php`
 
