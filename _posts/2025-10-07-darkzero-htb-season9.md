@@ -1433,4 +1433,6 @@ From my perspective, I thinking that the way from `svc_sql` to `nt system` in `D
 This could be running `SharpHound` on `DC02` and then check if it has `ADCS` so we can view via the graph and exploit to get `root`. <br>
 And we gonna doing some other reverse shell just to know that this can be exploited in more than 1 way.
 
+![result](/assets/img/darkzero-htb-season9/result.png)
+
 > *Stay tuned, I gonna update this later on :>. Have fun with next machine :D*
