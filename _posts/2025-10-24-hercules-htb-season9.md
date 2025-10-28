@@ -3604,6 +3604,8 @@ Pwned the `root.txt` flag
 
 > *Also the hint from the machine info got work where there is not flag in `Administrator` but in `Admin` :D.*
 
+> *And be careful that the flow of from getting `stephen.m` &rarr; `Administrator` need to be straighforward so that it will works, otherwise it will got error so in that case, just redo the step from the begining or create an automate script if we already pwned the machine to have a clear look again the flow. If got some trouble with clock skew just `sudo rdate -n $ip` and it should work fine again :D.*
+
 Now we can [passing-the-ticket](https://www.thehacker.recipes/ad/movement/kerberos/ptt#passing-the-ticket) by using `impacket-secretsdump` to dump hashes and LSA secrets.
 
 ```bash
