@@ -6,7 +6,7 @@ gemspec
 
 gem "html-proofer", "~> 5.0", group: :test
 
-gem "sass-embedded", "~> 1.80"
+gem "sass-embedded", "1.80.6"
 
 platforms :mingw, :x64_mingw, :mswin, :jruby do
   gem "tzinfo", ">= 1", "< 3"
