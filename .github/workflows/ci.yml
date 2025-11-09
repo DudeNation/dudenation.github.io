@@ -40,6 +40,10 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+          rubygems: latest
+
+      - name: Add Linux platform to lockfile
+        run: bundle lock --add-platform x86_64-linux
 
       - name: Setup Node
         uses: actions/setup-node@v4
