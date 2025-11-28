@@ -4,7 +4,7 @@ icon: fas fa-info-circle
 order: 4
 ---
 
-Hello, my name is An, I'm currently fourth-year CS student at VGU and also the co-founder of [VGU Cypher](https://www.facebook.com/people/VGU-Cypher/61568635109435/).
+Hello, my name is An, I graduated with a bachelor's degree in CS at VGU and also have been a co-founder of [VGU Cypher](https://www.facebook.com/people/VGU-Cypher/61568635109435/).
 
 I'm interested in web security, redteam, and AI/ML.
 
