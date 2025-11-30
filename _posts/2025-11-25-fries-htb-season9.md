@@ -2284,4 +2284,4 @@ Grab our `root.txt` flag.
 
 > *This machine is great that it combine both evironment Linux into Windows and how the ESC7 is not working and need to chain two other ESC6 and ESC16 to get it work and fully compromising the machine :>.*
 
-![result](/assets/img/friest-htb-season9/result.png)
+![result](/assets/img/fries-htb-season9/result.png)
