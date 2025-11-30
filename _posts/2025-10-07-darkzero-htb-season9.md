@@ -1,5 +1,6 @@
 ---
 title: DarkZero [Hard]
+published: false
 date: 2025-10-07
 tags: [htb, windows, dns, kerberos, ldap, smb, mssql, evil-winrm, rpc, unconstrained delegation, forest trust, powerview, responder, msfconsole, msfvenom, cve-2024-30088, rubeus, coercer]
 categories: [HTB Writeups]

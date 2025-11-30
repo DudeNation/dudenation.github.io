@@ -1,5 +1,6 @@
 ---
 title: Expressway [Easy]
+published: false
 date: 2025-09-21
 tags: [htb, linux, nmap, isakmp, ike-scan, psk-crack, ssh, hashcat, sudo, cve-2025-32463]
 categories: [HTB Writeups]

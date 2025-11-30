@@ -1,5 +1,6 @@
 ---
 title: Imagery [Medium]
+published: false
 date: 2025-10-04
 tags: [htb, linux, nmap, xss, path traversal, lfi, password cracking, pyAesCrypt, dpyAesCrypt, charcol, penelope, cron]
 categories: [HTB Writeups]

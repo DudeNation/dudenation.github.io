@@ -1,5 +1,6 @@
 ---
 title: Conversor [Easy]
+published: false
 date: 2025-10-28
 tags: [htb, linux, nmap, xml, xslt, sqlite3, cve-2024-48990, needrestart, crackstation, penelope, ssh, crackstation]
 categories: [HTB Writeups]

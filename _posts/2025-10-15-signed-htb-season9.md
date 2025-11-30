@@ -1,5 +1,6 @@
 ---
 title: Signed [Medium]
+published: false
 date: 2025-10-07
 tags: [htb, windows, mssql, responder, silver ticket, rid, ntlm reflection, cve-2025-33073, ps history, runascs, proxychains, nxc, smb, winrms, dnstool, openrowset, git, ntlmrelayx, dig, evil-winrm, powershell, rlwrap]
 categories: [HTB Writeups]

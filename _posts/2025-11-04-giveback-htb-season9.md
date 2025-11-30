@@ -1,5 +1,6 @@
 ---
 title: Giveback [Medium]
+published: false
 date: 2025-10-28
 tags: [htb, linux, nmap, kubernetes, wpscan, cve-2024-5932, env, ligolo-mp, wordpress, pivot, cve-2024-4577, cve-2012-1823, runc, php cgi]
 categories: [HTB Writeups]

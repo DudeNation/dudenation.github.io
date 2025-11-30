@@ -1,5 +1,6 @@
 ---
 title: NanoCorp [Hard]
+published: false
 date: 2025-11-12
 tags: [htb, windows, nmap, check_mk, cve-2025-24071, bloodhound, acl, winrmexec, responder, zip file, john, ntlm-reflection, nxc, smb, penelope, cve-2024-0670, faketime, impacket-secretsdump, cve-2025-33073, evil-winrm]
 categories: [HTB Writeups]
