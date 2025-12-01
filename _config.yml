@@ -129,15 +129,6 @@ comments:
     lang: # optional, default to the value of `site.lang`
     reactions_enabled: # optional, default to the value of `1`
 
-# Password Protection Settings
-# To protect a post, add `password: "sha256-hash"` to the post's front matter
-# Generate hash using: echo -n "your-password" | openssl dgst -sha256 | awk '{print $2}'
-# Or use: bash tools/generate-password-hash.sh "your-password"
-# If no password is specified in the post, it will use the default password hash below (if set)
-password_protect:
-  enabled: true
-  password: # Optional: default password hash for all protected posts (leave empty to require password in each post)
-
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
 assets:
   self_host:
