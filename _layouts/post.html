@@ -122,7 +122,7 @@ tail_includes:
   {% endif %}
 
   <div class="content">
-    {{ content }}
+    {% include password-protect.html content=content %}
   </div>
 
   <div class="post-tail-wrapper text-muted">
