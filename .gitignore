@@ -22,4 +22,7 @@ package-lock.json
 !.vscode/extensions.json
 !.vscode/tasks.json
 
+# Locked post content (private - not committed to repository)
+_locked_content/
+
 # Misc
