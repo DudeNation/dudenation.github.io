@@ -1,5 +1,6 @@
 ---
 title: Editor [Easy]
+published: false
 date: 2025-08-04
 tags: [htb, linux, nmap, cve-2024-31982, cve-2025-24893, penelope, busybox, nc, mysql, suid, ndsudo, gcc, path hijacking, ssh]
 categories: [HTB Writeups]
