@@ -1,5 +1,6 @@
 ---
 title: Sorcery [Insane]
+published: false
 date: 2025-06-22
 tags: [htb, linux, nmap, ssh, docker, pspy, tesseract, netpbm, xwud, freeipa, sudo, privesc, cypher injection, ftp, mail, dirsearch, dns, phising, webauthn, devtools]
 categories: [HTB Writeups]
