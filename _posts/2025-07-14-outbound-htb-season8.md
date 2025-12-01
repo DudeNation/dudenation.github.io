@@ -1,7 +1,6 @@
 ---
 title: Outbound [Easy]
 date: 2025-07-14
-password: 3905181a4fcf0c6f51b0ef10616abf1695f61f082587db07952da790128fa6c7
 tags: [htb, linux, nmap, ssh, below, roundcube, cve-2025-49113, mysql, symlink, msfconsole, 3des cbc, file permission, race condition]
 categories: [HTB Writeups]
 author: 2Fa0n
